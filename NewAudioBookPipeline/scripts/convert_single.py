@@ -79,9 +79,10 @@ async def synth_chapter(
     work_dir: Path,
     parallel: int,
     chunk_chars: int,
+    rate_limit_gap: float = 1.0,
 ) -> List[Path]:
     chunks = chunk_text(text, chunk_chars)
-    print(f"  split into {len(chunks)} chunk(s), {parallel} in parallel")
+    print(f"  split into {len(chunks)} chunk(s), {parallel} in parallel (1s gap between starts)")
 
     mp3_paths = [
         work_dir / f"chunk_{i:04}.mp3" for i in range(len(chunks))
@@ -90,9 +91,19 @@ async def synth_chapter(
     sem = asyncio.Semaphore(parallel)
     done = {"n": 0}
     total = len(chunks)
+    last_req_ts = {"t": 0.0}
+    lock = asyncio.Lock()
 
     async def run_one(i: int) -> None:
         async with sem:
+            # Rate-limit: ensure at least `rate_limit_gap` seconds between
+            # any two Edge-TTS requests to avoid server-side throttling.
+            async with lock:
+                now = time.monotonic()
+                wait = rate_limit_gap - (now - last_req_ts["t"])
+                if wait > 0:
+                    await asyncio.sleep(wait)
+                last_req_ts["t"] = time.monotonic()
             await synth_chunk(chunks[i], voice, rate, pitch, mp3_paths[i])
             done["n"] += 1
             print(f"  [{done['n']:>4}/{total}] chunk {i + 1} done")
@@ -120,22 +131,16 @@ def merge_mp3s(ffmpeg: str, chunk_mp3s: List[Path], out_mp3: Path) -> None:
             esc = str(p.resolve()).replace("'", "'\\''")
             f.write(f"file '{esc}'\n")
     try:
-        rc = subprocess.run(
+        # Always re-encode — stream-copying MP3 chunks from different
+        # synthesis runs causes non-monotonically-increasing DTS warnings.
+        subprocess.run(
             [
                 ffmpeg, "-y", "-hide_banner", "-loglevel", "error",
                 "-f", "concat", "-safe", "0", "-i", str(listfile),
-                "-c", "copy", str(out_mp3),
+                "-c:a", "libmp3lame", "-b:a", "192k", str(out_mp3),
             ],
-        ).returncode
-        if rc != 0:
-            subprocess.run(
-                [
-                    ffmpeg, "-y", "-hide_banner", "-loglevel", "error",
-                    "-f", "concat", "-safe", "0", "-i", str(listfile),
-                    "-c:a", "libmp3lame", "-b:a", "192k", str(out_mp3),
-                ],
-                check=True,
-            )
+            check=True,
+        )
     finally:
         listfile.unlink(missing_ok=True)
 

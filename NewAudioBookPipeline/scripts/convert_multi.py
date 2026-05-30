@@ -52,16 +52,13 @@ VOICE_ALIASES: Dict[str, str] = {
     # native Hindi
     "swara": "hi-IN-SwaraNeural",
     "madhur": "hi-IN-MadhurNeural",
-    # Indian English (bilingual)
-    "neerja": "en-IN-NeerjaNeural",
-    "prabhat": "en-IN-PrabhatNeural",
-    # Marathi (Devanagari)
+    # Marathi (Devanagari script, reads Hindi well)
     "aarohi": "mr-IN-AarohiNeural",
     "manohar": "mr-IN-ManoharNeural",
-    # Nepali (Devanagari)
+    # Nepali (Devanagari script, reads Hindi cleanly)
     "hemkala": "ne-NP-HemkalaNeural",
     "sagar": "ne-NP-SagarNeural",
-    # Multilingual
+    # Multilingual (proven to handle Hindi text)
     "ava": "en-US-AvaMultilingualNeural",
     "andrew": "en-US-AndrewMultilingualNeural",
     "emma": "en-US-EmmaMultilingualNeural",
@@ -323,10 +320,15 @@ async def synth_span(
         except Exception as e:
             last_err = e
             wait = RETRY_BACKOFF * (2 ** (attempt - 1))
+            preview = text[:80].replace("\n", " ")
             print(
-                f"    span failed (attempt {attempt}/{MAX_RETRIES}): {e}; "
-                f"retrying in {wait:.1f}s"
+                f"    span failed (attempt {attempt}/{MAX_RETRIES}): {e}"
             )
+            print(
+                f"      voice={voice}  len={len(text)}  "
+                f"text=\"{preview}{'…' if len(text) > 80 else ''}\""
+            )
+            print(f"      retrying in {wait:.1f}s")
             await asyncio.sleep(wait)
     raise RuntimeError(
         f"span synthesis failed after {MAX_RETRIES} attempts: {last_err}"
@@ -334,7 +336,8 @@ async def synth_span(
 
 
 async def synth_all_spans(
-    plan: Plan, work_dir: Path, parallel: int
+    plan: Plan, work_dir: Path, parallel: int, narr_spec: 'VoiceSpec',
+    rate_limit_gap: float = 1.0,
 ) -> List[Path]:
     """Synthesize audio spans in parallel, produce one .mp3 per audio unit
     (silences are generated inline by merge_plan)."""
@@ -348,20 +351,47 @@ async def synth_all_spans(
     sem = asyncio.Semaphore(parallel)
     done = {"n": 0}
     total_audio = sum(1 for u in plan.units if u["type"] == "audio")
+    last_req_ts = {"t": 0.0}
+    lock = asyncio.Lock()
 
     async def synth_one(idx: int, unit: dict) -> None:
-        out = work_dir / f"span_{idx:04d}.mp3"
-        await synth_span(
-            unit["text"],
-            unit["voice"],
-            unit["rate"],
-            unit["pitch"],
-            out,
-        )
-        audio_paths[idx] = out
-        done["n"] += 1
-        label = unit.get("speaker", "?")
-        print(f"  [{done['n']:>4}/{total_audio}] {label}")
+        # Rate-limit: ensure at least `rate_limit_gap` seconds between
+        # any two Edge-TTS requests to avoid server-side throttling.
+        async with lock:
+            now = time.monotonic()
+            wait = rate_limit_gap - (now - last_req_ts["t"])
+            if wait > 0:
+                await asyncio.sleep(wait)
+            last_req_ts["t"] = time.monotonic()
+        async with sem:
+            out = work_dir / f"span_{idx:04d}.mp3"
+            try:
+                await synth_span(
+                    unit["text"],
+                    unit["voice"],
+                    unit["rate"],
+                    unit["pitch"],
+                    out,
+                )
+            except RuntimeError:
+                # Voice failed (e.g. monolingual English voice on Hindi text).
+                # Fall back to the NARRATOR voice so the book isn't missing audio.
+                spk = unit.get("speaker", "?")
+                print(
+                    f"      → falling back to NARRATOR voice "
+                    f"({narr_spec.voice}) for \"{spk}\""
+                )
+                await synth_span(
+                    unit["text"],
+                    narr_spec.voice,
+                    narr_spec.rate_s,
+                    narr_spec.pitch_s,
+                    out,
+                )
+            audio_paths[idx] = out
+            done["n"] += 1
+            label = unit.get("speaker", "?")
+            print(f"  [{done['n']:>4}/{total_audio}] {label}")
 
     tasks = []
     for idx, unit in enumerate(plan.units):
@@ -425,22 +455,17 @@ def merge_plan(
             esc = str(p.resolve()).replace("'", "'\\''")
             f.write(f"file '{esc}'\n")
     try:
-        rc = subprocess.run(
+        # Always re-encode — stream-copying MP3 chunks from different
+        # synthesis runs (Edge TTS + silence) causes non-monotonically-
+        # increasing DTS warnings that -fflags +genpts alone cannot fix.
+        subprocess.run(
             [
                 ffmpeg, "-y", "-hide_banner", "-loglevel", "error",
                 "-f", "concat", "-safe", "0", "-i", str(listfile),
-                "-c", "copy", str(out_mp3),
+                "-c:a", "libmp3lame", "-b:a", "192k", str(out_mp3),
             ],
-        ).returncode
-        if rc != 0:
-            subprocess.run(
-                [
-                    ffmpeg, "-y", "-hide_banner", "-loglevel", "error",
-                    "-f", "concat", "-safe", "0", "-i", str(listfile),
-                    "-c:a", "libmp3lame", "-b:a", "192k", str(out_mp3),
-                ],
-                check=True,
-            )
+            check=True,
+        )
     finally:
         listfile.unlink(missing_ok=True)
 
@@ -487,7 +512,9 @@ async def process_chapter(
         work_dir = Path(tmp)
         t0 = time.time()
 
-        audio_paths = await synth_all_spans(plan, work_dir, parallel)
+        audio_paths = await synth_all_spans(
+            plan, work_dir, parallel, narr_spec=vmap[NARRATOR.lower()]
+        )
 
         print(f"  merging {len(audio_paths)} spans + silences ...")
         merge_plan(ffmpeg, plan, audio_paths, work_dir, out_mp3)

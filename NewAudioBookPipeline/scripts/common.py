@@ -58,8 +58,6 @@ _CURATED: Dict[str, List[Dict[str, str]]] = {
         {"name": "hi-IN-MadhurNeural",  "gender": "Male",   "note": "Hindi male — clear narration"},
     ],
     "en": [
-        {"name": "en-IN-NeerjaNeural",      "gender": "Female", "note": "IN — Indian English (bilingual with Hindi)"},
-        {"name": "en-IN-PrabhatNeural",     "gender": "Male",   "note": "IN — Indian English"},
         {"name": "en-US-AvaNeural",         "gender": "Female", "note": "US — warm, expressive"},
         {"name": "en-US-AndrewNeural",      "gender": "Male",   "note": "US — warm, confident"},
     ],
@@ -72,10 +70,10 @@ DEFAULT_CONFIG = {
     "language": "hi",
     "voice": "hi-IN-MadhurNeural",
     "voice_hi": "hi-IN-MadhurNeural",
-    "voice_en": "en-IN-NeerjaNeural",
+    "voice_en": "en-US-AvaNeural",
     "rate": "+0%",
     "pitch": "+0Hz",
-    "parallel_chunks": 4,
+    "parallel_chunks": 2,
     "chunk_chars": 2800,
     # Multi-voice (character) narration
     "narrator_voice": "hi-IN-MadhurNeural",
