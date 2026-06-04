@@ -229,7 +229,12 @@
    ----------------------------------------------------------------------- */
 var IS_EDGE = /Edg\//.test(navigator.userAgent);
 var warnEl = document.getElementById('voice-browser-warn');
-if (!IS_EDGE) warnEl.style.display = 'block';
+if (!IS_EDGE) {
+  warnEl.textContent = '⚠ Open this page in Microsoft Edge for speech playback.';
+  warnEl.style.display = 'block';
+  warnEl.style.background = 'var(--buho-yellow)';
+  warnEl.style.color = 'var(--buho-bg)';
+}
 
 /* -----------------------------------------------------------------------
    State
@@ -314,6 +319,7 @@ function shortNum(n) { return n.toLocaleString(); }
    ----------------------------------------------------------------------- */
 // Real desktop Edge has Azure neural voices. Edge on iOS/Android is just WebKit.
 var IS_EDGE_DESKTOP = IS_EDGE && !/Mobile|iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+var IS_MOBILE = /Mobile|iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 function loadVoices() {
   if (typeof speechSynthesis === 'undefined') return;
@@ -327,7 +333,7 @@ function loadVoices() {
   var filtered;
 
   if (IS_EDGE_DESKTOP) {
-    // Desktop Edge only: filter to Azure cloud neural voices
+    // Desktop Edge: filter to Azure cloud neural voices
     filtered = [];
     for (var i = 0; i < all.length; i++) {
       var v = all[i];
@@ -339,18 +345,32 @@ function loadVoices() {
       }
     }
     if (filtered.length === 0) filtered = all;
+  } else if (IS_MOBILE) {
+    // iOS/Android: prefer Enhanced/premium voices (much better quality than defaults)
+    filtered = [];
+    for (var m = 0; m < all.length; m++) {
+      var mv = all[m];
+      // Enhanced voices on iOS have "(Enhanced)" suffix, or are known premium names
+      if (mv.name.indexOf('Enhanced') !== -1 ||
+          mv.name.indexOf('Premium') !== -1 ||
+          mv.name.indexOf('Siri') !== -1) {
+        filtered.push(mv);
+      }
+    }
+    // If no enhanced found, show all (fallback to robotic defaults)
+    if (filtered.length === 0) filtered = all;
   } else {
-    // iOS / mobile / other browsers: show all available voices
+    // Other desktop browsers: show all voices
     filtered = all;
   }
 
   STATE.voices = filtered;
   populateVoiceSelect(filtered);
 
-  // Pick default: Emma Multilingual on desktop, first English voice otherwise
+  // Pick default voice
   if (filtered.length > 0) {
     var found = false;
-    // Try Emma Multilingual first
+    // Try Emma first (desktop Azure)
     for (var j = 0; j < filtered.length; j++) {
       if (filtered[j].name.indexOf('Emma') !== -1) {
         STATE.selectedVoice = filtered[j];
@@ -358,12 +378,23 @@ function loadVoices() {
         found = true; break;
       }
     }
-    // Try first English voice
+    // Try first Enhanced English voice (iOS)
     if (!found) {
       for (var k = 0; k < filtered.length; k++) {
-        if (filtered[k].lang.indexOf('en') === 0) {
+        if (filtered[k].lang.indexOf('en') === 0 &&
+            filtered[k].name.indexOf('Enhanced') !== -1) {
           STATE.selectedVoice = filtered[k];
           voiceSelect.value = filtered[k].name;
+          found = true; break;
+        }
+      }
+    }
+    // Try any English voice
+    if (!found) {
+      for (var n = 0; n < filtered.length; n++) {
+        if (filtered[n].lang.indexOf('en') === 0) {
+          STATE.selectedVoice = filtered[n];
+          voiceSelect.value = filtered[n].name;
           found = true; break;
         }
       }
@@ -373,6 +404,14 @@ function loadVoices() {
       STATE.selectedVoice = filtered[0];
       voiceSelect.value = filtered[0].name;
     }
+  }
+
+  // Update banner for mobile users
+  if (IS_MOBILE && !IS_EDGE_DESKTOP) {
+    warnEl.textContent = 'ℹ️ On iOS/Android, voices are limited to built-in models. For Azure Neural Voices, use Microsoft Edge on desktop (Windows/macOS).';
+    warnEl.style.display = 'block';
+    warnEl.style.background = 'var(--buho-blue)';
+    warnEl.style.color = 'var(--buho-bg)';
   }
 }
 
