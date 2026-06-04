@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anna's Voice - Buho</title>
+  <link rel="stylesheet" href="../_framework/buho.css">
+<style>
+/* ============================================================
+   Tool-specific styles
+   ============================================================ */
+:root {
+  --ctrl-h: 56px;
+  --ctrl-gap: 8px;
+}
+.voice-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: var(--buho-max-w);
+  margin: 0 auto;
+}
+
+/* --- file screen --- */
+.voice-file-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-align: center;
+  gap: var(--buho-space-5);
+  padding: var(--buho-space-6) 0;
+}
+.voice-file-screen__icon { font-size: 64px; line-height: 1; }
+.voice-file-screen h1 { font-size: var(--buho-fs-xl); color: var(--buho-fg-hi); }
+.voice-file-screen p { color: var(--buho-fg-lo); max-width: 400px; }
+
+.voice-browser-warn {
+  display: none;
+  background: var(--buho-yellow);
+  color: var(--buho-bg);
+  padding: var(--buho-space-2) var(--buho-space-4);
+  border-radius: var(--buho-radius);
+  font-size: var(--buho-fs-sm);
+  font-weight: 600;
+  max-width: 480px;
+}
+
+/* --- chapter list --- */
+.voice-chapter-screen { display: none; flex-direction: column; flex: 1; }
+.voice-chapter-top {
+  display: flex; align-items: center; gap: var(--buho-space-3);
+  padding-bottom: var(--buho-space-4);
+  border-bottom: var(--buho-border);
+  margin-bottom: var(--buho-space-3);
+}
+.voice-chapter-list {
+  flex: 1; overflow-y: auto;
+  list-style: none; padding: 0; margin: 0;
+}
+.voice-chapter-item {
+  display: block; width: 100%; text-align: left;
+  padding: var(--buho-space-3) var(--buho-space-4);
+  font-size: var(--buho-fs-base);
+  color: var(--buho-fg); background: var(--buho-bg);
+  border: var(--buho-border); border-radius: var(--buho-radius);
+  margin-bottom: var(--buho-space-2);
+  cursor: pointer; transition: background var(--buho-ease);
+}
+.voice-chapter-item:hover { background: var(--buho-bg-hi); color: var(--buho-blue); }
+.voice-chapter-item:active { transform: scale(0.99); }
+
+/* --- reader screen --- */
+.voice-reader-screen { display: none; flex-direction: column; flex: 1; }
+
+.voice-reader-topbar {
+  display: flex; align-items: center; gap: var(--buho-space-2);
+  padding: var(--buho-space-2) 0 var(--buho-space-3);
+  border-bottom: var(--buho-border); margin-bottom: var(--buho-space-3);
+  flex-shrink: 0;
+}
+.voice-reader-topbar__title {
+  flex: 1; font-size: var(--buho-fs-sm); font-weight: 600;
+  color: var(--buho-fg-hi); text-align: center;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.voice-reader-topbar select {
+  max-width: 180px; font-size: var(--buho-fs-xs);
+  padding: 4px 6px; border: var(--buho-border); border-radius: var(--buho-radius);
+  background: var(--buho-bg); color: var(--buho-fg);
+}
+
+/* text display area */
+.voice-text-area {
+  flex: 1; overflow-y: auto; padding: var(--buho-space-3) 0;
+  font-size: var(--buho-fs-lg); line-height: 1.9;
+  color: var(--buho-fg);
+}
+.voice-word {
+  display: inline; transition: background 0.08s ease, color 0.08s ease;
+  border-radius: 2px; padding: 0 1px;
+}
+.voice-word--active {
+  background: var(--buho-yellow);
+  color: var(--buho-bg);
+  border-radius: 3px;
+}
+
+/* --- status bar --- */
+.voice-status {
+  font-size: var(--buho-fs-xs); color: var(--buho-fg-lo);
+  text-align: center; padding: var(--buho-space-1) 0;
+  flex-shrink: 0;
+}
+
+/* --- bottom controls --- */
+.voice-controls {
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--ctrl-gap);
+  padding: var(--buho-space-3) 0 var(--buho-space-4);
+  border-top: var(--buho-border);
+  flex-shrink: 0;
+  position: sticky; bottom: 0;
+  background: var(--buho-bg);
+}
+.voice-ctrl {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: var(--buho-border); border-radius: var(--buho-radius);
+  background: var(--buho-bg-hi); color: var(--buho-fg-hi);
+  cursor: pointer; transition: background var(--buho-ease), transform 0.1s;
+  user-select: none; outline: none;
+}
+.voice-ctrl:hover { background: #e6dfc8; }
+.voice-ctrl:active { transform: scale(0.94); }
+.voice-ctrl:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+.voice-ctrl--circle {
+  width: var(--ctrl-h); height: var(--ctrl-h);
+  border-radius: 50%; font-size: 24px;
+}
+.voice-ctrl--sm {
+  width: 44px; height: 44px; border-radius: 50%; font-size: 16px;
+}
+.voice-ctrl--p {
+  width: 44px; height: 44px; font-size: 18px;
+}
+
+/* responsive tighten on small screens */
+@media (max-width: 420px) {
+  .voice-ctrl--sm { width: 40px; height: 40px; font-size: 14px; }
+  .voice-ctrl--p   { width: 40px; height: 40px; font-size: 16px; }
+  .voice-ctrl--circle { width: 48px; height: 48px; font-size: 20px; }
+  :root { --ctrl-gap: 5px; }
+  .voice-reader-topbar select { max-width: 120px; }
+}
+</style>
+</head>
+<body>
+
+<main class="buho-content">
+  <div class="buho-content__inner" style="height:100%">
+    <div class="voice-main">
+
+      <!-- ================================================================
+           FILE SELECTION SCREEN
+           ================================================================ -->
+      <div id="voice-file-screen" class="voice-file-screen">
+        <div class="voice-file-screen__icon">🎧</div>
+        <h1>Anna's Voice</h1>
+        <p>Choose a <strong>.txt</strong> or <strong>.epub</strong> file to read aloud using Microsoft Edge's natural voices.</p>
+        <div id="voice-browser-warn" class="voice-browser-warn">
+          ⚠ Open this page in <strong>Microsoft Edge</strong> for speech playback.
+        </div>
+        <button class="buho-btn" id="voice-pick-btn">📂 Choose File</button>
+        <input type="file" id="voice-file-input" accept=".txt,.epub" style="display:none">
+      </div>
+
+      <!-- ================================================================
+           CHAPTER LIST SCREEN  (EPUB only)
+           ================================================================ -->
+      <div id="voice-chapter-screen" class="voice-chapter-screen">
+        <div class="voice-chapter-top">
+          <button class="buho-btn buho-btn--outline" id="voice-chapter-back">← Choose Another File</button>
+          <span style="font-weight:600;color:var(--buho-fg-hi)" id="voice-book-title"></span>
+        </div>
+        <ul class="voice-chapter-list" id="voice-chapter-list"></ul>
+      </div>
+
+      <!-- ================================================================
+           READER SCREEN
+           ================================================================ -->
+      <div id="voice-reader-screen" class="voice-reader-screen">
+        <!-- top bar -->
+        <div class="voice-reader-topbar">
+          <button class="voice-ctrl voice-ctrl--sm" id="voice-menu-btn" title="Menu (back)">☰</button>
+          <span class="voice-reader-topbar__title" id="voice-reader-title">Reading</span>
+          <select id="voice-select" title="Choose voice"></select>
+        </div>
+
+        <!-- text display -->
+        <div class="voice-text-area" id="voice-text-area"></div>
+
+        <!-- status -->
+        <div class="voice-status" id="voice-status"></div>
+
+        <!-- controls -->
+        <div class="voice-controls" id="voice-controls">
+          <button class="voice-ctrl voice-ctrl--p"  id="btn-chapter-prev" title="Previous chapter (EPUB) / -100 words (TXT)">⏮</button>
+          <button class="voice-ctrl voice-ctrl--sm" id="btn-skip-back"  title="Skip back 15 words">↺</button>
+          <button class="voice-ctrl voice-ctrl--circle" id="btn-play" title="Play / Pause">▶</button>
+          <button class="voice-ctrl voice-ctrl--sm" id="btn-skip-fwd"  title="Skip forward 15 words">↻</button>
+          <button class="voice-ctrl voice-ctrl--p"  id="btn-chapter-next" title="Next chapter (EPUB) / +100 words (TXT)">⏭</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script src="../_framework/buho.js"></script>
+<script>
+// ============================================================
+//  Anna's Voice — Core Logic
+// ============================================================
+
+/* -----------------------------------------------------------------------
+   Edge Detection
+   ----------------------------------------------------------------------- */
+var IS_EDGE = /Edg\//.test(navigator.userAgent);
+var warnEl = document.getElementById('voice-browser-warn');
+if (!IS_EDGE) warnEl.style.display = 'block';
+
+/* -----------------------------------------------------------------------
+   State
+   ----------------------------------------------------------------------- */
+var STATE = {
+  fileType: null,           // 'txt' | 'epub'
+  mode: 'file-select',      // 'file-select' | 'chapter-list' | 'reader'
+  // TXT
+  fullText: '',
+  words: [],                // [{text, idx}]
+  currentWordIdx: 0,
+  // EPUB
+  bookTitle: '',
+  chapters: [],             // [{title, text, words}]
+  currentChapterIdx: 0,
+  // speech
+  isPlaying: false,
+  isPaused: false,
+  selectedVoice: null,
+  voices: [],
+  // chunking
+  _utterance: null,
+  _utteranceStartWord: 0,   // which word does current utterance start at
+  _utteranceEndWord: 0,
+  _chunkSize: 500,
+  // debounce skip
+  _skipLock: false,
+};
+
+/* -----------------------------------------------------------------------
+   DOM refs
+   ----------------------------------------------------------------------- */
+var $ = function (id) { return document.getElementById(id); };
+var fileScreen     = $('voice-file-screen');
+var chapterScreen  = $('voice-chapter-screen');
+var readerScreen   = $('voice-reader-screen');
+var fileInput      = $('voice-file-input');
+var pickBtn        = $('voice-pick-btn');
+var chapterBackBtn = $('voice-chapter-back');
+var chapterListEl  = $('voice-chapter-list');
+var bookTitleEl    = $('voice-book-title');
+var readerTitleEl  = $('voice-reader-title');
+var menuBtn        = $('voice-menu-btn');
+var voiceSelect    = $('voice-select');
+var textArea       = $('voice-text-area');
+var statusEl       = $('voice-status');
+var btnPlay        = $('btn-play');
+var btnSkipBack15  = $('btn-skip-back');
+var btnSkipFwd15   = $('btn-skip-fwd');
+var btnChapPrev    = $('btn-chapter-prev');
+var btnChapNext    = $('btn-chapter-next');
+
+/* -----------------------------------------------------------------------
+   Screen management
+   ----------------------------------------------------------------------- */
+function showScreen(mode) {
+  STATE.mode = mode;
+  fileScreen.style.display    = (mode === 'file-select')    ? 'flex'  : 'none';
+  chapterScreen.style.display = (mode === 'chapter-list')   ? 'flex'  : 'none';
+  readerScreen.style.display  = (mode === 'reader')         ? 'flex'  : 'none';
+}
+
+/* -----------------------------------------------------------------------
+   Helpers
+   ----------------------------------------------------------------------- */
+function tokenize(text) {
+  // Unicode-aware word tokenizer — splits on whitespace, keeps punctuation attached
+  var raw = text.match(/[\p{L}\p{M}\p{N}'-]+|[^\p{L}\p{M}\p{N}'\s-]/gu) || [];
+  return raw.map(function (t) { return { text: t }; });
+}
+
+function escapeHtml(str) {
+  var d = document.createElement('div');
+  d.appendChild(document.createTextNode(str));
+  return d.innerHTML;
+}
+
+function shortNum(n) { return n.toLocaleString(); }
+
+/* -----------------------------------------------------------------------
+   Voice Loading
+   ----------------------------------------------------------------------- */
+function loadVoices() {
+  if (typeof speechSynthesis === 'undefined') return;
+  var all = speechSynthesis.getVoices();
+  // Keep only Edge Azure neural voices (localService === true in Edge)
+  var filtered = [];
+  for (var i = 0; i < all.length; i++) {
+    var v = all[i];
+    // Filter: no on-device voices (localService=false = cloud neural in Edge),
+    // and only neural/multilingual/HD natural voices
+    if (v.localService === false && (
+        v.name.indexOf('Neural') !== -1 ||
+        v.name.indexOf('DragonHD') !== -1 ||
+        v.name.indexOf('Multilingual') !== -1)) {
+      filtered.push(v);
+    }
+  }
+  // If no neural found, fallback to all voices
+  if (filtered.length === 0) filtered = all;
+
+  STATE.voices = filtered;
+  populateVoiceSelect(filtered);
+
+  // Set default to en-US-EmmaMultilingualNeural or first Neural
+  if (filtered.length > 0) {
+    var found = false;
+    for (var j = 0; j < filtered.length; j++) {
+      if (filtered[j].name.indexOf('Emma') !== -1 && filtered[j].name.indexOf('Multilingual') !== -1) {
+        STATE.selectedVoice = filtered[j];
+        voiceSelect.value = filtered[j].name;
+        found = true; break;
+      }
+    }
+    if (!found) {
+      // try en-US-EmmaMultilingualNeural (newer naming)
+      for (var k = 0; k < filtered.length; k++) {
+        if (filtered[k].name.indexOf('Emma') !== -1) {
+          STATE.selectedVoice = filtered[k];
+          voiceSelect.value = filtered[k].name;
+          found = true; break;
+        }
+      }
+    }
+    if (!found) {
+      STATE.selectedVoice = filtered[0];
+      voiceSelect.value = filtered[0].name;
+    }
+  }
+}
+
+function populateVoiceSelect(voices) {
+  voiceSelect.innerHTML = '';
+  for (var i = 0; i < voices.length; i++) {
+    var v = voices[i];
+    var opt = document.createElement('option');
+    opt.value = v.name;
+    opt.textContent = v.name + ' (' + v.lang + ')';
+    voiceSelect.appendChild(opt);
+  }
+}
+
+if (IS_EDGE && typeof speechSynthesis !== 'undefined') {
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+voiceSelect.addEventListener('change', function () {
+  var name = voiceSelect.value;
+  for (var i = 0; i < STATE.voices.length; i++) {
+    if (STATE.voices[i].name === name) {
+      STATE.selectedVoice = STATE.voices[i]; break;
+    }
+  }
+});
+
+/* -----------------------------------------------------------------------
+   File Picking
+   ----------------------------------------------------------------------- */
+pickBtn.addEventListener('click', function () { fileInput.click(); });
+
+fileInput.addEventListener('change', function () {
+  var file = fileInput.files[0];
+  if (!file) return;
+  fileInput.value = '';
+
+  var ext = file.name.split('.').pop().toLowerCase();
+  if (ext === 'txt') loadTxtFile(file);
+  else if (ext === 'epub') loadEpubFile(file);
+  else alert('Unsupported file type. Choose .txt or .epub');
+});
+
+/* -----------------------------------------------------------------------
+   TXT Loading
+   ----------------------------------------------------------------------- */
+function loadTxtFile(file) {
+  stopSpeech();
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    STATE.fileType = 'txt';
+    STATE.fullText = e.target.result;
+    STATE.words = tokenize(STATE.fullText);
+    STATE.currentWordIdx = 0;
+    STATE.currentChapterIdx = 0;
+    STATE.chapters = [];
+    STATE.bookTitle = file.name;
+    STATE._chunkCache = {};
+    renderText();
+    showScreen('reader');
+    readerTitleEl.textContent = file.name;
+    updateStatus();
+  };
+  reader.readAsText(file);
+}
+
+/* -----------------------------------------------------------------------
+   EPUB Loading — uses JSZip
+   ----------------------------------------------------------------------- */
+function loadEpubFile(file) {
+  var archiveBuffer;
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    archiveBuffer = e.target.result;
+    // Try loading JSZip from CDN, fallback to local
+    ensureJSZip(function (err, JSZip) {
+      if (err) { alert('Failed to load EPUB parser. Check internet / reload.'); return; }
+      JSZip.loadAsync(archiveBuffer).then(function (zip) {
+        return parseEpub(zip);
+      }).then(function (book) {
+        STATE.fileType = 'epub';
+        STATE.bookTitle = book.title || file.name.replace(/\.epub$/i, '');
+        STATE.chapters = book.chapters;
+        STATE.currentChapterIdx = 0;
+        STATE.words = STATE.chapters.length > 0 ? STATE.chapters[0].words : [];
+        STATE.fullText = STATE.chapters.length > 0 ? STATE.chapters[0].text : '';
+        STATE.currentWordIdx = 0;
+        showChapterList();
+      }).catch(function (err) {
+        alert('Error reading EPUB: ' + err.message);
+      });
+    });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+var _jszipPromise = null;
+
+function ensureJSZip(cb) {
+  if (typeof JSZip !== 'undefined') { cb(null, JSZip); return; }
+
+  // Try CDN first
+  var script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+  script.onload = function () {
+    if (typeof JSZip !== 'undefined') { cb(null, JSZip); return; }
+    // fallback to local
+    var s2 = document.createElement('script');
+    s2.src = 'lib/jszip.min.js';
+    s2.onload = function () {
+      if (typeof JSZip !== 'undefined') cb(null, JSZip);
+      else cb(new Error('JSZip not available'));
+    };
+    s2.onerror = function () { cb(new Error('JSZip not available')); };
+    document.head.appendChild(s2);
+  };
+  script.onerror = function () {
+    // fallback to local
+    var s2 = document.createElement('script');
+    s2.src = 'lib/jszip.min.js';
+    s2.onload = function () {
+      if (typeof JSZip !== 'undefined') cb(null, JSZip);
+      else cb(new Error('JSZip not available'));
+    };
+    s2.onerror = function () { cb(new Error('JSZip not available')); };
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(script);
+}
+
+function parseEpub(zip) {
+  // Read META-INF/container.xml
+  return zip.file('META-INF/container.xml').async('string').then(function (containerXml) {
+    var parser = new DOMParser();
+    var containerDoc = parser.parseFromString(containerXml, 'text/xml');
+    var rootfiles = containerDoc.querySelectorAll('rootfile');
+    var opfPath = null;
+    for (var i = 0; i < rootfiles.length; i++) {
+      var mt = rootfiles[i].getAttribute('media-type');
+      if (mt === 'application/oebps-package+xml') {
+        opfPath = rootfiles[i].getAttribute('full-path');
+        break;
+      }
+    }
+    if (!opfPath) throw new Error('No OPF found in container.xml');
+    return zip.file(opfPath).async('string').then(function (opfXml) {
+      return parseOpf(zip, opfPath, opfXml);
+    });
+  });
+}
+
+function parseOpf(zip, opfPath, opfXml) {
+  var opfDir = opfPath.substring(0, opfPath.lastIndexOf('/') + 1) || '';
+  var doc = new DOMParser().parseFromString(opfXml, 'text/xml');
+
+  // Title (namespace-aware for dc:title)
+  var DC_NS = 'http://purl.org/dc/elements/1.1/';
+  var titleEl = doc.querySelector('title') || doc.getElementsByTagNameNS(DC_NS, 'title')[0];
+  var title = titleEl ? titleEl.textContent.trim() : 'Untitled';
+
+  // Manifest items
+  var manifestItems = {};
+  var itemEls = doc.querySelectorAll('manifest > item');
+  for (var i = 0; i < itemEls.length; i++) {
+    var id = itemEls[i].getAttribute('id');
+    var href = itemEls[i].getAttribute('href');
+    manifestItems[id] = {
+      href: href,
+      mediaType: itemEls[i].getAttribute('media-type')
+    };
+  }
+
+  // Spine — ordered list of IDs
+  var spineIds = [];
+  var spineItem = doc.querySelector('spine');
+  if (spineItem) {
+    var itemrefs = spineItem.querySelectorAll('itemref');
+    for (var j = 0; j < itemrefs.length; j++) {
+      var idref = itemrefs[j].getAttribute('idref');
+      if (idref && manifestItems[idref]) spineIds.push(idref);
+    }
+  }
+
+  // Read each chapter
+  var chapterPromises = spineIds.map(function (id) {
+    var item = manifestItems[id];
+    var fullPath = resolvePath(opfDir + item.href);
+    // Skip non-XHTML
+    if (item.mediaType && item.mediaType.indexOf('xhtml') === -1 && item.mediaType.indexOf('html') === -1) {
+      return null;
+    }
+    var fileEntry = zip.file(fullPath);
+    if (!fileEntry) return null;
+    return fileEntry.async('string').then(function (html) {
+      var hdoc = new DOMParser().parseFromString(html, 'text/html');
+      // Get title from <title> or first <h1-h6>
+      var htitle = '';
+      var htitleEl = hdoc.querySelector('title');
+      if (htitleEl) htitle = htitleEl.textContent.trim();
+      if (!htitle) {
+        var h1 = hdoc.querySelector('h1, h2, h3');
+        if (h1) htitle = h1.textContent.trim();
+      }
+      // Strip script, style, nav
+      var body = hdoc.body || hdoc.documentElement;
+      if (body) {
+        var toRemove = body.querySelectorAll('script, style, nav, header, footer');
+        for (var k = 0; k < toRemove.length; k++) toRemove[k].remove();
+      }
+      var text = body ? (body.textContent || '') : '';
+      text = text.replace(/\s+/g, ' ').trim();
+      var words = tokenize(text);
+      return { title: htitle || 'Chapter', text: text, words: words };
+    });
+  });
+
+  return Promise.all(chapterPromises).then(function (results) {
+    var chapters = results.filter(function (r) { return r !== null && r.words.length > 0; });
+    // If no meaningful chapters extracted, add a fallback
+    if (chapters.length === 0) {
+      // Read all html files as single chapter
+      return getAllHtmlFilesAsSingleChapter(zip, opfDir);
+    }
+    return { title: title, chapters: chapters };
+  });
+}
+
+function getAllHtmlFilesAsSingleChapter(zip, opfDir) {
+  // Fallback: find all xhtml/html files and merge
+  var all = [];
+  zip.forEach(function (path, entry) {
+    if (!entry.dir && /\.x?html?$/i.test(path)) {
+      all.push(entry.async('string').then(function (html) {
+        var d = new DOMParser().parseFromString(html, 'text/html');
+        var body = d.body || d.documentElement;
+        if (body) {
+          var rem = body.querySelectorAll('script, style, nav, header, footer');
+          for (var k = 0; k < rem.length; k++) rem[k].remove();
+        }
+        var text = body ? (body.textContent || '') : '';
+        return text.replace(/\s+/g, ' ').trim();
+      }));
+    }
+  });
+  return Promise.all(all).then(function (texts) {
+    var fullText = texts.join('\n\n');
+    var words = tokenize(fullText);
+    return {
+      title: 'EPUB Book',
+      chapters: [{ title: 'Full Text', text: fullText, words: words }]
+    };
+  });
+}
+
+function resolvePath(path) {
+  // Normalize relative paths (e.g., ../)
+  var parts = path.split('/');
+  var result = [];
+  for (var i = 0; i < parts.length; i++) {
+    if (parts[i] === '..') result.pop();
+    else if (parts[i] !== '.' && parts[i] !== '') result.push(parts[i]);
+  }
+  return result.join('/');
+}
+
+/* -----------------------------------------------------------------------
+   Chapter List
+   ----------------------------------------------------------------------- */
+function showChapterList() {
+  // If only 1 chapter, go straight to reader
+  if (STATE.chapters.length <= 1) {
+    loadChapter(0);
+    return;
+  }
+  showScreen('chapter-list');
+  bookTitleEl.textContent = STATE.bookTitle;
+  chapterListEl.innerHTML = '';
+  for (var i = 0; i < STATE.chapters.length; i++) {
+    var li = document.createElement('button');
+    li.className = 'voice-chapter-item';
+    li.textContent = STATE.chapters[i].title || ('Chapter ' + (i + 1));
+    (function (idx) {
+      li.addEventListener('click', function () { loadChapter(idx); });
+    })(i);
+    chapterListEl.appendChild(li);
+  }
+}
+
+chapterBackBtn.addEventListener('click', function () {
+  stopSpeech();
+  showScreen('file-select');
+});
+
+/* -----------------------------------------------------------------------
+   Load Chapter / Render Text
+   ----------------------------------------------------------------------- */
+function loadChapter(idx) {
+  if (idx < 0 || idx >= STATE.chapters.length) return;
+  STATE.currentChapterIdx = idx;
+  STATE.currentWordIdx = 0;
+  STATE.words = STATE.chapters[idx].words;
+  STATE.fullText = STATE.chapters[idx].text;
+  STATE._chunkCache = {}; // fresh cache per chapter
+  renderText();
+  showScreen('reader');
+  readerTitleEl.textContent = STATE.chapters[idx].title || ('Chapter ' + (idx + 1));
+  updateStatus();
+  updateChapterButtons();
+}
+
+function renderText() {
+  var html = '';
+  for (var i = 0; i < STATE.words.length; i++) {
+    var w = STATE.words[i];
+    var activeClass = (i === STATE.currentWordIdx) ? ' voice-word--active' : '';
+    html += '<span class="voice-word' + activeClass + '" data-wi="' + i + '">' + escapeHtml(w.text) + '</span>';
+  }
+  textArea.innerHTML = html;
+  scrollToActiveWord();
+}
+
+function scrollToActiveWord() {
+  var active = textArea.querySelector('.voice-word--active');
+  if (active) active.scrollIntoView({ block: 'center', behavior: 'auto' });
+}
+
+function updateStatus() {
+  var total = STATE.words.length;
+  statusEl.textContent = 'Word ' + shortNum(Math.min(STATE.currentWordIdx + 1, total)) + ' / ' + shortNum(total);
+}
+
+function updateChapterButtons() {
+  if (STATE.fileType === 'epub' && STATE.chapters.length > 1) {
+    btnChapPrev.title = 'Previous chapter';
+    btnChapNext.title = 'Next chapter';
+    btnChapPrev.disabled = STATE.currentChapterIdx <= 0;
+    btnChapNext.disabled = STATE.currentChapterIdx >= STATE.chapters.length - 1;
+  } else {
+    btnChapPrev.title = 'Skip back 100 words';
+    btnChapNext.title = 'Skip forward 100 words';
+    btnChapPrev.disabled = false;
+    btnChapNext.disabled = false;
+  }
+}
+
+/* -----------------------------------------------------------------------
+   Speech Engine — chunk cache, pre-queue, instant skip
+   ----------------------------------------------------------------------- */
+// Chunk cache: shared across current chapter, keyed by start word index
+STATE._chunkCache = {};   // { chunkId: {text, start, end} }
+STATE._prefetchAhead = 2; // number of chunks ahead to pre-queue
+STATE._chunkId = null;    // current active chunk id for boundary tracking
+
+function chunkId(start) { return 'c' + start; }
+
+function stopSpeech() {
+  if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
+  STATE.isPlaying = false;
+  STATE.isPaused = false;
+  STATE._chunkId = null;
+  btnPlay.textContent = '▶';
+}
+
+function buildChunkText(startIdx, endIdx) {
+  var t = '';
+  for (var i = startIdx; i < endIdx; i++) {
+    t += STATE.words[i].text + ' ';
+  }
+  return t.trim();
+}
+
+function getOrBuildChunk(startIdx) {
+  var id = chunkId(startIdx);
+  if (STATE._chunkCache[id]) return STATE._chunkCache[id];
+  var endIdx = Math.min(startIdx + STATE._chunkSize, STATE.words.length);
+  if (endIdx <= startIdx) return null;
+  var text = buildChunkText(startIdx, endIdx);
+  var entry = { text: text, start: startIdx, end: endIdx };
+  STATE._chunkCache[id] = entry;
+  // Prune cache if too large (>500 entries)
+  var keys = Object.keys(STATE._chunkCache);
+  if (keys.length > 500) {
+    delete STATE._chunkCache[keys[0]];
+  }
+  return entry;
+}
+
+function queueUtterance(chunkEntry) {
+  var utterance = new SpeechSynthesisUtterance(chunkEntry.text);
+  utterance.voice = STATE.selectedVoice;
+  utterance.rate = 1.0;
+
+  // Attach chunk metadata to utterance object itself for boundary dispatch
+  utterance._chunkStart = chunkEntry.start;
+  utterance._chunkEnd = chunkEntry.end;
+
+  utterance.onboundary = function (evt) {
+    if (evt.name !== 'word' && evt.name !== 'WordBoundary') return;
+    // Determine which chunk this utterance belongs to
+    var cStart = evt.utterance._chunkStart;
+    var cEnd   = evt.utterance._chunkEnd;
+    var charIndex = evt.charIndex;
+    // Map charIndex to word index within this chunk
+    var charsBefore = 0;
+    var foundIdx = cStart;
+    for (var w = cStart; w < cEnd && w < STATE.words.length; w++) {
+      var wlen = STATE.words[w].text.length;
+      if (charsBefore <= charIndex && charIndex < charsBefore + wlen + 1) {
+        foundIdx = w; break;
+      }
+      charsBefore += wlen + 1;
+    }
+    if (foundIdx >= STATE.words.length) foundIdx = STATE.words.length - 1;
+    STATE.currentWordIdx = foundIdx;
+    updateHighlight();
+    updateStatus();
+  };
+
+  utterance.onend = function (evt) {
+    // Check if this chunk reached the end of all words
+    if (evt.utterance._chunkEnd >= STATE.words.length) {
+      STATE.isPlaying = false;
+      STATE.isPaused = false;
+      btnPlay.textContent = '▶';
+      if (STATE.fileType === 'epub' &&
+          STATE.currentChapterIdx < STATE.chapters.length - 1) {
+        tryAdvanceChapter();
+      } else {
+        statusEl.textContent = '✅ End of content';
+        stopSpeech();
+      }
+    }
+    // Non-final chunk: next one's already queued, nothing extra needed
+  };
+
+  utterance.onerror = function (evt) {
+    if (evt.error !== 'canceled' && evt.error !== 'interrupted') {
+      console.warn('Speech error:', evt.error);
+    }
+  };
+
+  speechSynthesis.speak(utterance);
+}
+
+function speakFrom(wordIdx) {
+  if (!IS_EDGE) { stopSpeech(); return; }
+  if (!STATE.selectedVoice || STATE.voices.length === 0) {
+    alert('No voice selected. Try reloading.');
+    return;
+  }
+  stopSpeech();
+  STATE.currentWordIdx = Math.max(0, Math.min(wordIdx, STATE.words.length - 1));
+  if (STATE.currentWordIdx >= STATE.words.length) { tryAdvanceChapter(); return; }
+  speakChunksFrom(STATE.currentWordIdx);
+}
+
+function speakChunksFrom(startIdx) {
+  if (startIdx >= STATE.words.length) { tryAdvanceChapter(); return; }
+
+  // Queue current + (prefetchAhead) chunks immediately
+  var queued = 0;
+  var idx = startIdx;
+  var lastChunkEntry = null;
+
+  while (idx < STATE.words.length && queued <= STATE._prefetchAhead) {
+    var entry = getOrBuildChunk(idx);
+    if (!entry) break;
+    idx = entry.end;
+    queued++;
+    queueUtterance(entry);
+    lastChunkEntry = entry;
+  }
+
+  STATE.isPlaying = true;
+  STATE.isPaused = false;
+  btnPlay.textContent = '⏸';
+}
+
+function updateHighlight() {
+  var spans = textArea.querySelectorAll('.voice-word');
+  for (var i = 0; i < spans.length; i++) {
+    var idx = parseInt(spans[i].getAttribute('data-wi'), 10);
+    spans[i].classList.toggle('voice-word--active', idx === STATE.currentWordIdx);
+  }
+  scrollToActiveWord();
+}
+
+function tryAdvanceChapter() {
+  if (STATE.fileType === 'epub' && STATE.currentChapterIdx < STATE.chapters.length - 1) {
+    loadChapter(STATE.currentChapterIdx + 1);
+    // Clear chunk cache for new chapter
+    STATE._chunkCache = {};
+    speakChunksFrom(0);
+  } else {
+    statusEl.textContent = '✅ End of content';
+    stopSpeech();
+  }
+}
+
+/* -----------------------------------------------------------------------
+   Play / Pause
+   ----------------------------------------------------------------------- */
+btnPlay.addEventListener('click', function () {
+  if (!IS_EDGE) return;
+  if (STATE.words.length === 0) return;
+
+  if (STATE.isPlaying && !STATE.isPaused) {
+    // Pause
+    speechSynthesis.pause();
+    STATE.isPaused = true;
+    btnPlay.textContent = '▶';
+  } else if (STATE.isPaused) {
+    // Resume
+    speechSynthesis.resume();
+    STATE.isPaused = false;
+    btnPlay.textContent = '⏸';
+  } else {
+    // Start fresh
+    speakFrom(STATE.currentWordIdx);
+  }
+});
+
+/* -----------------------------------------------------------------------
+   Skip
+   ----------------------------------------------------------------------- */
+function skipWords(offset) {
+  if (STATE._skipLock) return;
+  STATE._skipLock = true;
+  setTimeout(function () { STATE._skipLock = false; }, 250);
+
+  var wasPlaying = STATE.isPlaying;
+  stopSpeech();
+  var newIdx = Math.max(0, Math.min(STATE.currentWordIdx + offset, STATE.words.length - 1));
+  STATE.currentWordIdx = newIdx;
+  updateHighlight();
+  updateStatus();
+  if (wasPlaying) speakFrom(newIdx);
+}
+
+btnSkipBack15.addEventListener('click', function () { skipWords(-15); });
+btnSkipFwd15.addEventListener('click',  function () { skipWords(15); });
+
+/* -----------------------------------------------------------------------
+   Chapter / Big Skip (far left / far right)
+   ----------------------------------------------------------------------- */
+function prevBig() {
+  if (STATE.fileType === 'epub' && STATE.chapters.length > 1) {
+    if (STATE.currentChapterIdx > 0) {
+      stopSpeech();
+      loadChapter(STATE.currentChapterIdx - 1);
+    }
+  } else {
+    skipWords(-100);
+  }
+}
+
+function nextBig() {
+  if (STATE.fileType === 'epub' && STATE.chapters.length > 1) {
+    if (STATE.currentChapterIdx < STATE.chapters.length - 1) {
+      stopSpeech();
+      loadChapter(STATE.currentChapterIdx + 1);
+      // Auto-start if was playing
+    }
+  } else {
+    skipWords(100);
+  }
+}
+
+btnChapPrev.addEventListener('click', prevBig);
+btnChapNext.addEventListener('click', nextBig);
+
+/* -----------------------------------------------------------------------
+   Menu / Back button (reader top bar)
+   ----------------------------------------------------------------------- */
+menuBtn.addEventListener('click', function () {
+  stopSpeech();
+  if (STATE.fileType === 'epub' && STATE.chapters.length > 1) {
+    showChapterList();
+  } else {
+    showScreen('file-select');
+  }
+});
+
+/* -----------------------------------------------------------------------
+   Keyboard shortcuts
+   ----------------------------------------------------------------------- */
+document.addEventListener('keydown', function (e) {
+  if (STATE.mode !== 'reader') return;
+  switch (e.key) {
+    case ' ': e.preventDefault(); btnPlay.click(); break;
+    case 'ArrowLeft':  if (e.shiftKey) prevBig(); else btnSkipBack15.click(); break;
+    case 'ArrowRight': if (e.shiftKey) nextBig(); else btnSkipFwd15.click(); break;
+    case 'm': case 'M': menuBtn.click(); break;
+  }
+});
+
+/* -----------------------------------------------------------------------
+   Init
+   ----------------------------------------------------------------------- */
+showScreen('file-select');
+</script>
+</body>
+</html>

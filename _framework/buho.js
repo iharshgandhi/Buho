@@ -10,24 +10,13 @@
    When adding a new tool, add it here AND add a link in index.html grid.
    --------------------------------------------------------------------------- */
 var BUHO_CATEGORIES = [
-  /*
-  // EXAMPLE — uncomment and edit to add your first category:
   {
-    name: "Text Tools",                         // Display name
-    folder: "text-tools",                       // Folder under Buho root
+    name: "Reader",
+    folder: "Annas-Voice",
     tools: [
-      { name: "JSON Formatter", file: "json-formatter.html" },
-      { name: "Base64 Encode/Decode", file: "base64.html" }
-    ]
-  },
-  {
-    name: "Image Tools",
-    folder: "image-tools",
-    tools: [
-      { name: "Color Picker", file: "color-picker.html" }
+      { name: "Anna's Voice", file: "annas-voice.html" }
     ]
   }
-  */
 ];
 
 /* ---------------------------------------------------------------------------
