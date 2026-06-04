@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buho — Smart Owl Tools</title>
+  <meta name="description" content="Buho — A collection of smart browser-based tools. No installs, no tracking, just tools that work.">
+  <link rel="stylesheet" href="_framework/buho.css">
+</head>
+<body>
+
+  <!--
+    Top bar and sub-bar are injected by buho.js.
+    Sub-bar hidden on home page (buho-subbar--hidden).
+  -->
+
+  <main class="buho-content">
+    <div class="buho-content__inner">
+
+      <!-- Hero -->
+      <section class="buho-hero">
+        <span class="buho-hero__owl" aria-hidden="true">🦉</span>
+        <h1 class="buho-hero__title">Buho</h1>
+        <p class="buho-hero__tagline">
+          Smart tools for the browser. Free. No installs. No tracking.
+        </p>
+      </section>
+
+      <!-- Category Grid — populated by buho.js -->
+      <div class="buho-categories" id="buho-categories-grid"></div>
+
+    </div>
+  </main>
+
+  <script src="_framework/buho.js"></script>
+</body>
+</html>

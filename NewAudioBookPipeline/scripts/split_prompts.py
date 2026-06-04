@@ -36,7 +36,7 @@ ALL_MARKERS = (
 )
 REQUIRED_MARKERS = ("===PROMPTS===", "===END===")
 
-CHAPTER_HEADER_RE = re.compile(r"^\s*\[Chapter(\d+)\]\s*$")
+CHAPTER_HEADER_RE = re.compile(r"^\s*\[Chapter(\d+)[^\]]*\]\s*$")
 IMAGE_HEADER_RE = re.compile(r"^\s*#(\d+)\s*$")
 
 
@@ -178,18 +178,23 @@ def write_prompts(
             "  before each group of image prompts."
         )
 
-    if len(chapter_nums) != len(books):
+    use_numeric = len(chapter_nums) != len(books)
+    if use_numeric:
         print(
             f"  warn: {len(books)} chapter file(s) in EnglishSource/ but "
             f"{len(chapter_nums)} [ChapterN] block(s) in HaikuOutput/. "
-            f"Zipping in order."
+            f"Writing all as chapter_NN folders."
         )
+        pairs: list[tuple[str, int]] = [
+            (f"chapter_{n:02d}", n) for n in chapter_nums
+        ]
+    else:
+        pairs = [(chapter_stem(b), n) for b, n in zip(books, chapter_nums)]
 
     PROMPTS_DIR.mkdir(parents=True, exist_ok=True)
     total = 0
 
-    for book_txt, chap_num in zip(books, chapter_nums):
-        stem = chapter_stem(book_txt)
+    for stem, chap_num in pairs:
         prompts_dir = prompts_folder_for(stem)
 
         # Check for existing prompts
@@ -210,11 +215,10 @@ def write_prompts(
             out.write_text(prompt_text + "\n", encoding="utf-8")
         total += len(images)
         print(
-            f"  {book_txt.name}  ←  Chapter{chap_num}: "
-            f"{len(images)} prompt(s)  →  Prompts/{stem}/"
+            f"  Chapter{chap_num}: {len(images)} prompt(s)  →  Prompts/{stem}/"
         )
 
-    print(f"\nWrote {total} prompt(s) across {len(books)} chapter folder(s).")
+    print(f"\nWrote {total} prompt(s) across {len(pairs)} chapter folder(s).")
 
 
 def main() -> None:
@@ -229,11 +233,6 @@ def main() -> None:
     args = ap.parse_args()
 
     books = list_english_chapters()
-    if not books:
-        sys.exit(
-            "ERROR: no .txt files found in EnglishSource/.\n"
-            "  Drop your English chapter file(s) into EnglishSource/, then re-run."
-        )
 
     files = collect_input_files()
     print(f"Processing {len(files)} Haiku output file(s):")

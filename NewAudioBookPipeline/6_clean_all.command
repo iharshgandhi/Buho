@@ -5,13 +5,24 @@
 #  Deletes ALL generated content so you can start a fresh pipeline run.
 #
 #  DELETES:
-#    Prompts/      Images/      HindiClean/
-#    AudioSingle/  AudioMulti/  Videos/
-#    HaikuOutput/  HindiTagged/
+#    Prompts/       Images/       HindiClean/
+#    AudioSingle/   AudioMulti/   Videos/
+#    HaikuOutput/   HindiTagged/
 #
-#  PRESERVES:
-#    EnglishSource/  (your English chapters — NEVER deleted)
-#    scripts/        (.venv/, .command files, configs, mega-prompts)
+#  PRESERVES (NEVER deleted):
+#    EnglishSource/              — your English chapters
+#    scripts/                    — Python implementation
+#    .venv/                      — Python dependencies
+#    config.json                 — tracked settings (no secrets)
+#    config.local.json           — YOUR API key (gitignored)
+#    config.example.json         — reference for new setups
+#    character_voices.txt        — character → voice mapping
+#    sample_character_voices.txt — reference voice assignments
+#    tag_chapters.py             — tagging utility (if present)
+#    BookToPrompts_HaikuPrompt.md
+#    translation_mega_prompt.md
+#    README.md, .gitignore
+#    All .command files
 #
 # =============================================================================
 
@@ -39,7 +50,12 @@ echo ""
 echo "These will be KEPT:"
 echo ""
 echo "  • EnglishSource/  (your English chapters)"
-echo "  • All scripts, configs, and mega-prompts"
+echo "  • config.local.json (your API key)"
+echo "  • config.json + config.example.json"
+echo "  • character_voices.txt + sample_character_voices.txt"
+echo "  • tag_chapters.py (if present)"
+echo "  • All .command files, scripts/, .venv/"
+echo "  • Mega-prompts, README.md, .gitignore"
 echo ""
 
 printf "Type 'DELETE' to confirm: "
