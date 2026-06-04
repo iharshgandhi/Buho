@@ -312,48 +312,63 @@ function shortNum(n) { return n.toLocaleString(); }
 /* -----------------------------------------------------------------------
    Voice Loading
    ----------------------------------------------------------------------- */
+// Real desktop Edge has Azure neural voices. Edge on iOS/Android is just WebKit.
+var IS_EDGE_DESKTOP = IS_EDGE && !/Mobile|iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
 function loadVoices() {
   if (typeof speechSynthesis === 'undefined') return;
   var all = speechSynthesis.getVoices();
-  // Keep only Edge Azure neural voices (localService === true in Edge)
-  var filtered = [];
-  for (var i = 0; i < all.length; i++) {
-    var v = all[i];
-    // Filter: no on-device voices (localService=false = cloud neural in Edge),
-    // and only neural/multilingual/HD natural voices
-    if (v.localService === false && (
-        v.name.indexOf('Neural') !== -1 ||
-        v.name.indexOf('DragonHD') !== -1 ||
-        v.name.indexOf('Multilingual') !== -1)) {
-      filtered.push(v);
-    }
+  if (!all || all.length === 0) {
+    // iOS / some browsers return empty on first call — retry
+    setTimeout(loadVoices, 200);
+    return;
   }
-  // If no neural found, fallback to all voices
-  if (filtered.length === 0) filtered = all;
+
+  var filtered;
+
+  if (IS_EDGE_DESKTOP) {
+    // Desktop Edge only: filter to Azure cloud neural voices
+    filtered = [];
+    for (var i = 0; i < all.length; i++) {
+      var v = all[i];
+      if (v.localService === false && (
+          v.name.indexOf('Neural') !== -1 ||
+          v.name.indexOf('DragonHD') !== -1 ||
+          v.name.indexOf('Multilingual') !== -1)) {
+        filtered.push(v);
+      }
+    }
+    if (filtered.length === 0) filtered = all;
+  } else {
+    // iOS / mobile / other browsers: show all available voices
+    filtered = all;
+  }
 
   STATE.voices = filtered;
   populateVoiceSelect(filtered);
 
-  // Set default to en-US-EmmaMultilingualNeural or first Neural
+  // Pick default: Emma Multilingual on desktop, first English voice otherwise
   if (filtered.length > 0) {
     var found = false;
+    // Try Emma Multilingual first
     for (var j = 0; j < filtered.length; j++) {
-      if (filtered[j].name.indexOf('Emma') !== -1 && filtered[j].name.indexOf('Multilingual') !== -1) {
+      if (filtered[j].name.indexOf('Emma') !== -1) {
         STATE.selectedVoice = filtered[j];
         voiceSelect.value = filtered[j].name;
         found = true; break;
       }
     }
+    // Try first English voice
     if (!found) {
-      // try en-US-EmmaMultilingualNeural (newer naming)
       for (var k = 0; k < filtered.length; k++) {
-        if (filtered[k].name.indexOf('Emma') !== -1) {
+        if (filtered[k].lang.indexOf('en') === 0) {
           STATE.selectedVoice = filtered[k];
           voiceSelect.value = filtered[k].name;
           found = true; break;
         }
       }
     }
+    // Last resort: first voice
     if (!found) {
       STATE.selectedVoice = filtered[0];
       voiceSelect.value = filtered[0].name;
@@ -363,6 +378,13 @@ function loadVoices() {
 
 function populateVoiceSelect(voices) {
   voiceSelect.innerHTML = '';
+  if (voices.length === 0) {
+    var opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = 'Loading voices...';
+    voiceSelect.appendChild(opt);
+    return;
+  }
   for (var i = 0; i < voices.length; i++) {
     var v = voices[i];
     var opt = document.createElement('option');
@@ -372,9 +394,12 @@ function populateVoiceSelect(voices) {
   }
 }
 
-if (IS_EDGE && typeof speechSynthesis !== 'undefined') {
+// Init voices — works on ALL browsers (not just Edge)
+if (typeof speechSynthesis !== 'undefined') {
   loadVoices();
   speechSynthesis.onvoiceschanged = loadVoices;
+  // Extra safety: retry once after 500ms (iOS async timing)
+  setTimeout(loadVoices, 500);
 }
 
 voiceSelect.addEventListener('change', function () {
