@@ -16,6 +16,14 @@ var BUHO_CATEGORIES = [
     tools: [
       { name: "Anna's Voice", file: "annas-voice.html" }
     ]
+  },
+  {
+    name: "About",
+    folder: "",
+    tools: [
+      { name: "GitHub", url: "https://github.com/iharshgandhi/Buho" },
+      { name: "Harsh Gandhi", url: "https://harshgandhi.com" }
+    ]
   }
 ];
 
@@ -71,8 +79,9 @@ function buhoBuildDropdownContent() {
     html += '  <span class="buho-dropdown__cat-name">' + buhoEscapeHTML(cat.name) + '</span>';
     for (var t = 0; t < cat.tools.length; t++) {
       var tool = cat.tools[t];
-      var href = buhoGetHomeURL() + cat.folder + "/" + tool.file;
-      html += '  <a href="' + href + '" class="buho-dropdown__tool-link" role="menuitem">' + buhoEscapeHTML(tool.name) + '</a>';
+      var href = tool.url || buhoGetHomeURL() + cat.folder + "/" + tool.file;
+      var target = tool.url ? ' target="_blank" rel="noopener"' : '';
+      html += '  <a href="' + href + '" class="buho-dropdown__tool-link" role="menuitem"' + target + '>' + buhoEscapeHTML(tool.name) + '</a>';
     }
     html += '</div>';
   }
