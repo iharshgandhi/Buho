@@ -227,7 +227,7 @@
 /* -----------------------------------------------------------------------
    Edge Detection
    ----------------------------------------------------------------------- */
-var IS_EDGE = /Edg\//.test(navigator.userAgent);
+var IS_EDGE = /Edg\//.test(navigator.userAgent) || /EdgiOS\//.test(navigator.userAgent);
 var warnEl = document.getElementById('voice-browser-warn');
 if (!IS_EDGE) {
   warnEl.textContent = '⚠ Open this page in Microsoft Edge for speech playback.';
@@ -868,7 +868,6 @@ function queueUtterance(chunkEntry) {
 }
 
 function speakFrom(wordIdx) {
-  if (!IS_EDGE) { stopSpeech(); return; }
   if (!STATE.selectedVoice || STATE.voices.length === 0) {
     alert('No voice selected. Try reloading.');
     return;
@@ -926,7 +925,6 @@ function tryAdvanceChapter() {
    Play / Pause
    ----------------------------------------------------------------------- */
 btnPlay.addEventListener('click', function () {
-  if (!IS_EDGE) return;
   if (STATE.words.length === 0) return;
 
   if (STATE.isPlaying && !STATE.isPaused) {
