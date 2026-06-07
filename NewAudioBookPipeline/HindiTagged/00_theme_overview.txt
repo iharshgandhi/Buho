@@ -1,0 +1,47 @@
+# Jurassic Park — Theme Overview
+Book: Jurassic Park
+Author: Michael Crichton
+Year: 1990
+Genre: Techno-thriller / Science Fiction / Adventure
+
+## Plot Gist
+Billionaire John Hammond has used cutting-edge genetic engineering to clone dinosaurs from DNA trapped in prehistoric amber. He builds a theme park on a remote Costa Rican island, Isla Nublar, and invites experts — paleontologist Alan Grant, paleobotanist Ellie Sattler, and chaos mathematician Ian Malcolm — to inspect it before opening. But the park's systems fail catastrophically: the dinosaurs escape, the security fences lose power, and the visitors must fight for survival while corporate espionage, scientific hubris, and nature's unpredictability collide.
+
+## Setting
+1980s. Starts in Costa Rican coastal villages, Montana badlands, and San Francisco corporate offices, then moves to Isla Nublar — a volcanic island eight miles long, wreathed in fog, with tropical jungle, steam vents, and state-of-the-art genetic labs and electrified enclosures.
+
+## Tone
+Starts with creeping dread and scientific wonder, builds to escalating terror and chaos, and ends with philosophical reflection on humanity's relationship with nature. The narrator is omniscient third-person, moving between multiple character perspectives with a clinical but engaged voice.
+
+## Hindi Tone Register
+Casual Mumbai-Hindi with serious undertone in action/horror scenes. Dialogue-driven sections should feel like Bollywood thriller conversations. Scientific explanations should be clear and conversational, not textbook-like. The narrator's voice is Madhur (calm male).
+
+## Major Characters & Voice Feel
+- Alan Grant — male, 40s, gruff outdoorsman, bearded, khaki-clad paleontologist
+- Ellie Sattler — female, 24, blonde, athletic paleobotanist
+- John Hammond — male, 70s, short, enthusiastic, stubborn billionaire
+- Ian Malcolm — male, 35, tall, black-clad mathematician, fast talker, sardonic
+- Donald Gennaro — male, 30s, stocky lawyer, nervous
+- Dennis Nedry — male, 30s, fat programmer, greedy
+- Robert Muldoon — male, 50, African game warden, gruff
+- Dr. Henry Wu — male, 30s, Chinese-American geneticist, precise
+- Tim Murphy — boy, 11, computer prodigy, brave
+- Lex Murphy — girl, 7-8, feisty, baseball-loving
+- Ed Regis — male, 30s, red-haired PR man, cowardly
+
+## Minor Characters
+- Dr. Roberta Carter — female, 20s, ER physician (Prologue)
+- Lewis Dodgson — male, 30s, Biosyn geneticist (antagonist)
+- Bob Morris — male, 20s, EPA investigator
+- Marty Guitierrez — male, 30s, field biologist in Costa Rica
+- Dr. Harding — male, 50s, park veterinarian
+- John Arnold — male, 40s, chief engineer, chain-smoker
+- Alice Levin — female, 40s, lab technician
+- Bowman family (Mike, Ellen, Tina) — tourists
+- Elena Morales — female, 60s, Costa Rican midwife
+
+## Pacing
+Terse and propulsive. Action scenes are short, punchy. Scientific exposition is woven into dialogue and tour sequences. The book has a journalistic feel with short chapters/sections.
+
+## Era Flavor
+1990 — contemporary for its time. Keep the feel modern. Tech references (Cray supercomputers, CD-ROMs) should stay as-is.

@@ -1,0 +1,81 @@
+# Jurassic Park — Hindi Glossary
+# One term per line: English | Hindi (Devanagari) | Notes
+dinosaur | डायनासोर | standard Hindi
+velociraptor | वेलोसिरैप्टर | or रैप्टर for short
+raptor | रैप्टर | short form used throughout
+Tyrannosaurus rex | टी-रेक्स | or टायरैनोसॉरस
+T-rex | टी-रेक्स | nickname
+compsognathus | कॉम्पसॉग्नैथस | scientific name
+compy | कॉम्पी | nickname
+procompsognathus | प्रोकॉम्पसॉग्नैथस | full name
+DNA | डीएनए | keep as acronym
+amber | ऐम्बर | fossilized tree sap
+clone | क्लोन | standard
+cloning | क्लोनिंग | standard
+embryo | एम्ब्रियो | standard
+genetic engineering | जेनेटिक इंजीनियरिंग | keep English
+gene | जीन | standard
+chromosome | क्रोमोज़ोम | standard
+protein | प्रोटीन | standard
+enzyme | एन्ज़ाइम | standard
+lysine | लाइसीन | amino acid
+DNA sequence | डीएनए सीक्वेंस | keep English
+Jurassic Park | Jurassic Park | proper name, Roman in prose
+Isla Nublar | Isla Nublar | proper name, Roman in prose
+InGen | InGen | company name, Roman in prose
+Biosyn | Biosyn | company name, Roman in prose
+Costa Rica | Costa Rica | country, Roman in prose
+San José | San José | city, Roman in prose
+Puntarenas | Puntarenas | city, Roman in prose
+Bahía Anasco | Bahía Anasco | village, Roman in prose
+Cabo Blanco | Cabo Blanco | preserve, Roman in prose
+chaos theory | केऑस थ्योरी | mathematics
+paleontology | पैलियॉन्टॉलॉजी | science of fossils
+paleontologist | पैलियॉन्टॉलॉजिस्ट | fossil scientist
+paleobotany | पैलियोबॉटनी | fossil plant science
+computer | कंप्यूटर | standard
+supercomputer | सुपरकंप्यूटर | standard
+motion sensor | मोशन सेंसर | standard
+electric fence | इलेक्ट्रिक फ़ेंस | standard
+helipad | हेलिपैड | standard
+Land Cruiser | Land Cruiser | vehicle, Roman in prose
+Jeep | Jeep | vehicle, Roman in prose
+pterosaur | टेरोसॉर | flying reptile
+triceratops | ट्राइसेराटॉप्स | three-horned
+stegosaurus | स्टेगोसॉरस | plated dinosaur
+apatosaurus | अपैटोसॉरस | long-necked
+brontosaurus | ब्रॉन्टोसॉरस | common name
+hadrosaur | हैड्रोसॉर | duckbilled
+dilophosaur | डायलोफ़ोसॉर | crested, poisonous
+hypsilophodont | हिप्सिलोफ़ोडॉन्ट | small herbivore
+othnielia | ऑथनीलिया | tree-dwelling small dinosaur
+maiasaur | माइअसॉर | good mother lizard
+sauropod | सॉरोपॉड | giant herbivore
+carnivore | कार्निवोर | meat-eater
+herbivore | हर्बिवोर | plant-eater
+scavenger | स्कैवेंजर | dead-animal eater
+predator | प्रीडेटर | hunter
+pack hunter | पैक हंटर | group hunter
+nocturnal | नॉक्टर्नल | night-active
+hatchery | हैचरी | egg nursery
+paddock | पैडक | enclosure
+moat | खाई | water barrier
+fractal | फ्रैक्टल | mathematical shape
+nonlinear | नॉनलीनियर | mathematics
+phase space | फ़ेज़ स्पेस | mathematics
+butterfly effect | बटरफ़्लाई इफ़ेक्ट | chaos concept
+paradigm | पैराडाइम | world view
+Malcolm Effect | मैल्कम इफ़ेक्ट | system collapse
+tranquilizer | ट्रैंक्विलाइज़र | sedative
+dart | डार्ट | tranquilizer projectile
+tourniquet | टूर्निके | medical
+morphine | मॉर्फ़ीन | painkiller
+antivenin | ऐन्टीवेनिन | anti-venom
+lysine dependent | लाइसीन डिपेंडेंट | engineered weakness
+frog DNA | फ़्रॉग डीएनए | amphibian DNA used
+gender transition | जेंडर ट्रांज़िशन | sex change ability
+migration | माइग्रेशन | seasonal movement
+colony | कॉलोनी | animal group
+alpha female | ऐल्फ़ा फ़ीमेल | dominant female
+gizzard stones | गिज़र्ड स्टोन्स | digestive aid
+egg tooth | एग टूथ | hatching aid

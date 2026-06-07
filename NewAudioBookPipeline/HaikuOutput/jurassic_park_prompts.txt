@@ -1,0 +1,596 @@
+===STYLE_BIBLE===
+STYLE_ANCHOR: cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+GENRE: Techno-thriller / Science fiction / Adventure
+SETTING: 1980s Costa Rica, Montana badlands, and Isla Nublar (fictional island off Costa Rica)
+TONE: Awe and wonder mixed with escalating dread and moral unease as scientific hubris leads to catastrophic consequences
+NOTES: Cinematic oil painting suits both the corporate boardrooms and high-tech labs of InGen and the mist-shrouded prehistoric island landscapes. Painterly brushwork unifies scenes ranging from sterile genetic engineering facilities to tropical jungles and dinosaur-filled vistas. The dramatic chiaroscuro emphasizes the tension between enlightenment and disaster that runs through the novel.
+
+===CHARACTER_BIBLE===
+ALAN_GRANT — American paleontologist, early 40s, barrel-chested, full dark beard, sun-weathered skin, shaggy brown hair under battered cowboy hat, wears khaki fieldwork clothes and boots, sharp intelligent eyes, gruff impatient demeanor
+ELLIE_SATTLER — American paleobotanist, 24, blond hair pulled back in ponytail, deeply tanned, athletic build, cut-off denim shorts and tied workshirt, practical and sharp-minded, attractive
+JOHN_HAMMOND — Elderly American entrepreneur, mid-70s, short small frame, white hair, ruddy face, grandfatherly smile, expensive casual blazer with red silk handkerchief, walks with slight limp, charismatic but stubborn
+IAN_MALCOLM — American mathematician (chaos theory), mid-30s, tall thin build, receding dark hair slicked back, pale complexion, dressed entirely in black, sardonic smirk, intense intellectual energy
+DONALD_GENNARO — InGen corporate lawyer, mid-30s, stocky muscular build, Armani suit with loosened tie, wire-rim glasses, nervous perspiring demeanor, ambitious but out of his depth
+DENNIS_NEDRY — Computer programmer, late 30s, overweight sloppy build, disheveled Hawaiian shirt with food stains, glasses, greedy untrustworthy expression, constantly eating candy bars
+ROBERT_MULDOON — Game warden, 50, tall muscular build, steel-gray mustache, weathered skin, khaki safari clothes, deep blue penetrating eyes, gruff no-nonsense African bush veteran
+DR_HENRY_WU — Chief geneticist, early 30s, slender Asian man, neat black hair, white lab coat, precise earnest manner, intense intellectual focus
+TIM_MURPHY — Boy 11 years old, Lex's brother, slender build, dark hair, thick glasses, curious intelligent eyes, computer prodigy, shy but brave
+LEX_MURPHY — Girl 7-8 years old, Tim's sister, blond hair under Mets baseball cap, baseball glove always slung on shoulder, feisty talkative, tomboyish
+ED_REGIS — InGen PR executive, mid-30s, red hair visible under Mets cap, yellow rain slicker, nervous ingratiating smile, eager-to-please corporate type
+DR_ROBERTTA_CARTER — American ER physician visiting Costa Rica, late 20s, cut-off jeans and tank top, stethoscope over shoulder, sharp observant eyes
+MANUEL_ARAGON — Costa Rican paramedic, dark skin, white uniform, practical and capable, deeply superstitious
+LEWIS_DODGSON — Biosyn geneticist, 34, balding hawk-faced, intense predatory stare, cheap suit, morally reckless ambitious scientist
+BOB_MORRIS — EPA investigator, late 20s, earnest young man in business suit and tie, wing-tip shoes, briefcase-carrying government type
+MARTY_GUITIERREZ — American field biologist in Costa Rica, bearded, khaki shorts and short-sleeve shirt, soft Southern accent, knowledgeable calm demeanor
+TINA_BOWMAN — American girl, 8 years old, dark hair, curious adventurous spirit, keeping animal list for school project
+MIKE_BOWMAN — Tina's father, 36, American tourist from Dallas, polo shirt and khakis, protective but distracted
+DR_RICHARD_STONE — Head of Tropical Diseases Lab at Columbia Medical Center, middle-aged, balding, white lab coat, skeptical academic
+ALICE_LEVIN — Lab technician at Columbia, middle-aged woman, sharp observant, mother of two boys who draw dinosaurs
+ELENA_MORALES — Costa Rican midwife, 60, gray hair, strong practical face, traditional beliefs
+JOHN_ARNOLD — Park chief engineer, 45, thin chain-smoker, button-down short-sleeve shirt and tie, nervous intense energy
+DR_HARDING — Park veterinarian, 50s, rugged outdoorsman, practical calm demeanor
+
+===LOCATION_BIBLE===
+BAHIA_ANASCO_CLINIC — Coastal Costa Rican village clinic, corrugated metal roof, whitewashed walls, simple examining table, rain-drenched windows overlooking grey ocean
+CABO_BLANCO_BEACH — Deserted two-mile crescent of white Pacific sand, fringe of palm trees, mangrove thicket, crystal turquoise water, remote wilderness
+CLINICA_SANTA_MARIA — Modern Puntarenas hospital, clean sterile white rooms, oxygen tent equipment, fluorescent lighting
+SNAKEWATER_MONTANA — Montana badlands, endless eroded limestone hills, six Blackfoot tipis, field lab trailer, generator hum, baking hundred-degree heat, alkaline dust
+COWAN_SWAIN_OFFICE — San Francisco high-rise law office, all-glass conference room, modern furnishings, midday sun streaming through floor-to-ceiling windows
+ISLA_NUBLAR_LANDSCAPE — Volcanic seamount island, eight miles long, fog-shrouded peaks, dense tropical jungle, steam vents, rugged cliffs, crashing Pacific surf
+VISITOR_CENTER_LOBBY — Two-story glass and black anodized steel atrium, robotic T-Rex display, hanging WHEN DINOSAURS RULED THE EARTH banner, unfinished exhibits, wires across floor
+CONTROL_ROOM — Darkened high-tech nerve center, floor-to-ceiling glass park map, banks of glowing monitors and consoles, Cray supercomputers, dim blue light, cigarette smoke
+SAFARI_LODGE — Elegant low-rise hotel, glass pyramid skylights, rattan jungle-print furniture, beige tones, tempered glass windows, twelve-foot steel perimeter fence retrofitted
+HATCHERY — Warm humid nursery, infrared lighting, mist-covered long tables with rocking eggs, 99-degree temperature, overhead thermal sensors, dim red glow
+DINO_DNA_LAB — Sterile genetics laboratory, green light, shelves of amber stones, microscopes, high-resolution screens showing DNA sequences, chilled computer room
+AMBER_STORAGE — Small room bathed in green light, shelves and trays of yellow amber stones tagged with numbers, stereo microscopes
+T_REX_PADDOCK — Forested enclosure sloping to lagoon, electric fence perimeter, concrete moats, distant apatosaur necks visible, goat-feeding mechanism
+VELOCIRAPTOR_PEN — Double chain-link electrified fence twelve feet high, barbed wire, dense ferns inside, concrete bunker, warning signs
+RAPTOR_NEST_CAVERN — Underground concrete waterworks, vast echoing space, steam vents, nests of mud and straw, dozens of glowing green eyes in darkness
+STEGOSAUR_FIELD — Open meadow with volcanic steam vents, rocky outcrops, West Indian lilac bushes, hot sulfurous ground
+HATCHERY_NURSERY — Circular white room, infant incubators, toys scattered on floor, warm and sterile
+SAUROPOD_PADDOCK — Open grassland by lagoon, giant apatosaurs grazing, hadrosaurs at water's edge, misty mornings, peaceful
+JUNGLE_RIVER — Narrow tropical river, dense overhanging foliage canopy, dappled light, hot and still air, steep muddy banks
+MAINTENANCE_SHED — Dark concrete bunker with generator equipment, fuel tanks, pipes, metal catwalks, two stories underground
+EAST_DOCK — Small utility dock on east shore, foggy, concrete pier, raft storage shed
+JURASSIC_PARK_ROAD — Raised main road through enclosures, floodlit at night, concrete barriers, electric fences on both sides
+LOBBY_CAFETERIA — Deserted stainless-steel kitchen and dining area, empty tables, walk-in freezers, pilot lights flickering
+BEACH_CAVE_EXIT — Sandy beach opening from underground tunnels, palm tree fringe, ocean view, volcanic steam in distance
+
+===PROMPTS===
+
+[Chapter1 — Introduction: The InGen Incident]
+
+#1
+Dimly lit molecular biology laboratory late at night, computer screens displaying glowing DNA helix sequences, rows of microscopes and test tubes on steel counters, bottles with biohazard symbols, papers scattered everywhere, anxious energy, moody low-angle wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, volumetric lighting, atmospheric haze
+
+#2
+Dark wood-paneled courtroom, 1989, judge's bench and American flag, INGEN CHAPTER 11 filing document stamped on table, Japanese businessmen in dark suits sitting silently, green banker's lamp casting shadow across legal papers, thick silence and tension, wide establishing shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, deep shadows, moody backlight
+
+#3
+Aerial view of remote tropical island emerging from fog, Isla Nublar's volcanic peaks wreathed in mist, churning Pacific surf against rugged cliffs, dense jungle canopy below, mysterious and foreboding, dark storm clouds gathering, wide aerial establishing shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, atmospheric depth, volumetric fog
+
+[Chapter2 — Prologue: The Bite of the Raptor]
+
+#1
+Coastal Costa Rican clinic in drenching tropical rainstorm, corrugated metal roof streaming water, green painted door, DR_ROBERTTA_CARTER — American ER physician late 20s, cut-off jeans and tank top, stethoscope, blond hair damp — staring out rain-streaked window at grey ocean beyond, dark clouds, oppressive isolation, medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, atmospheric haze
+
+#2
+Sikorsky helicopter with InGen Construction blue stripe bursting through low ocean fog over churning surf, roaring low over fishing boats and rickety wooden dock, searching desperately for landing spot on rain-soaked beach, tense urgent action, low-angle dynamic shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, volumetric fog
+
+#3
+Helicopter settling on wet sand of beach, uniformed men jumping out and flinging open side door, frantic shouts in Spanish, rain hammering everyone, DR_ROBERTTA_CARTER running forward toward helicopter with stethoscope bouncing, MANUEL_ARAGON — Costa Rican paramedic in white uniform — following, Ed Regis in yellow slicker barking orders, urgent chaotic scene, medium wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+Inside rustic clinic, harsh overhead light on young wounded worker on examining table, unconscious pale face, bloody shredded shirt revealing massive slashing laceration across shoulder exposing bone, DR_ROBERTTA_CARTER bending over wound with penlight, MANUEL_ARAGON starting IV line, blood-soaked rags on floor, tense surgical atmosphere, close-up on wound, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#5
+Close detail of young man's hands with defensive slashing cuts on palms and bruised wrists, Ed Regis looking alarmed from doorway, DR_ROBERTTA_CARTER examining hands with growing realization — these are defense wounds, clinical lamp overhead casting harsh shadows, ominous tension, extreme close-up, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#6
+Young workman convulsing violently on clinic floor, body arching and shuddering, vomiting blood spreading across concrete, DR_ROBERTTA_CARTER grabbing for stick to put in his jaws, MANUEL_ARAGON crossing himself in horror, Ed Regis turning away with hand to mouth, blood everywhere, chaotic tragic scene, low-angle wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#7
+Body being carried away through rain toward helicopter, men silhouetted against misty beach, helicopter rotors beginning to turn, Ed Regis wiping mouth with back of hand, MANUEL_ARAGON standing apart watching with fearful expression, DR_ROBERTTA_CARTER looking on thoughtfully, rain streaming down, somber departure, wide establishing shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#8
+Night scene behind clinic, DR_ROBERTTA_CARTER standing under stars with tattered Spanish dictionary, ELENA_MORALES — gray-haired Costa Rican midwife 60s strong face — frowning sternly, moonlight on Pacific surf, fishing boats anchored offshore, peaceful yet ominous atmosphere, two-shot conversation, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, moonlight rim lighting
+
+#9
+DR_ROBERTTA_CARTER alone in small bedroom, reading English dictionary by lamplight, finding word "raptor" meaning "bird of prey", tattered paperback open on wooden table, rain finally stopped outside window, thoughtful contemplative moment, close-up on dictionary page, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, warm lamp light
+
+[Chapter3 — First Iteration: Almost Paradise]
+
+#1
+Cabo Blanco Biological Reserve road hugging cliff edge, Land Rover driving along spectacular mountain highway, MIKE_BOWMAN — American tourist 36 polo shirt and khakis at wheel, ELLEN_BOWMAN — wife 30 anxious pretty seated beside him, TINA_BOWMAN — daughter 8 in backseat, overlooking jungle and brilliant blue Pacific far below, beautiful sunny morning, wide establishing shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Deserted two-mile crescent of white sand beach, palm trees fringing shoreline, Land Rover parked in shade, MIKE_BOWMAN setting out box lunches, ELLEN_BOWMAN changing into bathing suit, TINA running ahead down beach a small distant figure, peaceful paradise scene, wide panoramic shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Tina sitting in shade of palm trees at edge of mangrove thicket, examining three-toed bird tracks in white sand, chirping sound coming from tangled roots, curious alert expression, dappled sunlight through palm fronds, close-up medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, god rays through foliage
+
+#4
+Green lizard emerging from mangrove roots, standing upright on hind legs balanced by thick tail, about one foot tall dark green with brown stripes, tiny forelegs with wiggling fingers, cocking head curiously at Tina, Tina holding breath watching amazed, tense first contact, close-up two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#5
+Compsognathus jumping onto Tina's outstretched hand, little toes pinching her palm, scrambling up her arm toward her face, Tina's expression shifting from wonder to fear, rapid attack motion, dynamic close-up action shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#6
+Tina's arm covered in profuse small thumbprint-sized bites, blood streaming down, sticky foamy saliva flecked on skin, MIKE_BOWMAN carrying screaming daughter back up beach toward Land Rover, desperate hurry, wide shot of frantic parents, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter3 — First Iteration: Puntarenas]
+
+#1
+Clínica Santa María hospital room, oxygen tent around bed with TINA_BOWMAN sleeping inside, Dr. Cruz lowering plastic flap, MIKE_BOWMAN sitting beside bed anxiously, ELLEN_BOWMAN staring through tent at daughter, clean sterile modern hospital, tense worried atmosphere, medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Dr. Cruz examining Tina's sketch of lizard, MARTY_GUITIERREZ — American field biologist bearded khaki shorts — peering at Polaroid photos with penlight, MIKE_BOWMAN watching hopefully, hospital room morning light, diagnostic discussion, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Guiterrez demonstrating how basilisk lizard walks, bobbing head up and down taking few steps, TINA watching from hospital bed, nodding confirmation, Dr. Cruz observing, ELLEN_BOWMAN skeptical expression, Guitierrez confident identification scene, medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter3 — First Iteration: The Beach]
+
+#1
+Cabo Blanco beach late afternoon, MARTY_GUITIERREZ sitting among mangroves watching sun sparkle on bay water, air pistol with darts lying beside him, contemplating the mysterious lizard bites, golden hour lighting, contemplative wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Howler monkey ambling along edge of mangrove swamp, green lizard tail and hind legs dangling from its mouth, brown stripes visible against green, MARTY_GUITIERREZ aiming air pistol from crouched position on beach, tense standoff, medium wide action shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Dart striking howler monkey's thigh, monkey shrieking in anger, dropping lizard remains and fleeing into jungle, Guitierrez getting to feet walking forward to examine dropped specimen, excitement and scientific discovery, three-quarter view, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter3 — First Iteration: New York]
+
+#1
+Tropical Diseases Laboratory at Columbia University, Dr. Richard Stone in white lab coat unscrewing sealed white plastic cylinder labeled with biohazard warnings, white smoke hissing out, sterile laboratory equipment around, morning light through blinds, cautious scientific procedure, medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Frozen piece of green lizard flesh on surgical drape, Dr. Stone examining with gloved hands, X-ray machine in background, ALICE_LEVIN — middle-aged lab technician — looking at Tina's dinosaur drawing and pointing, moment of recognition, close-up on the drawing, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+ALICE_LEVIN holding frozen lizard fragment in baggie insisting it looks like a dinosaur, Dr. Stone skeptical shaking head, freezer door open behind them, tension between scientific caution and intuition, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter3 — First Iteration: The Shape of the Data]
+
+#1
+Bahía Anasco clinic at midnight, storm raging outside, ELENA_MORALES working by flashlight in dark room, newborn baby in wicker bassinet, hearing chirping sound, concerned expression, tense atmospheric night scene, low-angle shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, candlelight
+
+#2
+ELENA_MORALES opening door to nursery, flashlight beam revealing three dark green compsognathids crouched like gargoyles around rim of bassinet, blood dripping from snouts, one bending to tear flesh from infant, horror and shock, wide angle of nightmare scene, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, flashlight beam
+
+#3
+Empty infirmary room, lizards gone, baby's bassinet overturned, bloody three-toed tracks like bird prints leading out door, ELENA_MORALES weeping in corner, aftermath of tragedy, desolate wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+Tropical Diseases Laboratory late afternoon, ALICE_LEVIN walking past freezer, seeing Tina's dinosaur drawing pinned on board, stopping suddenly staring, Stone at desk looking up, moment of dawning realization — the creature in the picture looks like a dinosaur, medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter4 — Second Iteration: The Shore of the Inland Sea]
+
+#1
+Montana badlands under vast blue sky, ALAN_GRANT — American paleontologist 40s barrel-chested full dark beard khaki fieldwork clothes cowboy hat — crouched on eroded hillside, using dental pick and camel brush to excavate tiny L-shaped dinosaur jawbone, blazing hundred-degree sun, distant eroded limestone hills stretching for miles, wide establishing shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Grant's vision of prehistoric Montana eighty million years ago, warm swampy bayou shoreline of great inland sea, pterosaurs swooping to scoop algae from surface, volcanic smoke darkening thin clouds above, herbivorous duckbilled dinosaurs laying eggs on offshore island ringed with dense vegetation, vibrant prehistoric world, wide panoramic time-vision shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, atmospheric depth
+
+#3
+Snakewater field camp, six Blackfoot tipis at foot of hill, flapping mess tent, field lab trailer, generator chugging, students working around jackhammer cutting rock, Ellie waving from trailer doorway, blue Ford sedan approaching in cloud of dust over rutted road, bustling excavation scene, wide medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+Inside field trailer, long wooden tables with neatly laid out tiny bone specimens tagged and labeled, ceramic dishes with vinegar for acid baths, BOB_MORRIS — EPA investigator late 20s suit and tie — peering at tiny bones, ELLIE_SATTLER — paleobotanist 24 blonde ponytail tanned cut-off jeans — showing him acetic acid baths, intrigued conversation, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#5
+End of trailer makeshift office, torn couch and sagging chair, ALAN_GRANT leaning back boots on end table drinking beer, BOB_MORRIS sitting forward showing Xeroxed world map with red dots marking Hammond Foundation funded digs, explains mysterious pattern — only cold-weather sites funded, conspiratorial discussion, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#6
+ALAN_GRANT staring at Xeroxed check from InGen for CONSULTANT SERVICES/COSTA RICA, BOB_MORRIS explaining Grant was paid consultant fee for Isla Nublar project, Grant puzzled examining document, confusion and intrigue, close-up on check, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#7
+ALAN_GRANT and BOB_MORRIS at trailer door, Morris putting on sunglasses in blazing sunlight, Grant explaining InGen asked about juvenile dinosaur dietary habits, Morris mentions supercomputers and gene sequencers shipped to Costa Rica, tensions over unregulated genetic engineering, farewell conversation at door, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter4 — Second Iteration: Skeleton]
+
+#1
+ALAN_GRANT standing at fax machine watching transmission come through, paper emerging with X-ray image, ELLIE_SATTLER at acid baths looking over, curious anticipation, field trailer interior, medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+ALAN_GRANT and ELLIE_SATTLER staring at X-ray image held up to light, both shocked, the X-ray shows a three-toed dinosaur foot — Procompsognathus — impossible contemporary dinosaur specimen, ELLIE_SATTLER's face lit by backlit X-ray, discovery and astonishment, close-up two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+ALAN_GRANT on phone with Hammond, speakerphone on, bewildered expression, ELLIE_SATTLER listening beside him, Hammond's raspy old voice coming through speaker inviting them to Costa Rica to see his "biological preserve", offering sixty thousand dollars for weekend consultancy, Grant agreeing reluctantly, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter4 — Second Iteration: Cowan, Swain and Ross]
+
+#1
+San Francisco law office with midday sun streaming through glass walls, DONALD_GENNARO — stocky lawyer mid-30s Armani suit wire-rim glasses — on phone tense, DANIEL ROSS — senior partner dark pinstripe suit cold expression — standing watching, conversation about InGen crisis and need for inspection, corporate tension, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+DONALD_GENNARO at desk talking on radiophone to Grant, confirming trip details, asking about the Procompsognathus specimen, plotting to get specimen delivered to island, calculating corporate damage control, close-up on Gennaro's determined face, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter4 — Second Iteration: Plans]
+
+#1
+Field trailer late afternoon, ALAN_GRANT opening thick manila envelope with InGen logo, pulling out bound stack of blueprints marked ISLA NUBLAR RESORT GUEST FACILITIES, ELLIE_SATTLER looking over shoulder, curiosity and confusion, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Topographical map of Isla Nublar spread on trailer table, inverted teardrop shape eight miles long, northern VISITOR AREA marked, network of roads and tunnels, codes like /P/PROC/V/2A, concrete moats thirty feet wide, electrified fence symbols, ALAN_GRANT and ELLIE_SATTLER puzzled examining, close-up on map, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+ALAN_GRANT examining blueprint cross-sections showing concrete bunker-like buildings with small windows like Nazi pillboxes, electrified fences and moats everywhere, ELLIE_SATTLER realizing "just like a zoo", dawning understanding this is no ordinary resort, revealing conversation, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter4 — Second Iteration: Hammond]
+
+#1
+DONALD_GENNARO walking through office hallway tearing sales tags off new suitcase, secretary bustling beside him, DANIEL ROSS emerging from conference room, grim instruction — "if there's a problem on that island, burn it to the ground", intense corporate hallway conversation, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Inside Gulfstream II jet flying toward Rocky Mountains, JOHN_HAMMOND — elderly entrepreneur mid-70s short small frame white hair expensive casual blazer — sitting in padded leather chair feet not touching carpet, DONALD_GENNARO across from him, Hammond explaining park concept, discussing 238 animals and 15 species, wide two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter4 — Second Iteration: Choteau]
+
+#1
+Dry plains airfield near Choteau, twin-engine Grumman jet circling for landing against distant black buttes, afternoon wind blowing dust and tumbleweed across cracked concrete, ALAN_GRANT standing with ELLIE_SATTLER near Jeep waiting, dramatic landscape, wide establishing shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Inside Gulfstream jet, ALAN_GRANT hunched over shaking hands with JOHN_HAMMOND, ELLIE_SATTLER introduced to DONALD_GENNARO who says "You're a woman" in surprise, Ellie's cool response "These things happen", awkward first meeting, cramped interior, medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter4 — Second Iteration: Target of Opportunity]
+
+#1
+Biosyn corporation boardroom 8:00 PM, ten directors seated around conference table irritable and impatient, LEWIS_DODGSON — geneticist 34 balding hawk-faced intense — standing at head of table holding pointer, dark modern corporate meeting room, tense atmosphere, wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+LEWIS_DODGSON revealing InGen's secret — they are cloning dinosaurs, directors in shock, Dodgson explaining economic potential, patent issues, need for industrial espionage, board members listening with mixed greed and concern, dramatic revelation scene, medium wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+LEWIS_DODGSON nodding as board members silently indicate approval without speaking on record, no formal resolution, just heads nodding in shadowed room, ominous ethical compromise, wide silent shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, deep shadows
+
+[Chapter4 — Second Iteration: Airport]
+
+#1
+San Francisco airport coffee shop, LEWIS_DODGSON wearing ridiculous straw hat for disguise, sitting at counter next to DENNIS_NEDRY — overweight programmer Hawaiian shirt food stains — Nedry examining can of Gillette Foamy shaving cream, briefcase with $750,000 on floor between them, clandestine meeting, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+DENNIS_NEDRY pressing top of modified shaving cream can, white foam puffing into hand, Dodgson explaining it's a coolant container for transporting frozen embryos, Nedry testing it, promised $50,000 per embryo, briefcase of cash, whispered conspiracy, close-up on the shaving cream can, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter4 — Second Iteration: Malcolm]
+
+#1
+Dallas airport midnight, IAN_MALCOLM — tall thin mathematician mid-30s receding dark hair dressed entirely in black — stepping onto Gulfstream jet, sardonic grin, shaking hands with group, striking rock star presence, airplane doorway, medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Inside jet flying through night, IAN_MALCOLM holding forth on chaos theory to DONALD_GENNARO and ALAN_GRANT, explaining nonlinear equations, butterfly effect, why complex systems are inherently unpredictable and Jurassic Park must fail, animated intellectual discussion, mid-flight cabin, medium three-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter4 — Second Iteration: Isla Nublar]
+
+#1
+Helicopter flying over Costa Rican coast toward island, deforested hills below, fishing village of Bahía Anasco flashing past, blue Pacific stretching ahead, passengers in headsets watching through Plexi bubble, morning sunlight, wide aerial shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Isla Nublar emerging from fog ahead, rugged volcanic island rising sharply from ocean, forested slopes wreathed in mist, like Alcatraz but larger, eight miles long, mysterious and foreboding, helicopter approaching, wide dramatic establishing shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, volumetric fog
+
+#3
+Helicopter descending through thick fog bank, pine tree branches reaching through mist alarmingly close, electronic beeping, passengers tense, pilot concentrating, sudden breakthrough to see glowing fluorescent cross on helipad below, rapid descent, thriller-style landing sequence, low-angle interior, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+ALAN_GRANT and ELLIE_SATTLER walking down narrow path winding through misty hill, Ed Regis leading, warm humid air, then seeing white roofs of large buildings nestled in planting below, impressive construction — then noticing a single trunk rising above palm trees moving, realizing it's the curving neck of an enormous dinosaur fifty feet tall, first dinosaur sighting, awestruck moment, wide shot with dinosaur silhouette, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#5
+Group standing transfixed staring up at apatosaurs, five or six necks craning above palm trees, gentle trumpeting sounds like elephants, graceful prehistoric creatures, morning mist swirling, ALAN_GRANT laughing with wonder, ELLIE_SATTLER speechless, DONALD_GENNARO calculating fortune, IAN_MALCOLM observing detached, THE REVEAL, wide majestic shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, god rays through mist
+
+[Chapter5 — Third Iteration: Jurassic Park]
+
+#1
+Walking through green tunnel of overarching palms toward main visitor building, hand-painted sign reading "Welcome to Jurassic Park", lush prehistoric planting everywhere, ALAN_GRANT and ELLIE_SATTLER and IAN_MALCOLM walking together discussing implications, Grant realizing his entire field of paleontology is now transformed, moment of paradigm shift, medium group shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Safari Lodge interior, beige tones with rattan jungle-print furniture, glass pyramidal skylight overhead barred with crude black steel frame retrofit, ALAN_GRANT examining bars suspiciously, ELLIE_SATTLER entering noting tempered glass in steel frames and twelve-foot perimeter fence outside, realizing lodge has been turned into fortress, concerned investigation, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Visitor center lobby, two-story glass atrium with black anodized girders, robotic Tyrannosaurus rex poised menacingly by entrance to WHEN DINOSAURS RULED THE EARTH exhibit, DONALD_GENNARO on stage speaking to group, John Hammond sitting in back arms folded, Grant Ellie and Malcolm listening, wires and cables across unfinished floor, briefing scene, wide establishing shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+DONALD_GENNARO showing infant mortality graph from Costa Rican Public Health Service on screen, unexplained biweekly spiking in coastal villages, IAN_MALCOLM stepping forward to explain it's a nonlinear signature proving animals have escaped island, tense argument with Hammond who denies possibility, Gennaro caught between, conference room debate, medium group shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#5
+Outside visitor center near helipad, DONALD_GENNARO screaming at JOHN_HAMMOND, veins in neck standing out, "You did what? You invited who?" — Hammond has invited his grandchildren to the island against Gennaro's orders, TIM_MURPHY — boy 11 dark hair glasses — and LEX_MURPHY — girl 7 blond hair Mets cap baseball glove — coming down hillside led by Ed Regis, awkward tense arrival, wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter5 — Third Iteration: The Tour]
+
+#1
+Inside DNA extraction lab bathed in green light, shelves of yellow amber stones tagged and numbered, DR_HENRY_WU — chief geneticist 30s Asian man white lab coat — holding up amber stone containing prehistoric insect, explaining how dinosaur DNA is extracted from blood-sucking insects trapped in tree sap, fascinated audience, scientific demonstration, medium wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Chilled computer room with humming Cray XMP supercomputers as six-foot round towers, rows of waist-high Hamachi-Hood automated gene sequencers along walls, DR_HENRY_WU at monitor showing DNA sequence display of repaired dinosaur genome, high-tech genetics factory, blue light from screens, wide shot of impressive facility, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Hatchery room, warm and humid with infrared lighting, long tables covered in hissing low mist with rows of pale dinosaur eggs rocking gently, overhead thermal sensors moving from egg to egg beeping, workers waist-deep in mist turning eggs, mysterious atmospheric birthing chamber, wide atmospheric shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, volumetric mist
+
+#4
+Nursery circular white room, infant incubators and toys scattered on floor, baby velociraptor six weeks old standing upright about one and a half feet tall, dark yellow with brown tiger stripes, cocking head with beady eyes and flicking forked tongue, TIM_MURPHY holding the little raptor who rubs head against his neck, charming first encounter, medium close-up, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#5
+Baby raptor hissing angrily at ALAN_GRANT who reaches to examine her, opening jaws with aggressive posture, Grant fascinated unfazed, Ed Regis intervening saying animals are delicate, tension between scientific curiosity and humane treatment, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter5 — Third Iteration: Version 4.4 / Control]
+
+#1
+Hammond's elegant bungalow with video monitors showing park animals, DR_HENRY_WU pleading with JOHN_HAMMOND to approve version 4.4 — genetically modified slower more docile dinosaurs for the park, arguing that the real dinosaurs are too fast and frightening for visitors, Hammond refusing wanting "real" dinosaurs, philosophical debate, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Darkened control room with banks of glowing consoles, JOHN_ARNOLD — chief engineer 45 thin chain-smoker button-down shirt — at central console, glass vertical map of park lit up with glowing animal positions, IAN_MALCOLM questioning, DONALD_GENNARO observing, demonstration of tracking system, high-tech nerve center atmosphere, wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter5 — Third Iteration: The Tour continues]
+
+#1
+Toyota Land Cruiser driving along raised park road, TIM_MURPHY in front seat with night-vision goggles and dashboard computer screens, LEX_MURPHY in back, Ed Regis narrating tour, Richard Kiley recorded voice playing, first dinosaur sighting — hypsilophodont heads popping up from grass like comical gophers, tour begins, medium interior shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Dilophosaur crouched by jungle river drinking, ten-foot-tall spotted yellow and black body like leopard, distinctive V-shaped red and black crested head like parrot, giving soft hooting owl-like cry, tourists watching from elevated road, beautiful but deadly creature revealed, medium wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Triceratops in shade of large tree, elephant-size and gray, three curving foot-long horns above eyes and nose, beaky rhino-like snout, fan-shaped solid bone crest behind head, standing motionless like statues, Lex complaining "they just sit there", underwhelming first encounter, medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter5 — Third Iteration: Big Rex]
+
+#1
+Land Cruisers stopped at hill rise overlooking lagoon, forest sloping down to water, sun falling to west, soft golden light on landscape, distant apatosaur necks mirrored in lagoon surface, peaceful prehistoric tableau — then goat rises on hydraulic platform in center of field bleating, audience waiting, tension building, wide cinematic shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, golden hour lighting
+
+#2
+Twenty-foot tyrannosaur head emerging from among palm trees, enormous square mottled reddish-brown head five feet long, huge jaws with fangs, working once opening and closing, observed from Land Cruiser, breathless awe, low-angle shot from car perspective, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Tyrannosaur springing silently forward in four bounding strides, covering distance to goat, bending down and biting through neck in one motion, bleating stops, sudden silence, massive predator poised over kill looking around warily, dramatic kill shot, dynamic action wide, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+Tyrannosaur raising head with ragged chunks of bleeding flesh in jaws, chewing with sickening crunch of bones, staring directly at Land Cruiser, visitors frozen in terror and amazement, Lex saying "Ewww, that's disgusting", intense predator-portrait close-up, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter5 — Third Iteration: Stegosaur / Breeding Discovery]
+
+#1
+Stegosaurus in steam-venting field, twenty feet long with bulky body and vertical armor plates along back, tail with three-foot spikes, absurdly small head, vet Harding examining sick animal, ELLIE_SATTLER investigating, LEX_MURPHY investigating, steam plumes rising from volcanic ground, afternoon overcast, wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, atmospheric haze
+
+#2
+ELLIE_SATTLER examining stegosaur's purple tongue with fine silvery blisters, Dr. Harding shining light, recognizing toxicity symptoms, then discovering piles of smooth gizzard stones nearby, realizing stegosaurs swallow berries with stones and get sick periodically, scientific detective work, close-up on tongue, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+ALAN_GRANT holding up small white eggshell fragment in fading light on fingertip, showing faint triangular pattern on interior curve, announcing to stunned group this is velociraptor eggshell, proving dinosaurs are breeding, horrified reactions from DONALD_GENNARO and Dr. Harding, dramatic revelation, close-up on shell fragment, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter5 — Third Iteration: Control / Population Discovery]
+
+#1
+Control room at night, computer screen displaying animal tally climbing from 238 to 270+, JOHN_ARNOLD staring horrified, JOHN_HAMMOND panicking, IAN_MALCOLM's voice over radio explaining the flaw — they only tracked expected number, never checked for MORE animals, population curves showing breeding compys, system failure revelation, tension in darkened room, wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Control room screen showing Gaussian distribution curves for compy heights, IAN_MALCOLM's overlaid voice explaining three batches should show three peaks but instead shows one smooth curve proving breeding population, DR_HENRY_WU shaking head in denial, "all the animals are female", realization of amphibian gender change possibility, scientific paradox, close-up on screen, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter5 — Third Iteration: Racing Dark]
+
+#1
+Late afternoon misty road, two Land Cruisers stopped, looking out at supply ship Anne B. departing in distance, LEX_MURPHY insisting she sees animals on ship, ALAN_GRANT with binoculars spotting juvenile raptors playing on stern structures, Ed Regis grabbing radio to call control room — but radios dead, crisis realization, evening tension, wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Control room, all floodlights in park going dark, monitors going black, JOHN_ARNOLD frantically pressing buttons, JOHN_HAMMOND demanding answers, DENNIS_NEDRY at corner console typing rapidly — he has sabotaged the system, power failure across entire island, Land Cruisers stopped on road in darkness, systems collapse, dramatic blackout reveal, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+DENNIS_NEDRY in fertilization lab, opening walk-in freezer with gloves, pulling out rack of frozen embryo tubes in nitrogen smoke, quickly selecting two of each species into modified shaving cream can, stealing fifteen embryos worth millions, hissing coolant gas frosting can, midnight theft, classic villain action, close-up on smoking freezer rack, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter6 — Fourth Iteration: The Main Road]
+
+#1
+Blacked-out park road at night, rain pouring, two Land Cruisers stopped in darkness, TIM_MURPHY using night-vision goggles through which everything glows phosphorescent green, scanning foliage, tense waiting, lightning flashes illuminating jungle, thunder crashing, Lex crying, oppressive storm atmosphere, interior POV shot through goggles, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, rain
+
+#2
+TIM_MURPHY through night-vision goggles seeing enormous square tyrannosaur head beyond foliage beyond fence, massive pebbled body towering above trees, glowing green eyes staring, lightning flash silhouetting huge black shape against white-flaring sky, bellowing roar, the predator watching, horror and awe, POV horror shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+ED_REGIS screaming and scrambling out of Land Cruiser door, fleeing into rain-soaked woods abandoning children, Lex screaming "He left us! He left us!", Tim trying to close door, tyrannosaur gripping fence with forelimb realizing it's not electrified, door paneling getting soaked, chaos and abandonment, dynamic action wide, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+Tyrannosaur crashing through non-electrified fence, huge hind limb tearing through mesh, rain lashing, DMX lights flickering, Tim scrambling back into car, Lex screaming, thunder and lightning, the fence giving way, nightmare breakthrough sequence, low-angle dynamic, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#5
+Tyrannosaur attacking Land Cruisers, enormous head smashing through windshield, jaws snapping, car crumpling like toy, ALAN_GRANT and IAN_MALCOLM scrambling, Lex and Tim screaming, glass shattering, metal tearing, pure primal terror, chaotic wide action shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter6 — Fourth Iteration: The Road / Search]
+
+#1
+ED_REGIS hiding among boulders at bottom of hill, rain-soaked terrified, leech swollen on his lip feeding, pulling it off with disgust, shaking with fear and shame at abandoning children, desperate survival, close-up on leech removal, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+JEEP with MULDOON and GENNARO on road, headlights revealing Ed Regis's severed leg lying in ferns by roadside, pale blue-white flesh with ragged bloody stump, Muldoon lifting leg to examine torn joint, Gennaro bent over fighting nausea, grim discovery, graphic horror scene, medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Overturned Land Cruiser in road, second car crumpled against tree twenty feet away, Muldoon investigating carefully, finding crushed digital watch with intact band proving kid survived and removed it himself, Gennaro skeptical, footprints in mud showing adult and child prints walking into park together, detective work, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+IAN_MALCOLM lying on back in foliage, skin gray-white, belt tourniquet tight over right thigh, ankle bent outward at awkward angle soaked in blood, Muldoon and Gennaro finding him, Malcolm groaning "Lex... went... Lex...", carrying him to Jeep, rescue scene, medium wide, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter6 — Fourth Iteration: Control / Nedry's Death]
+
+#1
+Control room, JOHN_ARNOLD discovering Nedry's trap door in code — "whte_rbt.obj" command that turns off security and perimeter systems, reverse engineering to find "fini.obj" restore command, typing it in, power surging back through park, lights coming on across island, technical triumph, close-up on screen with code, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+DENNIS_NEDRY driving Jeep through foggy jungle road toward east dock, skidding on mud, then seeing lights and realizing he took wrong turnoff, frustrated, heavy rain, then dilophosaur venom spat in his eyes, blinding him, screaming in pain, compys surrounding Jeep, poetic justice beginning, low-angle through windshield, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, rain
+
+#3
+Nedry's body lying on jungle road next to Jeep, compys feeding on his flesh, one squatting on his open mouth nibbling nose, dilo spit evidence visible, MULDOON and GENNARO finding him later, Muldoon recovering LAW missile launcher from Jeep, the thief's corpse abandoned, grim discovery, wide shot of body, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter6 — Fourth Iteration: In the Park - Night]
+
+#1
+Forest under full moon and drifting mist, ALAN_GRANT carrying LEX_MURPHY on back, TIM_MURPHY trudging alongside, walking through tyrannosaur paddock, crossing field past motion sensor boxes T/S/04, searching for safety, moonlight casting long shadows through trees, survival journey, wide night shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, moonlight
+
+#2
+ALAN_GRANT and TIM_MURPHY talking while walking through dark forest, Grant carrying sleeping girl, Tim asking about parents' divorce and dinosaurs, intimate father-son-like conversation under moon-dappled canopy, character bonding moment, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Grant climbing high tree branch to survey landscape, using night-vision goggles to spot distant service road and flat concrete roof of maintenance building, deciding route, moonlight above mist, strategic scout, high-angle POV, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+Group climbing twelve-foot chain-link fence with barbed wire, Lex scrambling easily, Tim afraid of heights, Grant helping, then sliding down into deep concrete moat, wading through waist-deep smelly water, climbing out using vine, reaching below-grade maintenance building, entering through barred gate, sanctuary found, medium action shots, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, moonlight
+
+#5
+Inside maintenance shed, Grant breaking open hay bales spreading on concrete floor, Lex and Tim curling up in warm hay, both immediately snoring, sauropods trumpeting softly in distance, exhausted safety, touching intimate scene of rest, medium low-light shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter6 — Fourth Iteration: The Lodge / Control]
+
+#1
+Malcolm's room in lodge, IAN_MALCOLM on bed with compound fracture, ELIIE_SATTLER adjusting dressings and IV, Harding attending, Malcolm making dark jokes despite pain, morphine-induced humor in crisis, medical care scene, medium group shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Dawn light through shed windows, ALAN_GRANT waking to sound of conveyor belt, baby triceratops "Ralph" outside bars eating hay from Lex's hands, gentle squeaking, big soft eyes, morning discovery of infant dinosaur, charming awakening scene, medium shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, morning light
+
+[Chapter6 — Fourth Iteration: The Park - Dawn]
+
+#1
+Sauropod paddock at dawn, white mist clinging low to ground, mother triceratops nudging baby Ralph away from bars, herd of duckbilled hadrosaurs eating foliage at lagoon edge, giant apatosaur above trees in distance, huge red dragonflies with six-foot wingspans humming past, peaceful prehistoric morning scene, wide majestic landscape, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, volumetric mist
+
+#2
+Tyrannosaur bursting from trees fifty yards away near lagoon, rushing across open field toward hadrosaur herd with enormous strides, duckbills stampeding honking, earth shaking, ALAN_GRANT grabbing LEX and running with TIM toward rocky outcrop and conifers, herd enveloping them in dust cloud, chaos and survival, wide dynamic action shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Group climbing tree as hadrosaurs stampede below in dust, Lex refusing to go higher, clinging to Grant, Tim above, herd wheeling and honking, tyrannosaur roaring, Grant propped against bark coughing in dust, survival in the branches, medium action shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, atmospheric dust
+
+[Chapter6 — Fourth Iteration: The River / T-Rex Chase]
+
+#1
+Dock at lagoon edge, ALAN_GRANT discovering tyrannosaur sleeping in shade twenty yards away, sitting upright snoring, flies crawling over bloody jaws and carcass of killed hadrosaur beside it, Grant silently retrieving rubber rafts from shed, inflating with loud hiss, terror of waking the beast, quiet stealth scene, medium wide, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Grant paddling rubber raft into lagoon with Lex and Tim, Lex coughing uncontrollably, tyrannosaur waking and plunging into water after them swimming like crocodile with powerful tail, head above surface, gaining fast, water chase, dynamic wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Tyrannosaur lunging at raft, jaws snapping inches from rubber gunwale, massive splash rocking boat, Lex screaming, Tim shouting, Grant firing air pistol dart into tyrannosaur's cheek, then juvenile T-rex roaring from shore defending kill, big tyrannosaur turning back, leaving raft, survival by luck, close-up action, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+Raft drifting north on river current through narrowing banks, canopy of trees meeting overhead, dappled patches of light, Grant exhausted lying back against rubber gunwale asleep, Lex and Tim watching, peaceful aftermath, medium wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, dappled light
+
+[Chapter7 — Fifth Iteration: Search]
+
+#1
+Trampled field at dawn, grass flattened for hundred yards in every direction, uprooted palm tree, great washes of blood on grass and rocks, flies buzzing everywhere, MULDOON and GENNARO in Jeep surveying battleground where T-rex attacked hadrosaurs, destruction evidence, wide morning shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Young hadrosaur carcass in trampled grass, crusted with blood, legs askew, othnielian scavengers scattering, MULDOON examining bite pattern, distinguishing tyrannosaur kill marks from scavenger bites, field forensics, close-up on carcass, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Nedry's body on jungle road surrounded by compys, two dead raptors and one dying from Grant's poison eggs in hatchery, Muldoon recovering missile launcher from Jeep, the destroyed embryos scattered, heroic recovery of weapon, medium wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter7 — Fifth Iteration: The Aviary / Raptors]
+
+#1
+Jungle river raft drifting into aviary section, giant aluminum-strut dome visible through foliage, pterosaurs circling inside, TIM_MURPHY and LEX_MURPHY looking up, ALAN_GRANT rowing, but then hearing splashing — dilophosaurs swimming alongside raft, their red and black crested heads cutting through water, tense river passage, low-angle from raft, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Raft approaching low branch bridge, LEX_MURPHY reaching for overhanging tree unaware of dilophosaur crouched in branches above, ALAN_GRANT shouting warning, the spotted yellow and black dinosaur hissing with frill extended, deadly beautiful creature poised to strike, horror moment, medium close-up, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Electric cart racing through dark underground tunnel, ALAN_GRANT driving foot to floor, TIM and LEX beside him, tranquilized juvenile raptor lying in back, tunnel featureless except for air vents above, white crusty animal droppings everywhere, speeding toward visitor center, action chase, medium interior shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter7 — Fifth Iteration: The Lodge Siege]
+
+#1
+Safari Lodge at night, raptors on roof chewing through steel bars of skylight above Malcolm's bed, foamy saliva spattering on sheets, glass shattered glittering on blankets, Ellie removing fragments, Malcolm watching calmly — "God, they're ugly", siege atmosphere, low-angle looking up at skylight, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+ELLIE_SATTLER standing outside lodge fence in fog, acting as bait to draw raptors away, opening gate with rusty creak, moving twenty yards into mist, heart pounding, MULDOON banging steel rod against bars shouting, two raptors charging from foliage, ambush attempt, tense standoff, wide foggy shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, volumetric fog
+
+#3
+Raptors sprinting toward Ellie in coordinated pincer attack, one from left one from right, she darting broken-field back toward fence, Muldoon throwing gate open reaching for her, pulling her through inches ahead of snapping jaws, animals crashing into fence snarling, close-call rescue, dynamic action sequence, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+DR_HENRY_WU pulled through lodge door by raptor jumping from roof, body torn open by big claw, still alive reaching up feebly, raptor jerking head tugging at his intestines, Ellie screaming, Muldoon slamming door, Harding watching horrified, Wu being eaten alive, brutal death, horror wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter7 — Fifth Iteration: The Kitchen / Refrigerator]
+
+#1
+Darkened cafeteria kitchen, pilot lights flickering on gas stove, TIM_MURPHY wearing night-vision goggles, velociraptor moving silently among dining tables outside, six feet tall powerfully built, iridescent speckled pattern on back, head jerking bird-like, moving toward kitchen following scent, stalker POV through kitchen door, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+TIM_MURPHY hiding LEX under table behind waste bin, grabbing handful of cold steaks from refrigerator, placing trail of steaks across kitchen floor to bait the raptor, listening to crunching sounds as it eats first steak, stealthy baiting, close-up on Tim's determined face, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Velociraptor entering walk-in freezer following steak trail, Tim sprinting to slam stainless-steel door, but tail caught! Door won't close! Raptor roaring, Tim stepping back, tail vanishes, he slams door shut, Lex scrambling to push locking pin through handle, pounding from inside, baby sister saves the day, triumphant close-up at door, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter7 — Fifth Iteration: Control Room / Power Restoration]
+
+#1
+Control room computer screens showing reset options, TIM_MURPHY at console touching touch screen, LEX_MURPHY beside him, discovering infrared touch screen interface, navigating through menus, finding electrical grid controls, time ticking dawn approaches, tech-savvy kid at work, close-up on screen, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+TIM_MURPHY pressing ELECTRICAL MAIN, then MAIN GRID P, then MAIN SET 1 — MAIN POWER ACTIVATED!, all lights coming on, monitors stopping flashing, Lex cheering, Tim triumphant, control room springing to life, victory in the nick of time, medium two-shot celebration, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Video monitor showing lodge ceiling, raptors caught between electrified skylight bars, writhing and screaming in hot cascade of sparks, Muldoon and others cheering, tinny voices over radio, electrifying justice, close-up on monitor, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+Control room, TIM_MURPHY at console using telephone directory to find supply ship number, DIAL NOW command, hearing dial tone, DONALD_GENNARO grabbing phone, threatening Captain Farrell with Maritime Act penalties, ordering ship to turn back, ship turning away from Puntarenas dock, everyone cheering, triumphant boat recall, medium group celebration shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter8 — Sixth Iteration: Return / Destroying the World]
+
+#1
+Malcolm's new room in lodge, IAN_MALCOLM lying in clean bed with IV, JOHN_HAMMOND pacing, Malcolm delivering passionate speech about how planet has survived billions of years and will survive humanity, humans only endanger themselves not the earth, Hammond stubbornly arguing, philosophical confrontation, medium two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter8 — Sixth Iteration: Under Control / The Nest]
+
+#1
+Control room late afternoon, ALAN_GRANT watching monitors showing park reaching equilibrium — raptors hunting hadrosaurs, triceratops fighting among themselves, stegosaur circling juvenile T-rex, Ellie explaining populations stabilizing, true Jurassic equilibrium being established, nature taking over, somber viewing, wide shot of group at monitors, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Storage room behind maintenance building, MULDOON opening steel storm door revealing concrete stairs going down, rows of gas masks on wall, heavy glass cubes with steel caps containing dark spheres — MORO-12 nerve gas grenades, weapons cache discovered, Grant grimly taking grenades, preparing for nest expedition, ominous discovery, low-angle down stairs, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+LEX_MURPHY in garage petting captured juvenile raptor through cage bars, animal rubbing against her hand, naming it "Clarence", MULDOON holding radio collar, Lex convincing raptor to let her put collar on it, animal turning bright green then back proving it's a chameleon, surprising discovery, tender dangerous interaction, medium close-up, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#4
+Jeep driving through southern volcanic fields, sulfur steam rising in plumes, mud bubbling and spitting, ALAN_GRANT with headphones tracking collared raptor's beeps, ELLIE_SATTLER and DONALD_GENNARO with gas grenades on belts, approaching the hidden nest entrance — a small rabbit-like hole in rocks, hellish volcanic landscape, wide atmospheric shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter8 — Sixth Iteration: Descent]
+
+#1
+GENNARO squeezing backward through narrow rabbit-hole tunnel, terror in darkness, concrete walls closing in, crushing air from lungs, then tumbling onto concrete ledge, opening eyes to see dozens of glowing green raptor eyes in vast underground concrete chamber, the nest, pure primal fear POV, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Underground raptor nest cavern, three mud and straw nests on concrete floor, two full-size velociraptors standing guard with dozens of juveniles and infants skittering, chirping, playing, adults watchful, ALAN_GRANT counting eggs and hatchlings from ledge behind junction boxes, ELLIE_SATTLER noting behavior patterns, DONALD_GENNARO terrified, secret observation, wide shot of nest colony, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+Juvenile raptor with radio collar approaching ELLIE_SATTLER, rubbing head against her leg whimpering, chafed skin from collar, Ellie petting and removing collar while adult raptor walks close, giant head near her hand sniffing, barely hidden by junction box, extreme tension, close-up on Ellie's hand on collar, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter8 — Sixth Iteration: The Migration / Hammond's End]
+
+#1
+All raptors suddenly running through concrete tunnels toward beach exit, infants squeaking, adults leading, coordinated group movement, ALAN_GRANT and group following cautiously, confusion at sudden change, action chase through tunnel, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Cavernous opening onto beach, all raptors scampering on sand then retreating to palm tree shade, lined up in rigid formation facing northeast-southwest, watching ocean, large freighter passing in distance, ALAN_GRANT realizing — they're not trying to escape, they're migrating, moment of profound understanding, wide beach shot with dinosaurs and ship, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#3
+JOHN_HAMMOND fallen on hillside near bungalow, ankle broken, compsognathids surrounding him, tiny poisonous scavengers hopping closer, one jumping on his chest, Hammond feeling strangely peaceful as they bite him, narcotic poison taking effect, lying still as a child in crib, death scene, tragic peaceful wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter8 — Sixth Iteration: Approaching Dark / Evacuation]
+
+#1
+Military helicopters bursting through fog over island, thundering and wheeling, olive-uniformed soldiers with armament, ALAN_GRANT and ELLIE_SATTLER and DONALD_GENNARO scrambling aboard, TIM and LEX already inside, raptors scattering in alarm, helicopters landing on beach, rescue arrives, wide action shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+Helicopter lifting above island, Grant looking out open door, seeing juvenile T-rex with bloody jaws crouched over hadrosaur by lagoon looking up and roaring, then explosions below — visitor center bursting in bright orange fireball, hypsilophodonts leaping gracefully as gazelles before another explosion, island burning in dusk light, farewell to Jurassic Park, aerial apocalyptic wide shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter9 — Seventh Iteration: Approaching Dark / Aftermath]
+
+#1
+Helicopter flying toward mainland, island diminishing in distance against deep purple sky, white-hot explosions bursting rapidly across entire island until it glows like a bright spot in darkening night, Grant staring back, final farewell, survivors in harnesses, pensive mood, interior cabin shot with window view, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+#2
+San José hotel poolside afternoon, TIM and LEX splashing in water, ALAN_GRANT sitting in chair watching them, MARTY_GUITIERREZ — Costa Rican field biologist — approaching, sitting beside Grant, discussing strange events in Ismaloya section — crops eaten in straight line from coast into mountains, animals preferring lysine-rich foods, like a migration, implication that some dinosaurs survived, conversation in sunlight, two-shot, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro
+
+[Chapter10 — Epilogue: San José]
+
+#1
+San José hotel pool late afternoon, ALAN_GRANT sitting alone in chair watching distant mountains, TIM and LEX playing in background, Guitierrez having left, Grant contemplating whether dinosaurs might have survived in Costa Rican jungle, the enduring mystery, warm golden light, pensive mood, medium shot of Grant in contemplation, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, golden hour
+
+#2
+Aerial view of Costa Rican jungle mountains stretching to horizon, dense green canopy, mist rising from valleys, unknown wildlife moving beneath, hint that life finds a way, dinosaurs might still exist unseen, wide majestic landscape, cinematic oil painting, painterly brushwork, rich earthy palette, dramatic chiaroscuro, atmospheric depth, volumetric haze
+
+===END===
