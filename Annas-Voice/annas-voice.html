@@ -93,7 +93,9 @@
 
 /* text display area */
 .voice-text-area {
-  flex: 1; overflow-y: auto; padding: var(--buho-space-3) 0;
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  overflow-wrap: break-word; word-break: break-word;
+  padding: var(--buho-space-3) 0;
   font-size: var(--buho-fs-lg); line-height: 1.9;
   color: var(--buho-fg);
 }
@@ -170,7 +172,7 @@
         <h1>Anna's Voice</h1>
         <p>Choose a <strong>.txt</strong> or <strong>.epub</strong> file to read aloud using Microsoft Edge's natural voices.</p>
         <div id="voice-browser-warn" class="voice-browser-warn">
-          ⚠ Open this page in <strong>Microsoft Edge</strong> for speech playback.
+          ⚠ Open this page in <strong>Microsoft Edge</strong> for Azure natural speech playback.
         </div>
         <button class="buho-btn" id="voice-pick-btn">📂 Choose File</button>
         <input type="file" id="voice-file-input" accept=".txt,.epub" style="display:none">
@@ -230,7 +232,7 @@
 var IS_EDGE = /Edg\//.test(navigator.userAgent) || /EdgiOS\//.test(navigator.userAgent);
 var warnEl = document.getElementById('voice-browser-warn');
 if (!IS_EDGE) {
-  warnEl.textContent = '⚠ Open this page in Microsoft Edge for speech playback.';
+  warnEl.textContent = '⚠ Open this page in Microsoft Edge for Azure natural speech playback.';
   warnEl.style.display = 'block';
   warnEl.style.background = 'var(--buho-yellow)';
   warnEl.style.color = 'var(--buho-bg)';
@@ -485,6 +487,7 @@ function loadTxtFile(file) {
     showScreen('reader');
     readerTitleEl.textContent = file.name;
     updateStatus();
+    updateMediaSession();
   };
   reader.readAsText(file);
 }
@@ -731,6 +734,7 @@ function loadChapter(idx) {
   readerTitleEl.textContent = STATE.chapters[idx].title || ('Chapter ' + (idx + 1));
   updateStatus();
   updateChapterButtons();
+  updateMediaSession();
 }
 
 function renderText() {
@@ -746,7 +750,7 @@ function renderText() {
 
 function scrollToActiveWord() {
   var active = textArea.querySelector('.voice-word--active');
-  if (active) active.scrollIntoView({ block: 'center', behavior: 'auto' });
+  if (active) active.scrollIntoView({ block: 'nearest', behavior: 'auto' });
 }
 
 function updateStatus() {
@@ -769,6 +773,60 @@ function updateChapterButtons() {
 }
 
 /* -----------------------------------------------------------------------
+   Media Session API — Lock Screen Controls (iOS / Android)
+   ----------------------------------------------------------------------- */
+function setupMediaSession() {
+  if ('mediaSession' in navigator === false) return;
+
+  navigator.mediaSession.setActionHandler('play', function () {
+    btnPlay.click();
+  });
+  navigator.mediaSession.setActionHandler('pause', function () {
+    btnPlay.click();
+  });
+  navigator.mediaSession.setActionHandler('seekbackward', function () {
+    skipWords(-15);
+  });
+  navigator.mediaSession.setActionHandler('seekforward', function () {
+    skipWords(15);
+  });
+  navigator.mediaSession.setActionHandler('previoustrack', function () {
+    prevBig();
+  });
+  navigator.mediaSession.setActionHandler('nexttrack', function () {
+    nextBig();
+  });
+  navigator.mediaSession.setActionHandler('stop', function () {
+    stopSpeech();
+  });
+}
+
+function updateMediaSession() {
+  if ('mediaSession' in navigator === false) return;
+
+  var title = '';
+  var album = '';
+
+  if (STATE.fileType === 'epub' && STATE.chapters.length > 0) {
+    title = STATE.chapters[STATE.currentChapterIdx].title || ('Chapter ' + (STATE.currentChapterIdx + 1));
+    album = STATE.bookTitle;
+  } else {
+    title = STATE.bookTitle || 'Text-to-Speech';
+    album = 'Anna\'s Voice';
+  }
+
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: title,
+    artist: 'Anna\'s Voice — Buho',
+    album: album
+  });
+
+  navigator.mediaSession.playbackState = STATE.isPlaying
+    ? (STATE.isPaused ? 'paused' : 'playing')
+    : 'none';
+}
+
+/* -----------------------------------------------------------------------
    Speech Engine — chunk cache, pre-queue, instant skip
    ----------------------------------------------------------------------- */
 // Chunk cache: shared across current chapter, keyed by start word index
@@ -784,6 +842,7 @@ function stopSpeech() {
   STATE.isPaused = false;
   STATE._chunkId = null;
   btnPlay.textContent = '▶';
+  updateMediaSession();
 }
 
 function buildChunkText(startIdx, endIdx) {
@@ -847,6 +906,7 @@ function queueUtterance(chunkEntry) {
       STATE.isPlaying = false;
       STATE.isPaused = false;
       btnPlay.textContent = '▶';
+      updateMediaSession();
       if (STATE.fileType === 'epub' &&
           STATE.currentChapterIdx < STATE.chapters.length - 1) {
         tryAdvanceChapter();
@@ -898,6 +958,7 @@ function speakChunksFrom(startIdx) {
   STATE.isPlaying = true;
   STATE.isPaused = false;
   btnPlay.textContent = '⏸';
+  updateMediaSession();
 }
 
 function updateHighlight() {
@@ -932,11 +993,13 @@ btnPlay.addEventListener('click', function () {
     speechSynthesis.pause();
     STATE.isPaused = true;
     btnPlay.textContent = '▶';
+    updateMediaSession();
   } else if (STATE.isPaused) {
     // Resume
     speechSynthesis.resume();
     STATE.isPaused = false;
     btnPlay.textContent = '⏸';
+    updateMediaSession();
   } else {
     // Start fresh
     speakFrom(STATE.currentWordIdx);
@@ -1021,6 +1084,7 @@ document.addEventListener('keydown', function (e) {
    Init
    ----------------------------------------------------------------------- */
 showScreen('file-select');
+setupMediaSession();
 </script>
 </body>
 </html>
