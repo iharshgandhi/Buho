@@ -31,8 +31,10 @@ venv/
 # ---------------------------------------------------------------------------
 #  Test artifacts
 # ---------------------------------------------------------------------------
-PDF-Tools/test_locked.pdf
-PDF-Tools/test_unlocked.pdf
+PDF-Tools/test_*.pdf
+# test scripts (not core functionality)
+PDF-Tools/test_*.py
+LocalTestFiles/
 
 # ---------------------------------------------------------------------------
 #  macOS
