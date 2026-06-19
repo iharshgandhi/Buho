@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merge PDF to PNG - Buho</title>
+  <link rel="stylesheet" href="../_framework/buho.css">
+<style>
+/* ============================================================
+   Merge PDF to PNG — Tool Styles
+   ============================================================ */
+:root {
+  --thumb-w: 300px;
+  --bottom-bar-h: 64px;
+}
+
+/* -------------------------------------------------------------------
+   FILE SELECTION SCREEN
+   ------------------------------------------------------------------- */
+.pdf-file-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 60vh;
+  text-align: center;
+  gap: var(--buho-space-5);
+  padding: var(--buho-space-6) 0;
+}
+.pdf-file-screen__icon { font-size: 64px; line-height: 1; }
+.pdf-file-screen h1 { font-size: var(--buho-fs-xl); color: var(--buho-fg-hi); }
+.pdf-file-screen p { color: var(--buho-fg-lo); max-width: 400px; }
+
+.pdf-error-msg {
+  display: none;
+  background: var(--buho-red);
+  color: #fff;
+  padding: var(--buho-space-2) var(--buho-space-4);
+  border-radius: var(--buho-radius);
+  font-size: var(--buho-fs-sm);
+  font-weight: 600;
+  max-width: 480px;
+}
+.pdf-loading-msg {
+  display: none;
+  align-items: center;
+  gap: var(--buho-space-2);
+  color: var(--buho-fg-lo);
+  font-size: var(--buho-fs-sm);
+}
+.pdf-loading-msg--visible { display: inline-flex; }
+
+/* -------------------------------------------------------------------
+   LOADED SCREEN — thumbnail grid
+   ------------------------------------------------------------------- */
+.pdf-loaded-screen { display: none; flex-direction: column; flex: 1; height: 100%; }
+
+.pdf-info-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-3);
+  padding: var(--buho-space-2) 0 var(--buho-space-3);
+  border-bottom: var(--buho-border);
+  margin-bottom: var(--buho-space-3);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.pdf-info-bar__name {
+  font-weight: 600;
+  color: var(--buho-fg-hi);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 300px;
+}
+.pdf-info-bar__count {
+  color: var(--buho-fg-lo);
+  font-size: var(--buho-fs-sm);
+  white-space: nowrap;
+}
+
+.pdf-thumb-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: calc(var(--bottom-bar-h) + var(--buho-space-5));
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--buho-space-4);
+}
+
+.pdf-page-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--buho-space-3);
+  background: var(--buho-bg-hi);
+  border: 2px solid transparent;
+  border-radius: var(--buho-radius);
+  padding: var(--buho-space-3);
+  transition: border-color var(--buho-ease), background var(--buho-ease);
+}
+.pdf-page-card--selected {
+  border-color: var(--buho-blue);
+  background: #f0f5fb;
+}
+
+.pdf-page-card__checkbox {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 4px;
+  accent-color: var(--buho-blue);
+  cursor: pointer;
+}
+
+.pdf-page-card__preview {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--buho-space-2);
+}
+.pdf-page-card__canvas {
+  width: 100%;
+  height: auto;
+  border: var(--buho-border);
+  border-radius: 4px;
+  display: block;
+  background: #fff;
+}
+.pdf-page-card__label {
+  font-size: var(--buho-fs-sm);
+  font-weight: 600;
+  color: var(--buho-fg-lo);
+}
+
+/* -------------------------------------------------------------------
+   FIXED BOTTOM BAR
+   ------------------------------------------------------------------- */
+.pdf-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--buho-space-3);
+  height: var(--bottom-bar-h);
+  padding: 0 var(--buho-space-4);
+  background: var(--buho-bg-hi);
+  border-top: var(--buho-border);
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+}
+
+.pdf-bottom-bar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-3);
+}
+.pdf-bottom-bar__count {
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg-lo);
+  white-space: nowrap;
+}
+.pdf-bottom-bar__btn {
+  min-width: 160px;
+}
+
+/* -------------------------------------------------------------------
+   PROGRESS OVERLAY
+   ------------------------------------------------------------------- */
+.pdf-progress-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(253, 246, 227, 0.92);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--buho-space-4);
+}
+.pdf-progress-overlay--visible { display: flex; }
+
+.pdf-progress-overlay__text {
+  font-size: var(--buho-fs-lg);
+  color: var(--buho-fg-hi);
+  font-weight: 600;
+}
+.pdf-progress-overlay__sub {
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg-lo);
+}
+
+/* progress bar */
+.pdf-progress-track {
+  width: 280px;
+  height: 8px;
+  background: var(--buho-bg);
+  border-radius: 4px;
+  border: var(--buho-border);
+  overflow: hidden;
+}
+.pdf-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--buho-blue);
+  border-radius: 4px;
+  transition: width 0.15s ease;
+}
+
+/* -------------------------------------------------------------------
+   Responsive tweaks
+   ------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .pdf-thumb-grid {
+    grid-template-columns: 1fr;
+  }
+  .pdf-bottom-bar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: var(--buho-space-3) var(--buho-space-4);
+    gap: var(--buho-space-2);
+  }
+  .pdf-bottom-bar__left {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .pdf-bottom-bar__btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+</style>
+</head>
+<body>
+
+<main class="buho-content" style="display:flex;flex-direction:column">
+  <div class="buho-content__inner" style="flex:1;display:flex;flex-direction:column">
+
+    <!-- ================================================================
+         FILE SELECTION SCREEN
+         ================================================================ -->
+    <div id="pdf-file-screen" class="pdf-file-screen">
+      <div class="pdf-file-screen__icon">📄</div>
+      <h1>Merge PDF to PNG</h1>
+      <p>Select a PDF file, choose which pages you want, and merge them into a single long PNG image.</p>
+      <div id="pdf-error-msg" class="pdf-error-msg"></div>
+      <div id="pdf-loading-msg" class="pdf-loading-msg">
+        <span>⏳</span>
+        <span>Loading PDF.js library…</span>
+      </div>
+      <button class="buho-btn" id="pdf-pick-btn">📂 Choose PDF File</button>
+      <input type="file" id="pdf-file-input" accept=".pdf" style="display:none">
+    </div>
+
+    <!-- ================================================================
+         LOADED SCREEN — thumbnail grid
+         ================================================================ -->
+    <div id="pdf-loaded-screen" class="pdf-loaded-screen">
+      <!-- info bar -->
+      <div class="pdf-info-bar">
+        <span class="pdf-info-bar__name" id="pdf-filename"></span>
+        <span class="pdf-info-bar__count" id="pdf-pagecount"></span>
+        <button class="buho-btn buho-btn--outline" id="pdf-change-btn" style="font-size:var(--buho-fs-xs);height:32px;padding:0 var(--buho-space-3)">Choose Different PDF</button>
+      </div>
+
+      <!-- thumbnail grid -->
+      <div class="pdf-thumb-grid" id="pdf-thumb-grid"></div>
+
+      <!-- merge preview (hidden until merge completes) -->
+      <div id="pdf-preview-area" style="display:none;margin-top:var(--buho-space-5);padding-top:var(--buho-space-4);border-top:2px solid var(--buho-blue)">
+        <h2 style="font-size:var(--buho-fs-lg);color:var(--buho-fg-hi);margin-bottom:var(--buho-space-3)">✅ Merged Preview</h2>
+        <p style="font-size:var(--buho-fs-sm);color:var(--buho-fg-lo);margin-bottom:var(--buho-space-3)">The merged PNG has been downloaded. Preview below (scaled to fit):</p>
+        <div id="pdf-preview-container" style="text-align:center;background:var(--buho-bg);border:var(--buho-border);border-radius:var(--buho-radius);padding:var(--buho-space-3);overflow-x:auto">
+          <img id="pdf-preview-img" style="max-width:100%;height:auto;display:block;margin:0 auto" alt="Merged PNG preview">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ================================================================
+     FIXED BOTTOM BAR (outside .buho-content so it's truly fixed)
+     ================================================================ -->
+<div class="pdf-bottom-bar" id="pdf-bottom-bar" style="display:none">
+  <div class="pdf-bottom-bar__left">
+    <button class="buho-btn buho-btn--outline" id="pdf-select-toggle" style="font-size:var(--buho-fs-xs);height:36px;padding:0 var(--buho-space-3)">Select All</button>
+    <span class="pdf-bottom-bar__count" id="pdf-select-count">0 of 0 selected</span>
+  </div>
+  <button class="buho-btn pdf-bottom-bar__btn" id="pdf-merge-btn" disabled>
+    🖼 Merge To PNG
+  </button>
+</div>
+
+<!-- ================================================================
+     PROGRESS OVERLAY
+     ================================================================ -->
+<div class="pdf-progress-overlay" id="pdf-progress-overlay">
+  <div class="pdf-progress-overlay__text" id="pdf-progress-text">Merging pages…</div>
+  <div class="pdf-progress-track">
+    <div class="pdf-progress-fill" id="pdf-progress-fill"></div>
+  </div>
+  <div class="pdf-progress-overlay__sub" id="pdf-progress-sub"></div>
+</div>
+
+<script src="../_framework/buho.js"></script>
+<script>
+// ============================================================
+//  Merge PDF to PNG — Core Logic
+//  Requires: pdf.js (loaded dynamically with CDN fallback)
+// ============================================================
+
+/* -------------------------------------------------------------------
+   CDN / Fallback URLs
+   ------------------------------------------------------------------- */
+var PDFJS_CDN_MAIN  = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+var PDFJS_CDN_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+var PDFJS_FALLBACK_MAIN  = 'lib/pdf.min.js';
+var PDFJS_FALLBACK_WORKER = 'lib/pdf.worker.min.js';
+
+/* -------------------------------------------------------------------
+   State
+   ------------------------------------------------------------------- */
+var STATE = {
+  pdfDoc: null,          // pdfjsLib.PDFDocumentProxy
+  totalPages: 0,
+  selected: new Set(),   // Set of page indices (1-based)
+  thumbScale: 0,
+  fileName: '',
+  isMerging: false,
+  pdfjsReady: false,
+  pendingFile: null,     // ArrayBuffer queued while loading pdf.js
+};
+
+/* -------------------------------------------------------------------
+   DOM refs
+   ------------------------------------------------------------------- */
+var $ = function (id) { return document.getElementById(id); };
+var fileScreen      = $('pdf-file-screen');
+var loadedScreen    = $('pdf-loaded-screen');
+var bottomBar       = $('pdf-bottom-bar');
+var fileInput       = $('pdf-file-input');
+var pickBtn         = $('pdf-pick-btn');
+var changeBtn       = $('pdf-change-btn');
+var errorMsg        = $('pdf-error-msg');
+var loadingMsg      = $('pdf-loading-msg');
+var fileNameEl      = $('pdf-filename');
+var pageCountEl     = $('pdf-pagecount');
+var thumbGrid       = $('pdf-thumb-grid');
+var selectToggleBtn = $('pdf-select-toggle');
+var selectCountEl   = $('pdf-select-count');
+var mergeBtn        = $('pdf-merge-btn');
+var progressOverlay = $('pdf-progress-overlay');
+var progressText    = $('pdf-progress-text');
+var progressSub     = $('pdf-progress-sub');
+var progressFill    = $('pdf-progress-fill');
+
+/* -------------------------------------------------------------------
+   Dynamic script loader with CDN fallback
+   ------------------------------------------------------------------- */
+function loadScript(src, fallbackSrc) {
+  return new Promise(function (resolve, reject) {
+    var script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = function () {
+      if (fallbackSrc) {
+        // Retry with fallback
+        var fallback = document.createElement('script');
+        fallback.src = fallbackSrc;
+        fallback.onload = resolve;
+        fallback.onerror = function () {
+          reject(new Error('Failed to load PDF.js from CDN and fallback.'));
+        };
+        document.head.appendChild(fallback);
+      } else {
+        reject(new Error('Failed to load script: ' + src));
+      }
+    };
+    document.head.appendChild(script);
+  });
+}
+
+function loadPDFjs() {
+  loadingMsg.classList.add('pdf-loading-msg--visible');
+  return loadScript(PDFJS_CDN_MAIN, PDFJS_FALLBACK_MAIN)
+    .then(function () {
+      // Set worker source (try CDN, fallback to local)
+      pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_CDN_WORKER;
+      // Verify worker works by making a quick attempt — if CDN fails, switch
+      pdfjsLib.getDocument({ data: new Uint8Array([37,80,68,70]).buffer }).promise
+        .catch(function () {
+          // CDN worker likely failed; use fallback
+          pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_FALLBACK_WORKER;
+        });
+      STATE.pdfjsReady = true;
+      loadingMsg.classList.remove('pdf-loading-msg--visible');
+    })
+    .catch(function (err) {
+      // Try fallback worker
+      try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_FALLBACK_WORKER;
+        STATE.pdfjsReady = true;
+        loadingMsg.classList.remove('pdf-loading-msg--visible');
+      } catch (e) {
+        loadingMsg.classList.remove('pdf-loading-msg--visible');
+        showError('Failed to load PDF.js library. Check your internet connection and try again.');
+        throw err;
+      }
+    });
+}
+
+/* -------------------------------------------------------------------
+   Error display
+   ------------------------------------------------------------------- */
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.style.display = 'block';
+}
+function clearError() {
+  errorMsg.style.display = 'none';
+  errorMsg.textContent = '';
+}
+
+/* -------------------------------------------------------------------
+   Screen management
+   ------------------------------------------------------------------- */
+function showFileScreen() {
+  fileScreen.style.display    = 'flex';
+  loadedScreen.style.display  = 'none';
+  bottomBar.style.display     = 'none';
+}
+function showLoadedScreen() {
+  fileScreen.style.display    = 'none';
+  loadedScreen.style.display  = 'flex';
+  bottomBar.style.display     = 'flex';
+}
+
+/* -------------------------------------------------------------------
+   File picker
+   ------------------------------------------------------------------- */
+pickBtn.addEventListener('click', function () { fileInput.click(); });
+changeBtn.addEventListener('click', function () {
+  resetTool();
+  fileInput.click();
+});
+
+fileInput.addEventListener('change', function () {
+  var file = fileInput.files && fileInput.files[0];
+  if (!file) return;
+  clearError();
+  STATE.fileName = file.name;
+
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    var arrayBuffer = e.target.result;
+    if (!STATE.pdfjsReady) {
+      // Queue it — PDF.js still loading
+      STATE.pendingFile = arrayBuffer;
+      return;
+    }
+    loadPDF(arrayBuffer);
+  };
+  reader.onerror = function () {
+    showError('Failed to read file. Please try again.');
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+/* -------------------------------------------------------------------
+   PDF loading & thumbnail rendering
+   ------------------------------------------------------------------- */
+function loadPDF(arrayBuffer) {
+  clearError();
+
+  var loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+  loadingTask.promise.then(function (pdfDoc) {
+    STATE.pdfDoc = pdfDoc;
+    STATE.totalPages = pdfDoc.numPages;
+    STATE.selected = new Set();
+    for (var i = 1; i <= pdfDoc.numPages; i++) STATE.selected.add(i);
+
+    // Show info
+    fileNameEl.textContent = STATE.fileName;
+    pageCountEl.textContent = pdfDoc.numPages + ' page' + (pdfDoc.numPages === 1 ? '' : 's');
+
+    // Clear grid
+    thumbGrid.innerHTML = '';
+
+    showLoadedScreen();
+    updateSelectUI();
+    renderThumbnails(pdfDoc);
+  }).catch(function (err) {
+    showError('Failed to load PDF. The file may be corrupted or not a valid PDF.');
+  });
+}
+
+function renderThumbnails(pdfDoc) {
+  var pageNum = 1;
+  var pagePromises = [];
+
+  function renderNext() {
+    if (pageNum > pdfDoc.numPages) {
+      Promise.all(pagePromises).then(function () {
+        // All thumbnails done
+      });
+      return;
+    }
+
+    var pNum = pageNum;
+    pageNum++;
+
+    pdfDoc.getPage(pNum).then(function (page) {
+      var origW = page.getViewport({ scale: 1 }).width;
+      var scale = 300 / origW;
+      if (scale > 1) scale = 1; // don't upscale
+      var viewport = page.getViewport({ scale: scale });
+
+      // Create card
+      var card = document.createElement('div');
+      card.className = 'pdf-page-card pdf-page-card--selected';
+      card.dataset.page = pNum;
+
+      // Checkbox
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.className = 'pdf-page-card__checkbox';
+      cb.checked = true;
+      cb.addEventListener('change', function () {
+        togglePage(pNum, cb.checked);
+        card.classList.toggle('pdf-page-card--selected', cb.checked);
+      });
+
+      // Preview wrapper
+      var preview = document.createElement('div');
+      preview.className = 'pdf-page-card__preview';
+
+      // Canvas
+      var canvas = document.createElement('canvas');
+      canvas.className = 'pdf-page-card__canvas';
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      // Page label
+      var label = document.createElement('span');
+      label.className = 'pdf-page-card__label';
+      label.textContent = 'Page ' + pNum;
+
+      preview.appendChild(canvas);
+      preview.appendChild(label);
+      card.appendChild(cb);
+      card.appendChild(preview);
+
+      // Insert in order (use appendChild since we process sequentially)
+      // We'll insert in the right position using requestAnimationFrame
+      thumbGrid.appendChild(card);
+
+      // Render to canvas
+      var ctx = canvas.getContext('2d');
+      page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
+        // Page rendered
+      });
+
+      // Schedule next with a small delay to keep UI responsive
+      setTimeout(renderNext, 10);
+    }).catch(function () {
+      setTimeout(renderNext, 10);
+    });
+  }
+
+  renderNext();
+}
+
+/* -------------------------------------------------------------------
+   Selection management
+   ------------------------------------------------------------------- */
+function togglePage(pageNum, selected) {
+  if (selected) {
+    STATE.selected.add(pageNum);
+  } else {
+    STATE.selected.delete(pageNum);
+  }
+  updateSelectUI();
+}
+
+function updateSelectUI() {
+  var count = STATE.selected.size;
+  var total = STATE.totalPages;
+  selectCountEl.textContent = count + ' of ' + total + ' selected';
+  mergeBtn.disabled = count === 0;
+
+  // Update toggle button text
+  if (count === total) {
+    selectToggleBtn.textContent = 'Deselect All';
+  } else {
+    selectToggleBtn.textContent = 'Select All';
+  }
+}
+
+selectToggleBtn.addEventListener('click', function () {
+  var allSelected = STATE.selected.size === STATE.totalPages;
+  var checkboxes = thumbGrid.querySelectorAll('.pdf-page-card__checkbox');
+  checkboxes.forEach(function (cb, idx) {
+    var pageNum = idx + 1;
+    if (allSelected) {
+      // Deselect all
+      cb.checked = false;
+      STATE.selected.delete(pageNum);
+      cb.closest('.pdf-page-card').classList.remove('pdf-page-card--selected');
+    } else {
+      // Select all
+      cb.checked = true;
+      STATE.selected.add(pageNum);
+      cb.closest('.pdf-page-card').classList.add('pdf-page-card--selected');
+    }
+  });
+  updateSelectUI();
+});
+
+/* -------------------------------------------------------------------
+   Reset tool
+   ------------------------------------------------------------------- */
+function resetTool() {
+  if (STATE.pdfDoc) {
+    STATE.pdfDoc.destroy();
+  }
+  STATE.pdfDoc = null;
+  STATE.totalPages = 0;
+  STATE.selected = new Set();
+  STATE.fileName = '';
+  STATE.isMerging = false;
+  STATE.pendingFile = null;
+  thumbGrid.innerHTML = '';
+  $('pdf-preview-area').style.display = 'none';
+  showFileScreen();
+  clearError();
+}
+
+/* -------------------------------------------------------------------
+   Canvas size helpers
+   ------------------------------------------------------------------- */
+function getCanvasMaxPixels() {
+  // Detect browser canvas limits
+  var c = document.createElement('canvas');
+  var ctx = c.getContext('2d');
+  // Test a large canvas — most browsers support up to ~32767 in each dimension
+  // Safari is more restrictive (~16384)
+  // Safe upper bound: 16384
+  return 16384;
+}
+
+function calcAutoScale(totalHeight, maxWidth) {
+  var limit = getCanvasMaxPixels();
+  var scale = 1;
+  if (totalHeight > limit || maxWidth > limit) {
+    var hScale = limit / totalHeight;
+    var wScale = limit / maxWidth;
+    scale = Math.min(hScale, wScale, 1);
+  }
+  return scale;
+}
+
+/* -------------------------------------------------------------------
+   MERGE TO PNG — Main engine
+   ------------------------------------------------------------------- */
+mergeBtn.addEventListener('click', function () {
+  if (STATE.isMerging) return;
+  if (STATE.selected.size === 0) return;
+  mergeSelectedPages();
+});
+
+function mergeSelectedPages() {
+  STATE.isMerging = true;
+  mergeBtn.disabled = true;
+
+  // Show progress overlay
+  progressOverlay.classList.add('pdf-progress-overlay--visible');
+  updateProgress(0, STATE.selected.size);
+
+  var selectedPages = [];
+  STATE.selected.forEach(function (p) { selectedPages.push(p); });
+  selectedPages.sort(function (a, b) { return a - b; });
+
+  var total = selectedPages.length;
+  var pageCanvases = [];
+  var maxWidth = 0;
+  var totalHeight = 0;
+
+  // --- Pass 1: Render all selected pages at 1x to get dimensions ---
+  var currentIdx = 0;
+
+  function renderNextPage() {
+    if (currentIdx >= total) {
+      // All rendered, now calculate scale and stitch
+      var autoScale = calcAutoScale(totalHeight, maxWidth);
+      if (autoScale < 1) {
+        // Need to downscale — we know the ratio is the same for all
+        // Actually, we need to re-render at the smaller scale
+        // Let's just adjust totalHeight and maxWidth
+        totalHeight = Math.round(totalHeight * autoScale);
+        maxWidth = Math.round(maxWidth * autoScale);
+
+        // Re-render each page at the new scale
+        // For now, just scale the canvases we already have
+        stitchCanvases(pageCanvases, autoScale, selectedPages, maxWidth, totalHeight);
+      } else {
+        stitchCanvases(pageCanvases, 1, selectedPages, maxWidth, totalHeight);
+      }
+      return;
+    }
+
+    var pageNum = selectedPages[currentIdx];
+    updateProgress(currentIdx, total);
+
+    STATE.pdfDoc.getPage(pageNum).then(function (page) {
+      var viewport = page.getViewport({ scale: 1 });
+      var w = Math.round(viewport.width);
+      var h = Math.round(viewport.height);
+
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+
+      page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
+        pageCanvases.push({ canvas: canvas, width: w, height: h });
+        if (w > maxWidth) maxWidth = w;
+        totalHeight += h;
+        currentIdx++;
+        setTimeout(renderNextPage, 5);
+      });
+    });
+  }
+
+  renderNextPage();
+}
+
+function stitchCanvases(pageCanvases, scale, selectedPages, maxWidth, totalHeight) {
+  var finalW = maxWidth;
+  var finalH = totalHeight;
+
+  if (scale < 1) {
+    finalW = Math.round(maxWidth * scale);
+    finalH = Math.round(totalHeight * scale);
+  }
+
+  var finalCanvas = document.createElement('canvas');
+  finalCanvas.width = finalW;
+  finalCanvas.height = finalH;
+  var finalCtx = finalCanvas.getContext('2d');
+
+  // Fill background white
+  finalCtx.fillStyle = '#ffffff';
+  finalCtx.fillRect(0, 0, finalW, finalH);
+
+  var yOffset = 0;
+  var total = pageCanvases.length;
+
+  progressText.textContent = 'Stitching final image…';
+
+  for (var i = 0; i < total; i++) {
+    var pc = pageCanvases[i];
+    if (scale < 1) {
+      finalCtx.drawImage(pc.canvas, 0, yOffset, Math.round(pc.width * scale), Math.round(pc.height * scale));
+      yOffset += Math.round(pc.height * scale);
+    } else {
+      finalCtx.drawImage(pc.canvas, 0, yOffset);
+      yOffset += pc.height;
+    }
+    updateProgress(i + 1, total);
+  }
+
+  // Download
+  console.log('Merge complete, generating blob...');
+  console.log('Final canvas size:', finalW, 'x', finalH);
+  finalCanvas.toBlob(function (blob) {
+    if (!blob) {
+      console.error('toBlob returned null');
+      showError('Failed to generate PNG. Try selecting fewer pages.');
+      finishMerge();
+      return;
+    }
+
+    console.log('Blob created, size:', blob.size, 'bytes');
+
+    // Show preview before download
+    showMergePreview(finalCanvas, blob);
+
+    // Derive filename
+    var baseName = STATE.fileName.replace(/\.pdf$/i, '');
+    var downloadName = baseName + '_merged.png';
+
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = downloadName;
+    a.textContent = 'Download';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    console.log('Triggering download...');
+    a.click();
+    console.log('Download triggered, cleaning up...');
+    setTimeout(function () {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      console.log('Cleanup done');
+    }, 1000);
+
+    finishMerge();
+  }, 'image/png');
+}
+
+function updateProgress(current, total) {
+  var pct = total > 0 ? Math.round((current / total) * 100) : 0;
+  progressFill.style.width = pct + '%';
+  progressText.textContent = 'Merging page ' + Math.min(current + 1, total) + ' of ' + total + '…';
+  progressSub.textContent = pct + '% complete';
+}
+
+/* -------------------------------------------------------------------
+   Preview
+   ------------------------------------------------------------------- */
+function showMergePreview(canvas, blob) {
+  var previewArea = $('pdf-preview-area');
+  var previewImg = $('pdf-preview-img');
+  var url = URL.createObjectURL(blob);
+  previewImg.onload = function () { URL.revokeObjectURL(url); };
+  previewImg.src = url;
+  previewArea.style.display = 'block';
+  previewArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function finishMerge() {
+  STATE.isMerging = false;
+  mergeBtn.disabled = STATE.selected.size === 0;
+  progressOverlay.classList.remove('pdf-progress-overlay--visible');
+  progressFill.style.width = '0%';
+}
+
+/* -------------------------------------------------------------------
+   Boot: Load PDF.js then process any pending file
+   ------------------------------------------------------------------- */
+loadPDFjs().then(function () {
+  if (STATE.pendingFile) {
+    loadPDF(STATE.pendingFile);
+    STATE.pendingFile = null;
+  }
+}).catch(function (err) {
+  // Error already shown
+});
+</script>
+</body>
+</html>

@@ -11,6 +11,13 @@
    --------------------------------------------------------------------------- */
 var BUHO_CATEGORIES = [
   {
+    name: "PDF Tools",
+    folder: "PDF-Tools",
+    tools: [
+      { name: "Merge PDF to PNG", file: "MergePDFtoPNG.html" }
+    ]
+  },
+  {
     name: "Reader",
     folder: "Annas-Voice",
     tools: [
