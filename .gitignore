@@ -34,6 +34,7 @@ venv/
 PDF-Tools/test_*.pdf
 # test scripts (not core functionality)
 PDF-Tools/test_*.py
+PDF-Tools/test_password_remover.py
 LocalTestFiles/
 
 # ---------------------------------------------------------------------------

@@ -214,8 +214,9 @@ function buhoRenderCategoryCards() {
     } else {
       for (var t = 0; t < cat.tools.length; t++) {
         var tool = cat.tools[t];
-        var href = cat.folder + "/" + tool.file;
-        html += '  <a href="' + href + '" class="buho-category-card__tool">' + buhoEscapeHTML(tool.name) + '</a>';
+        var href = tool.url || cat.folder + "/" + tool.file;
+        var target = tool.url ? ' target="_blank" rel="noopener"' : '';
+        html += '  <a href="' + href + '" class="buho-category-card__tool"' + target + '>' + buhoEscapeHTML(tool.name) + '</a>';
       }
     }
     html += '</div>';
