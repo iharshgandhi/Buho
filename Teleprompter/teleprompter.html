@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teleprompter - Buho</title>
+  <link rel="stylesheet" href="../_framework/buho.css">
+<style>
+/* ============================================================
+   Teleprompter — Tool Styles (Solarized Light)
+   ============================================================ */
+:root {
+  --tp-font-size: 48px;
+  --tp-bottom-bar-h: 72px;
+  --tp-control-gap: 6px;
+}
+
+/* -------------------------------------------------------------------
+   INPUT SCREEN
+   ------------------------------------------------------------------- */
+.tp-input-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 60vh;
+  text-align: center;
+  gap: var(--buho-space-5);
+  padding: var(--buho-space-6) 0;
+}
+
+.tp-input-screen__icon { font-size: 64px; line-height: 1; }
+.tp-input-screen h1 { font-size: var(--buho-fs-xl); color: var(--buho-fg-hi); }
+.tp-input-screen p { color: var(--buho-fg-lo); max-width: 420px; }
+
+.tp-input-methods {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--buho-space-3);
+}
+
+.tp-paste-area {
+  display: none;
+  flex-direction: column;
+  gap: var(--buho-space-3);
+  width: 100%;
+  max-width: 600px;
+  margin-top: var(--buho-space-2);
+}
+
+.tp-paste-area--visible { display: flex; }
+
+.tp-paste-area textarea {
+  width: 100%;
+  min-height: 180px;
+  padding: var(--buho-space-3);
+  font-family: var(--buho-font);
+  font-size: var(--buho-fs-base);
+  line-height: 1.6;
+  color: var(--buho-fg);
+  background: var(--buho-bg);
+  border: var(--buho-border);
+  border-radius: var(--buho-radius);
+  resize: vertical;
+  outline: none;
+  transition: border-color var(--buho-ease);
+}
+.tp-paste-area textarea:focus { border-color: var(--buho-blue); }
+
+.tp-paste-actions {
+  display: flex;
+  gap: var(--buho-space-2);
+  justify-content: center;
+}
+
+/* -------------------------------------------------------------------
+   TELEPROMPTER SCREEN
+   ------------------------------------------------------------------- */
+.tp-teleprompter-screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
+
+.tp-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-2);
+  padding: var(--buho-space-2) 0 var(--buho-space-3);
+  border-bottom: var(--buho-border);
+  flex-shrink: 0;
+}
+
+.tp-topbar__title {
+  flex: 1;
+  font-size: var(--buho-fs-sm);
+  font-weight: 600;
+  color: var(--buho-fg-hi);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------------------------
+   TEXT DISPLAY AREA
+   ------------------------------------------------------------------- */
+.tp-text-container {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  background: var(--buho-bg);
+  color: var(--buho-fg);
+  padding: var(--buho-space-7) var(--buho-space-6);
+  /* Overridden in fullscreen */
+}
+
+.tp-text-inner {
+  font-size: var(--tp-font-size);
+  line-height: 1.6;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  transition: font-size 0.15s ease;
+  will-change: transform;
+}
+
+.tp-text-inner p {
+  margin-bottom: calc(var(--tp-font-size) * 0.8);
+}
+
+.tp-text-inner p:last-child { margin-bottom: 0; }
+
+/* Mirror mode is handled via JS applyScrollTransform() */
+
+/* -------------------------------------------------------------------
+   FULLSCREEN
+   ------------------------------------------------------------------- */
+.tp-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--buho-bg);
+  padding: var(--buho-space-6);
+}
+
+.tp-fullscreen .tp-text-container {
+  /* no extra padding needed */
+  padding: 0;
+}
+
+.tp-fullscreen .tp-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  background: var(--buho-bg);
+  border-top: var(--buho-border);
+}
+
+.tp-fullscreen-exit {
+  position: fixed;
+  top: var(--buho-space-3);
+  right: var(--buho-space-3);
+  z-index: 10001;
+  display: none; /* shown only when fullscreen active */
+}
+
+/* -------------------------------------------------------------------
+   BOTTOM CONTROL BAR
+   ------------------------------------------------------------------- */
+.tp-bottom-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tp-control-gap);
+  padding: var(--buho-space-3) var(--buho-space-4);
+  border-top: var(--buho-border);
+  background: var(--buho-bg);
+  flex-wrap: wrap;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+/* Control buttons — mirror Anna's Voice pattern */
+.tp-ctrl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--buho-border);
+  border-radius: 50%;
+  background: var(--buho-bg-hi);
+  color: var(--buho-fg-hi);
+  cursor: pointer;
+  transition: background var(--buho-ease), transform 0.1s, color var(--buho-ease);
+  user-select: none;
+  outline: none;
+  font-size: 16px;
+  width: 44px;
+  height: 44px;
+}
+.tp-ctrl:hover { background: #e6dfc8; }
+.tp-ctrl:active { transform: scale(0.94); }
+.tp-ctrl:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+.tp-ctrl--play {
+  width: 56px;
+  height: 56px;
+  font-size: 24px;
+  background: var(--buho-blue);
+  color: #fff;
+  border-color: var(--buho-blue);
+}
+.tp-ctrl--play:hover { background: #1f7bc4; }
+.tp-ctrl--play:active { transform: scale(0.94); }
+
+.tp-ctrl--active {
+  background: var(--buho-blue);
+  color: #fff;
+  border-color: var(--buho-blue);
+}
+.tp-ctrl--active:hover { background: #1f7bc4; }
+
+.tp-ctrl--sm {
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
+}
+
+.tp-ctrl--label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--buho-fs-xs);
+  font-weight: 600;
+  color: var(--buho-fg);
+  min-width: 40px;
+  padding: 0 var(--buho-space-1);
+}
+
+/* Speed slider */
+.tp-speed-slider-area {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-1);
+}
+
+.tp-speed-slider {
+  width: 80px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--buho-fg-lo);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.tp-speed-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--buho-blue);
+  cursor: pointer;
+  border: 2px solid var(--buho-bg);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.tp-speed-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--buho-blue);
+  cursor: pointer;
+  border: 2px solid var(--buho-bg);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Separator */
+.tp-sep {
+  width: 1px;
+  height: 28px;
+  background: var(--buho-border);
+  margin: 0 var(--buho-space-1);
+}
+
+/* -------------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  :root {
+    --tp-font-size: 32px;
+    --tp-bottom-bar-h: auto;
+  }
+  .tp-ctrl { width: 38px; height: 38px; font-size: 14px; }
+  .tp-ctrl--play { width: 48px; height: 48px; font-size: 20px; }
+  .tp-ctrl--sm { width: 32px; height: 32px; font-size: 12px; }
+  .tp-speed-slider { width: 60px; }
+  .tp-text-container { padding: var(--buho-space-5) var(--buho-space-3); }
+  .tp-bottom-bar { padding: var(--buho-space-2) var(--buho-space-2); gap: 4px; }
+}
+
+@media (max-width: 480px) {
+  .tp-ctrl { width: 34px; height: 34px; font-size: 12px; }
+  .tp-ctrl--play { width: 42px; height: 42px; font-size: 18px; }
+  .tp-ctrl--sm { width: 28px; height: 28px; font-size: 11px; }
+  .tp-speed-slider { width: 50px; }
+  .tp-sep { display: none; }
+}
+</style>
+</head>
+<body>
+
+<main class="buho-content">
+  <div class="buho-content__inner" style="height:100%;display:flex;flex-direction:column;">
+
+    <!-- ================================================================
+         INPUT SCREEN
+         ================================================================ -->
+    <div id="tp-input-screen" class="tp-input-screen">
+      <div class="tp-input-screen__icon">📜</div>
+      <h1>Teleprompter</h1>
+      <p>Paste your script or upload a <strong>.txt</strong> file to begin. Adjust speed, font size, and mirror mode from the control bar.</p>
+
+      <div class="tp-input-methods">
+        <button class="buho-btn" id="tp-file-btn">📂 Choose .txt File</button>
+        <input type="file" id="tp-file-input" accept=".txt" style="display:none">
+        <button class="buho-btn buho-btn--outline" id="tp-paste-btn">✏️ Paste Text</button>
+      </div>
+
+      <div id="tp-paste-area" class="tp-paste-area">
+        <textarea id="tp-textarea" placeholder="Paste your script here…"></textarea>
+        <div class="tp-paste-actions">
+          <button class="buho-btn" id="tp-start-btn">▶ Start Teleprompter</button>
+          <button class="buho-btn buho-btn--outline" id="tp-paste-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================
+         TELEPROMPTER SCREEN
+         ================================================================ -->
+    <div id="tp-teleprompter-screen" class="tp-teleprompter-screen">
+
+      <!-- Top bar -->
+      <div class="tp-topbar">
+        <button class="buho-btn buho-btn--outline" id="tp-back-btn" style="height:36px;font-size:var(--buho-fs-sm)">← Back</button>
+        <span class="tp-topbar__title" id="tp-title">Teleprompter</span>
+      </div>
+
+      <!-- Text display -->
+      <div class="tp-text-container" id="tp-text-container">
+        <div class="tp-text-inner" id="tp-text-inner"></div>
+      </div>
+
+      <!-- Fullscreen exit button -->
+      <button class="buho-btn" id="tp-fs-exit" class="tp-fullscreen-exit" style="display:none;position:fixed;top:12px;right:12px;z-index:10001">
+        ⛶ Exit Fullscreen
+      </button>
+
+      <!-- Bottom control bar -->
+      <div class="tp-bottom-bar" id="tp-bottom-bar">
+        <!-- Restart -->
+        <button class="tp-ctrl" id="tp-restart" title="Restart (R)">↺</button>
+
+        <!-- Speed - -->
+        <button class="tp-ctrl tp-ctrl--sm" id="tp-speed-down" title="Decrease speed">⏪</button>
+
+        <!-- Speed slider -->
+        <div class="tp-speed-slider-area">
+          <input type="range" class="tp-speed-slider" id="tp-speed-slider" min="1" max="10" value="3" step="1" title="Scroll speed">
+          <span class="tp-ctrl--label" id="tp-speed-label">3</span>
+        </div>
+
+        <!-- Speed + -->
+        <button class="tp-ctrl tp-ctrl--sm" id="tp-speed-up" title="Increase speed">⏩</button>
+
+        <div class="tp-sep"></div>
+
+        <!-- Play/Pause -->
+        <button class="tp-ctrl tp-ctrl--play" id="tp-play" title="Play / Pause (Space)">▶</button>
+
+        <div class="tp-sep"></div>
+
+        <!-- Font size - -->
+        <button class="tp-ctrl tp-ctrl--sm" id="tp-font-down" title="Decrease font size">A⁻</button>
+
+        <!-- Font size display -->
+        <span class="tp-ctrl--label" id="tp-font-label">48</span>
+
+        <!-- Font size + -->
+        <button class="tp-ctrl tp-ctrl--sm" id="tp-font-up" title="Increase font size">A⁺</button>
+
+        <div class="tp-sep"></div>
+
+        <!-- Mirror toggle -->
+        <button class="tp-ctrl" id="tp-mirror" title="Mirror mode (M)">🪞</button>
+
+        <!-- Fullscreen -->
+        <button class="tp-ctrl" id="tp-fullscreen" title="Fullscreen (F)">⛶</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../_framework/buho.js"></script>
+<script>
+/* ============================================================
+   Teleprompter — Core Logic
+   ============================================================ */
+
+/* -----------------------------------------------------------------------
+   State
+   ----------------------------------------------------------------------- */
+var TP = {
+  mode: 'input',          // 'input' | 'teleprompting'
+  text: '',
+  fileName: '',
+
+  // Scroll
+  isPlaying: false,
+  scrollY: 0,
+  speed: 3,
+  lastFrameTime: 0,
+  animFrameId: null,
+  totalHeight: 0,
+  containerHeight: 0,
+
+  // Display
+  fontSize: 48,
+  mirror: false,
+  isFullscreen: false,
+};
+
+/* -----------------------------------------------------------------------
+   DOM refs
+   ----------------------------------------------------------------------- */
+var $ = function (id) { return document.getElementById(id); };
+
+var inputScreen       = $('tp-input-screen');
+var teleScreen        = $('tp-teleprompter-screen');
+var fileInput         = $('tp-file-input');
+var fileBtn           = $('tp-file-btn');
+var pasteBtn          = $('tp-paste-btn');
+var pasteArea         = $('tp-paste-area');
+var textarea          = $('tp-textarea');
+var startBtn          = $('tp-start-btn');
+var pasteCancel       = $('tp-paste-cancel');
+var backBtn           = $('tp-back-btn');
+var titleEl           = $('tp-title');
+var textContainer     = $('tp-text-container');
+var textInner         = $('tp-text-inner');
+var btnPlay           = $('tp-play');
+var btnRestart        = $('tp-restart');
+var btnSpeedDown      = $('tp-speed-down');
+var btnSpeedUp        = $('tp-speed-up');
+var speedSlider       = $('tp-speed-slider');
+var speedLabel        = $('tp-speed-label');
+var btnFontDown       = $('tp-font-down');
+var btnFontUp         = $('tp-font-up');
+var fontLabel         = $('tp-font-label');
+var btnMirror         = $('tp-mirror');
+var btnFullscreen     = $('tp-fullscreen');
+var fsExitBtn         = $('tp-fs-exit');
+
+/* -----------------------------------------------------------------------
+   Screen management
+   ----------------------------------------------------------------------- */
+function showScreen(mode) {
+  TP.mode = mode;
+  inputScreen.style.display  = (mode === 'input')          ? 'flex'  : 'none';
+  teleScreen.style.display   = (mode === 'teleprompting')  ? 'flex'  : 'none';
+}
+
+/* -----------------------------------------------------------------------
+   Escape HTML
+   ----------------------------------------------------------------------- */
+function escapeHtml(str) {
+  var d = document.createElement('div');
+  d.appendChild(document.createTextNode(str));
+  return d.innerHTML;
+}
+
+/* -----------------------------------------------------------------------
+   Render text into display
+   ----------------------------------------------------------------------- */
+function renderTeleprompterText() {
+  if (!TP.text) return;
+
+  // Split into paragraphs (double newline)
+  var paragraphs = TP.text.split(/\n\s*\n/);
+  if (paragraphs.length <= 1) {
+    // Fallback: single line breaks
+    paragraphs = TP.text.split(/\n+/);
+  }
+
+  var html = '';
+  for (var i = 0; i < paragraphs.length; i++) {
+    var p = paragraphs[i].trim();
+    if (p) {
+      html += '<p>' + escapeHtml(p) + '</p>';
+    }
+  }
+  if (!html) {
+    html = '<p>' + escapeHtml(TP.text) + '</p>';
+  }
+
+  textInner.innerHTML = html;
+  updateFontSize();
+  recalcScrollBounds();
+}
+
+/* -----------------------------------------------------------------------
+   Scroll bounds recalculation
+   ----------------------------------------------------------------------- */
+function recalcScrollBounds() {
+  TP.containerHeight = textContainer.clientHeight;
+  TP.totalHeight = textInner.scrollHeight;
+}
+
+/* -----------------------------------------------------------------------
+   Scroll animation engine
+   ----------------------------------------------------------------------- */
+function startScroll() {
+  if (TP.isPlaying) return;
+
+  // If we've scrolled past the end, reset
+  if (TP.scrollY >= TP.totalHeight - TP.containerHeight) {
+    TP.scrollY = 0;
+  }
+
+  TP.isPlaying = true;
+  TP.lastFrameTime = 0;
+  btnPlay.textContent = '⏸';
+  btnPlay.title = 'Pause (Space)';
+  TP.animFrameId = requestAnimationFrame(scrollLoop);
+}
+
+function stopScroll() {
+  if (!TP.isPlaying) return;
+  TP.isPlaying = false;
+  if (TP.animFrameId) {
+    cancelAnimationFrame(TP.animFrameId);
+    TP.animFrameId = null;
+  }
+  btnPlay.textContent = '▶';
+  btnPlay.title = 'Play (Space)';
+}
+
+function togglePlay() {
+  if (TP.isPlaying) {
+    stopScroll();
+  } else {
+    startScroll();
+  }
+}
+
+function scrollLoop(timestamp) {
+  if (!TP.isPlaying) return;
+
+  if (TP.lastFrameTime === 0) {
+    TP.lastFrameTime = timestamp;
+  }
+
+  var delta = (timestamp - TP.lastFrameTime) / 1000; // seconds
+  TP.lastFrameTime = timestamp;
+
+  // Speed 1–10 maps to ~10–150 px/s
+  var pps = TP.speed * 15 + 5;
+  TP.scrollY += delta * pps;
+
+  // Clamp
+  var maxScroll = Math.max(0, TP.totalHeight - TP.containerHeight);
+  if (TP.scrollY >= maxScroll) {
+    TP.scrollY = maxScroll;
+    stopScroll();
+    applyScrollTransform();
+    return;
+  }
+
+  applyScrollTransform();
+  TP.animFrameId = requestAnimationFrame(scrollLoop);
+}
+
+function applyScrollTransform() {
+  var transform = 'translateY(-' + TP.scrollY + 'px)';
+  if (TP.mirror) {
+    transform += ' scaleX(-1)';
+  }
+  textInner.style.transform = transform;
+}
+
+/* -----------------------------------------------------------------------
+   Restart
+   ----------------------------------------------------------------------- */
+function restartScroll() {
+  stopScroll();
+  TP.scrollY = 0;
+  applyScrollTransform();
+  recalcScrollBounds();
+}
+
+/* -----------------------------------------------------------------------
+   Speed control
+   ----------------------------------------------------------------------- */
+function setSpeed(val) {
+  TP.speed = Math.max(1, Math.min(10, val));
+  speedSlider.value = TP.speed;
+  speedLabel.textContent = TP.speed;
+}
+
+/* -----------------------------------------------------------------------
+   Font size control
+   ----------------------------------------------------------------------- */
+function setFontSize(val) {
+  TP.fontSize = Math.max(24, Math.min(96, val));
+  fontLabel.textContent = TP.fontSize;
+  updateFontSize();
+  // Recalculate scroll bounds since text height changed
+  recalcScrollBounds();
+  // Clamp scroll position
+  var maxScroll = Math.max(0, TP.totalHeight - TP.containerHeight);
+  if (TP.scrollY > maxScroll) {
+    TP.scrollY = maxScroll;
+    applyScrollTransform();
+  }
+}
+
+function updateFontSize() {
+  textInner.style.fontSize = TP.fontSize + 'px';
+}
+
+/* -----------------------------------------------------------------------
+   Mirror toggle
+   ----------------------------------------------------------------------- */
+function toggleMirror() {
+  TP.mirror = !TP.mirror;
+  textContainer.classList.toggle('tp-mirror', TP.mirror);
+  btnMirror.classList.toggle('tp-ctrl--active', TP.mirror);
+  // Re-apply scroll transform so mirror takes effect immediately
+  applyScrollTransform();
+}
+
+/* -----------------------------------------------------------------------
+   Fullscreen
+   ----------------------------------------------------------------------- */
+function toggleFullscreen() {
+  if (TP.isFullscreen) {
+    exitFullscreen();
+  } else {
+    enterFullscreen();
+  }
+}
+
+function enterFullscreen() {
+  var el = textContainer;
+  if (el.requestFullscreen) {
+    el.requestFullscreen().then(function () {
+      TP.isFullscreen = true;
+      document.body.classList.add('tp-fullscreen');
+      fsExitBtn.style.display = 'inline-flex';
+      setTimeout(recalcScrollBounds, 100);
+    }).catch(function () {
+      // Fullscreen denied or not supported — fall back to CSS fullscreen
+      tpCssFullscreen(true);
+    });
+  } else if (el.webkitRequestFullscreen) {
+    el.webkitRequestFullscreen();
+    TP.isFullscreen = true;
+    document.body.classList.add('tp-fullscreen');
+    fsExitBtn.style.display = 'inline-flex';
+    setTimeout(recalcScrollBounds, 100);
+  } else {
+    // Fallback: CSS pseudo-fullscreen
+    tpCssFullscreen(true);
+  }
+}
+
+function exitFullscreen() {
+  if (document.fullscreenElement) {
+    document.exitFullscreen().then(function () {
+      onFullscreenExit();
+    }).catch(function () {
+      tpCssFullscreen(false);
+    });
+  } else if (document.webkitFullscreenElement) {
+    document.webkitExitFullscreen();
+    onFullscreenExit();
+  } else {
+    tpCssFullscreen(false);
+  }
+}
+
+function onFullscreenExit() {
+  TP.isFullscreen = false;
+  document.body.classList.remove('tp-fullscreen');
+  fsExitBtn.style.display = 'none';
+  setTimeout(recalcScrollBounds, 100);
+}
+
+function tpCssFullscreen(enter) {
+  if (enter) {
+    TP.isFullscreen = true;
+    document.body.classList.add('tp-fullscreen');
+    fsExitBtn.style.display = 'inline-flex';
+    setTimeout(recalcScrollBounds, 100);
+  } else {
+    TP.isFullscreen = false;
+    document.body.classList.remove('tp-fullscreen');
+    fsExitBtn.style.display = 'none';
+    setTimeout(recalcScrollBounds, 100);
+  }
+}
+
+// Listen for fullscreen change (Esc key, etc.)
+document.addEventListener('fullscreenchange', function () {
+  if (!document.fullscreenElement) {
+    onFullscreenExit();
+  }
+});
+document.addEventListener('webkitfullscreenchange', function () {
+  if (!document.webkitFullscreenElement) {
+    onFullscreenExit();
+  }
+});
+
+/* -----------------------------------------------------------------------
+   File input
+   ----------------------------------------------------------------------- */
+fileBtn.addEventListener('click', function () { fileInput.click(); });
+
+fileInput.addEventListener('change', function () {
+  var file = fileInput.files[0];
+  if (!file) return;
+  fileInput.value = '';
+
+  var ext = file.name.split('.').pop().toLowerCase();
+  if (ext !== 'txt') {
+    alert('Please select a .txt file.');
+    return;
+  }
+
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    loadText(e.target.result, file.name);
+  };
+  reader.onerror = function () {
+    alert('Error reading file.');
+  };
+  reader.readAsText(file);
+});
+
+/* -----------------------------------------------------------------------
+   Paste text
+   ----------------------------------------------------------------------- */
+pasteBtn.addEventListener('click', function () {
+  pasteArea.classList.add('tp-paste-area--visible');
+  pasteBtn.disabled = true;
+  textarea.focus();
+});
+
+pasteCancel.addEventListener('click', function () {
+  pasteArea.classList.remove('tp-paste-area--visible');
+  pasteBtn.disabled = false;
+  textarea.value = '';
+});
+
+startBtn.addEventListener('click', function () {
+  var val = textarea.value.trim();
+  if (!val) {
+    alert('Please paste some text first.');
+    return;
+  }
+  loadText(val, 'Pasted Text');
+  // Reset paste UI
+  pasteArea.classList.remove('tp-paste-area--visible');
+  pasteBtn.disabled = false;
+  textarea.value = '';
+});
+
+/* -----------------------------------------------------------------------
+   Load text into teleprompter
+   ----------------------------------------------------------------------- */
+function loadText(text, name) {
+  stopScroll();
+  TP.text = text;
+  TP.fileName = name;
+  TP.scrollY = 0;
+
+  titleEl.textContent = name;
+  renderTeleprompterText();
+
+  // Reset speed display
+  setSpeed(TP.speed);
+  fontLabel.textContent = TP.fontSize;
+
+  showScreen('teleprompting');
+  setTimeout(recalcScrollBounds, 50);
+}
+
+/* -----------------------------------------------------------------------
+   Back button
+   ----------------------------------------------------------------------- */
+backBtn.addEventListener('click', function () {
+  stopScroll();
+  showScreen('input');
+  TP.text = '';
+  TP.scrollY = 0;
+});
+
+/* -----------------------------------------------------------------------
+   Control event listeners
+   ----------------------------------------------------------------------- */
+// Play / Pause
+btnPlay.addEventListener('click', togglePlay);
+
+// Restart
+btnRestart.addEventListener('click', restartScroll);
+
+// Speed
+btnSpeedDown.addEventListener('click', function () { setSpeed(TP.speed - 1); });
+btnSpeedUp.addEventListener('click', function () { setSpeed(TP.speed + 1); });
+speedSlider.addEventListener('input', function () { setSpeed(parseInt(speedSlider.value, 10)); });
+
+// Font size
+btnFontDown.addEventListener('click', function () { setFontSize(TP.fontSize - 4); });
+btnFontUp.addEventListener('click', function () { setFontSize(TP.fontSize + 4); });
+
+// Mirror
+btnMirror.addEventListener('click', toggleMirror);
+
+// Fullscreen
+btnFullscreen.addEventListener('click', toggleFullscreen);
+fsExitBtn.addEventListener('click', exitFullscreen);
+
+/* -----------------------------------------------------------------------
+   Keyboard shortcuts (only in teleprompting mode)
+   ----------------------------------------------------------------------- */
+document.addEventListener('keydown', function (e) {
+  if (TP.mode !== 'teleprompting') return;
+
+  // Don't intercept if user is typing in an input/textarea
+  var tag = (e.target && e.target.tagName) || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+  switch (e.key) {
+    case ' ':
+      e.preventDefault();
+      togglePlay();
+      break;
+    case 'ArrowLeft':
+      e.preventDefault();
+      setSpeed(TP.speed - 1);
+      break;
+    case 'ArrowRight':
+      e.preventDefault();
+      setSpeed(TP.speed + 1);
+      break;
+    case 'ArrowUp':
+      e.preventDefault();
+      setFontSize(TP.fontSize + 4);
+      break;
+    case 'ArrowDown':
+      e.preventDefault();
+      setFontSize(TP.fontSize - 4);
+      break;
+    case 'r':
+    case 'R':
+      e.preventDefault();
+      restartScroll();
+      break;
+    case 'm':
+    case 'M':
+      e.preventDefault();
+      toggleMirror();
+      break;
+    case 'f':
+    case 'F':
+      e.preventDefault();
+      toggleFullscreen();
+      break;
+  }
+});
+
+/* -----------------------------------------------------------------------
+   Recalculate on resize
+   ----------------------------------------------------------------------- */
+var _resizeTimer = null;
+window.addEventListener('resize', function () {
+  if (_resizeTimer) clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(function () {
+    if (TP.mode === 'teleprompting') {
+      recalcScrollBounds();
+      // Clamp scroll if needed
+      var maxScroll = Math.max(0, TP.totalHeight - TP.containerHeight);
+      if (TP.scrollY > maxScroll) {
+        TP.scrollY = maxScroll;
+        applyScrollTransform();
+      }
+    }
+  }, 150);
+});
+
+/* -----------------------------------------------------------------------
+   Init
+   ----------------------------------------------------------------------- */
+showScreen('input');
+</script>
+</body>
+</html>

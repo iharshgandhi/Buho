@@ -22,7 +22,8 @@ var BUHO_CATEGORIES = [
     name: "Reader",
     folder: "Annas-Voice",
     tools: [
-      { name: "Anna's Voice", file: "annas-voice.html" }
+      { name: "Anna's Voice", file: "annas-voice.html" },
+      { name: "Teleprompter", file: "teleprompter.html", folder: "Teleprompter" }
     ]
   },
   {
@@ -87,7 +88,8 @@ function buhoBuildDropdownContent() {
     html += '  <span class="buho-dropdown__cat-name">' + buhoEscapeHTML(cat.name) + '</span>';
     for (var t = 0; t < cat.tools.length; t++) {
       var tool = cat.tools[t];
-      var href = tool.url || buhoGetHomeURL() + cat.folder + "/" + tool.file;
+      var toolFolder = tool.folder || cat.folder;
+      var href = tool.url || buhoGetHomeURL() + toolFolder + "/" + tool.file;
       var target = tool.url ? ' target="_blank" rel="noopener"' : '';
       html += '  <a href="' + href + '" class="buho-dropdown__tool-link" role="menuitem"' + target + '>' + buhoEscapeHTML(tool.name) + '</a>';
     }
@@ -214,7 +216,8 @@ function buhoRenderCategoryCards() {
     } else {
       for (var t = 0; t < cat.tools.length; t++) {
         var tool = cat.tools[t];
-        var href = tool.url || cat.folder + "/" + tool.file;
+        var toolFolder = tool.folder || cat.folder;
+        var href = tool.url || toolFolder + "/" + tool.file;
         var target = tool.url ? ' target="_blank" rel="noopener"' : '';
         html += '  <a href="' + href + '" class="buho-category-card__tool"' + target + '>' + buhoEscapeHTML(tool.name) + '</a>';
       }
