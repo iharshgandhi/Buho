@@ -30,7 +30,7 @@ var BUHO_CATEGORIES = [
     folder: "",
     tools: [
       { name: "GitHub", url: "https://github.com/iharshgandhi/Buho" },
-      { name: "Harsh Gandhi", url: "https://harshgandhi.com" }
+      { name: "Harsh Gandhi", url: "http://harshgandhi.com" }
     ]
   }
 ];
