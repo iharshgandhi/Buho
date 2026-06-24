@@ -27,6 +27,20 @@ var BUHO_CATEGORIES = [
     ]
   },
   {
+    name: "AI DEV TOOLS",
+    folder: "",
+    tools: [
+      { name: "PonytailCaveman", url: "https://github.com/iharshgandhi/PonytailCaveman.git" }
+    ]
+  },
+  {
+    name: "Image Tools",
+    folder: "Image-Tools",
+    tools: [
+      { name: "Image Compressor", file: "image-compressor.html", folder: "Image-Tools/Image-Compressor" }
+    ]
+  },
+  {
     name: "About",
     folder: "",
     tools: [
@@ -35,6 +49,17 @@ var BUHO_CATEGORIES = [
     ]
   }
 ];
+
+var BUHO_BASE_URL = (function () {
+  var script = document.currentScript;
+  var src = script ? script.getAttribute("src") || "" : "";
+  var marker = "_framework/buho.js";
+  var markerIndex = src.lastIndexOf(marker);
+  if (markerIndex === -1) return "./";
+
+  var base = src.slice(0, markerIndex);
+  return base || "./";
+})();
 
 /* ---------------------------------------------------------------------------
    Detect current page type
@@ -125,9 +150,7 @@ function buhoGetToolName() {
    Get relative path to home (index.html)
    --------------------------------------------------------------------------- */
 function buhoGetHomeURL() {
-  if (BUHO_IS_INDEX) return "./";
-  // Tool pages are one level deep (category/tool.html), so go up one level
-  return "../";
+  return BUHO_BASE_URL;
 }
 
 /* ---------------------------------------------------------------------------

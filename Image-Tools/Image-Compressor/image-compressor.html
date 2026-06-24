@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Compressor - Buho</title>
+  <link rel="stylesheet" href="../../_framework/buho.css">
+<style>
+/* ============================================================
+   Image Compressor — Tool Styles
+   ============================================================ */
+:root {
+  --ic-bottom-bar-h: 64px;
+  --ic-preview-max: 400px;
+}
+
+/* -------------------------------------------------------------------
+   FILE SELECTION SCREEN
+   ------------------------------------------------------------------- */
+.ic-file-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 60vh;
+  text-align: center;
+  gap: var(--buho-space-5);
+  padding: var(--buho-space-6) 0;
+}
+.ic-file-screen__icon { font-size: 64px; line-height: 1; }
+.ic-file-screen h1 { font-size: var(--buho-fs-xl); color: var(--buho-fg-hi); }
+.ic-file-screen p { color: var(--buho-fg-lo); max-width: 440px; }
+
+.ic-error-msg {
+  display: none;
+  background: var(--buho-red);
+  color: #fff;
+  padding: var(--buho-space-2) var(--buho-space-4);
+  border-radius: var(--buho-radius);
+  font-size: var(--buho-fs-sm);
+  font-weight: 600;
+  max-width: 480px;
+}
+.ic-loading-msg {
+  display: none;
+  align-items: center;
+  gap: var(--buho-space-2);
+  color: var(--buho-fg-lo);
+  font-size: var(--buho-fs-sm);
+}
+.ic-loading-msg--visible { display: inline-flex; }
+
+/* -------------------------------------------------------------------
+   COMPRESS SCREEN
+   ------------------------------------------------------------------- */
+.ic-compress-screen {
+  display: none;
+  flex-direction: column;
+  gap: var(--buho-space-5);
+  padding: var(--buho-space-4) 0 calc(var(--ic-bottom-bar-h) + var(--buho-space-5));
+}
+
+.ic-info-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-3);
+  padding: var(--buho-space-3) 0;
+  border-bottom: var(--buho-border);
+  flex-wrap: wrap;
+}
+.ic-info-bar__name {
+  font-weight: 600;
+  color: var(--buho-fg-hi);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 280px;
+}
+.ic-info-bar__size {
+  color: var(--buho-fg-lo);
+  font-size: var(--buho-fs-sm);
+  white-space: nowrap;
+}
+.ic-info-bar__action {
+  margin-left: auto;
+}
+
+/* -------------------------------------------------------------------
+   PREVIEW
+   ------------------------------------------------------------------- */
+.ic-preview-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--buho-space-3);
+}
+.ic-preview-section__label {
+  font-size: var(--buho-fs-sm);
+  font-weight: 600;
+  color: var(--buho-fg-lo);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  align-self: flex-start;
+}
+
+.ic-preview-box {
+  width: 100%;
+  max-width: var(--ic-preview-max);
+  background: var(--buho-bg-hi);
+  border: var(--buho-border);
+  border-radius: var(--buho-radius);
+  padding: var(--buho-space-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--buho-space-2);
+}
+.ic-preview-box img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  display: block;
+  background: #fff;
+}
+.ic-preview-box__size {
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg-lo);
+}
+
+.ic-savings {
+  font-size: var(--buho-fs-base);
+  font-weight: 700;
+  color: var(--buho-green);
+  text-align: center;
+}
+
+/* -------------------------------------------------------------------
+   SLIDER
+   ------------------------------------------------------------------- */
+.ic-slider-section {
+  background: var(--buho-bg-hi);
+  border: var(--buho-border);
+  border-radius: var(--buho-radius);
+  padding: var(--buho-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--buho-space-3);
+}
+.ic-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ic-slider-header__label {
+  font-weight: 600;
+  color: var(--buho-fg-hi);
+  font-size: var(--buho-fs-sm);
+}
+.ic-slider-header__value {
+  font-size: var(--buho-fs-xl);
+  font-weight: 800;
+  color: var(--buho-blue);
+}
+
+.ic-slider {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--buho-bg);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+.ic-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--buho-blue);
+  border: 3px solid var(--buho-bg);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.ic-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+.ic-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--buho-blue);
+  border: 3px solid var(--buho-bg);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+.ic-slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+.ic-slider-ticks__tick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--buho-fs-xs);
+  color: var(--buho-fg-lo);
+}
+.ic-slider-ticks__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--buho-bg-lo);
+}
+.ic-slider-ticks__dot--active {
+  background: var(--buho-blue);
+}
+
+.ic-estimate {
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg-lo);
+  text-align: center;
+}
+
+/* -------------------------------------------------------------------
+   OUTPUT SECTION (appears after compression)
+   ------------------------------------------------------------------- */
+.ic-output-section {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--buho-space-4);
+  border-top: var(--buho-border);
+  padding-top: var(--buho-space-5);
+  margin-top: var(--buho-space-2);
+}
+
+/* -------------------------------------------------------------------
+   FIXED BOTTOM BAR
+   ------------------------------------------------------------------- */
+.ic-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--buho-space-3);
+  height: var(--ic-bottom-bar-h);
+  padding: 0 var(--buho-space-4);
+  background: var(--buho-bg-hi);
+  border-top: var(--buho-border);
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+}
+.ic-bottom-bar--visible { display: flex; }
+
+.ic-bottom-bar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-3);
+  overflow: hidden;
+}
+.ic-bottom-bar__filename {
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg-lo);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+.ic-bottom-bar__actions {
+  display: flex;
+  gap: var(--buho-space-2);
+  flex-shrink: 0;
+}
+.ic-bottom-bar__btn {
+  min-width: 140px;
+  justify-content: center;
+}
+.ic-bottom-bar__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* -------------------------------------------------------------------
+   PROGRESS OVERLAY
+   ------------------------------------------------------------------- */
+.ic-progress-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(253, 246, 227, 0.92);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--buho-space-4);
+}
+.ic-progress-overlay--visible { display: flex; }
+
+.ic-progress-overlay__text {
+  font-size: var(--buho-fs-lg);
+  color: var(--buho-fg-hi);
+  font-weight: 600;
+}
+.ic-progress-overlay__sub {
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg-lo);
+}
+
+.ic-progress-track {
+  width: 280px;
+  height: 8px;
+  background: var(--buho-bg);
+  border-radius: 4px;
+  border: var(--buho-border);
+  overflow: hidden;
+}
+.ic-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--buho-blue);
+  border-radius: 4px;
+  transition: width 0.15s ease;
+}
+
+/* -------------------------------------------------------------------
+   Responsive tweaks
+   ------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .ic-info-bar__name {
+    max-width: 160px;
+  }
+  .ic-bottom-bar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: var(--buho-space-3) var(--buho-space-4);
+    gap: var(--buho-space-2);
+  }
+  .ic-bottom-bar__left {
+    width: 100%;
+  }
+  .ic-bottom-bar__filename {
+    max-width: 160px;
+  }
+  .ic-bottom-bar__actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .ic-bottom-bar__btn {
+    flex: 1;
+    min-width: 0;
+  }
+  .ic-slider-header__value {
+    font-size: var(--buho-fs-lg);
+  }
+}
+</style>
+</head>
+<body>
+
+<main class="buho-content" style="display:flex;flex-direction:column">
+  <div class="buho-content__inner" style="flex:1;display:flex;flex-direction:column">
+
+    <!-- ================================================================
+         FILE SELECTION SCREEN
+         ================================================================ -->
+    <div id="ic-file-screen" class="ic-file-screen">
+      <div class="ic-file-screen__icon">🖼️</div>
+      <h1>Image Compressor</h1>
+      <p>Compress images right in your browser. All processing happens on-device — nothing is uploaded to any server.</p>
+      <div id="ic-error-msg" class="ic-error-msg"></div>
+      <div id="ic-loading-msg" class="ic-loading-msg">
+        <span>⏳</span>
+        <span>Loading libraries…</span>
+      </div>
+      <button class="buho-btn" id="ic-pick-btn">📂 Choose Image</button>
+      <input type="file" id="ic-file-input" accept="image/*" style="display:none">
+    </div>
+
+    <!-- ================================================================
+         COMPRESS SCREEN
+         ================================================================ -->
+    <div id="ic-compress-screen" class="ic-compress-screen">
+
+      <!-- Info bar -->
+      <div class="ic-info-bar">
+        <span class="ic-info-bar__name" id="ic-filename"></span>
+        <span class="ic-info-bar__size" id="ic-orig-size"></span>
+        <button class="buho-btn buho-btn--outline ic-info-bar__action" id="ic-change-btn" style="font-size:var(--buho-fs-xs);height:32px;padding:0 var(--buho-space-3)">🔄 Choose Different</button>
+      </div>
+
+      <!-- Original preview -->
+      <div class="ic-preview-section">
+        <span class="ic-preview-section__label">Original</span>
+        <div class="ic-preview-box">
+          <img id="ic-orig-preview" alt="Original image preview">
+          <span class="ic-preview-box__size" id="ic-orig-preview-size"></span>
+        </div>
+      </div>
+
+      <!-- Quality slider -->
+      <div class="ic-slider-section">
+        <div class="ic-slider-header">
+          <span class="ic-slider-header__label">Reduce to</span>
+          <span class="ic-slider-header__value" id="ic-slider-value">80%</span>
+        </div>
+        <input type="range" class="ic-slider" id="ic-slider" min="5" max="95" step="5" value="80">
+        <div class="ic-slider-ticks">
+          <span class="ic-slider-ticks__tick"><span class="ic-slider-ticks__dot"></span>5%</span>
+          <span class="ic-slider-ticks__tick"><span class="ic-slider-ticks__dot"></span>25%</span>
+          <span class="ic-slider-ticks__tick"><span class="ic-slider-ticks__dot"></span>50%</span>
+          <span class="ic-slider-ticks__tick"><span class="ic-slider-ticks__dot"></span>75%</span>
+          <span class="ic-slider-ticks__tick"><span class="ic-slider-ticks__dot"></span>95%</span>
+        </div>
+        <div class="ic-estimate" id="ic-estimate">Estimated: ~128 KB</div>
+      </div>
+
+      <!-- Output section (shown after compression) -->
+      <div id="ic-output-section" class="ic-output-section">
+        <div class="ic-preview-section">
+          <span class="ic-preview-section__label">Compressed</span>
+          <div class="ic-preview-box">
+            <img id="ic-compressed-preview" alt="Compressed image preview">
+            <span class="ic-preview-box__size" id="ic-compressed-size"></span>
+          </div>
+        </div>
+        <div class="ic-savings" id="ic-savings"></div>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<!-- ================================================================
+     FIXED BOTTOM BAR
+     ================================================================ -->
+<div class="ic-bottom-bar" id="ic-bottom-bar">
+  <div class="ic-bottom-bar__left">
+    <span class="ic-bottom-bar__filename" id="ic-bar-filename"></span>
+  </div>
+  <div class="ic-bottom-bar__actions">
+    <button class="buho-btn ic-bottom-bar__btn" id="ic-compress-btn" disabled>
+      🔄 Compress
+    </button>
+    <button class="buho-btn ic-bottom-bar__btn" id="ic-download-btn" disabled>
+      ⬇ Download
+    </button>
+  </div>
+</div>
+
+<!-- ================================================================
+     PROGRESS OVERLAY
+     ================================================================ -->
+<div class="ic-progress-overlay" id="ic-progress-overlay">
+  <div class="ic-progress-overlay__text" id="ic-progress-text">Compressing…</div>
+  <div class="ic-progress-track">
+    <div class="ic-progress-fill" id="ic-progress-fill"></div>
+  </div>
+  <div class="ic-progress-overlay__sub" id="ic-progress-sub">0%</div>
+</div>
+
+<script src="../../_framework/buho.js"></script>
+<script>
+// ============================================================
+//  Image Compressor — Core Logic
+//  Requires: browser-image-compression (imageCompression global)
+// ============================================================
+
+/* -------------------------------------------------------------------
+   CDN / Fallback URLs
+   ------------------------------------------------------------------- */
+var COMPRESS_CDN = 'https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js';
+var COMPRESS_FALLBACK = 'lib/browser-image-compression.js';
+
+/* -------------------------------------------------------------------
+   State
+   ------------------------------------------------------------------- */
+var STATE = {
+  originalFile: null,     // File — never mutated; always compress from this
+  compressedBlob: null,   // Blob — latest compression result
+  compressedUrl: null,    // string — URL.createObjectURL for preview; revoked on change
+  qualityPercent: 80,     // current slider value
+  libReady: false,        // library loaded flag
+  isCompressing: false,   // compression in progress
+  controller: null,       // AbortController for ongoing compression
+  pendingFile: null,      // File queued while loading libs
+  libSource: ''           // 'cdn' or 'local' — for setting libURL in web worker
+};
+
+/* -------------------------------------------------------------------
+   DOM refs
+   ------------------------------------------------------------------- */
+var $ = function (id) { return document.getElementById(id); };
+
+var fileScreen       = $('ic-file-screen');
+var compressScreen   = $('ic-compress-screen');
+var outputSection    = $('ic-output-section');
+var bottomBar        = $('ic-bottom-bar');
+var fileInput        = $('ic-file-input');
+var pickBtn          = $('ic-pick-btn');
+var changeBtn        = $('ic-change-btn');
+var compressBtn      = $('ic-compress-btn');
+var downloadBtn      = $('ic-download-btn');
+var errorMsg         = $('ic-error-msg');
+var loadingMsg       = $('ic-loading-msg');
+var fileNameEl       = $('ic-filename');
+var origSizeEl       = $('ic-orig-size');
+var origPreview      = $('ic-orig-preview');
+var origPreviewSize  = $('ic-orig-preview-size');
+var slider           = $('ic-slider');
+var sliderValue      = $('ic-slider-value');
+var estimateEl       = $('ic-estimate');
+var compressedPreview = $('ic-compressed-preview');
+var compressedSizeEl  = $('ic-compressed-size');
+var savingsEl        = $('ic-savings');
+var barFilename      = $('ic-bar-filename');
+var progressOverlay  = $('ic-progress-overlay');
+var progressText     = $('ic-progress-text');
+var progressSub      = $('ic-progress-sub');
+var progressFill     = $('ic-progress-fill');
+
+/* -------------------------------------------------------------------
+   Helpers
+   ------------------------------------------------------------------- */
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.style.display = 'block';
+}
+
+function hideError() {
+  errorMsg.style.display = 'none';
+}
+
+function formatFilename(name) {
+  // Truncate long filenames
+  if (name.length > 40) {
+    var ext = name.lastIndexOf('.');
+    var extStr = ext > -1 ? name.slice(ext) : '';
+    return name.slice(0, 36 - extStr.length) + '…' + extStr;
+  }
+  return name;
+}
+
+/* -------------------------------------------------------------------
+   Dynamic script loader with CDN fallback
+   ------------------------------------------------------------------- */
+function loadScript(src, fallbackSrc) {
+  return new Promise(function (resolve, reject) {
+    var script = document.createElement('script');
+    script.src = src;
+    script.onload = function () {
+      STATE.libSource = 'cdn';
+      resolve();
+    };
+    script.onerror = function () {
+      if (fallbackSrc) {
+        var fallback = document.createElement('script');
+        fallback.src = fallbackSrc;
+        fallback.onload = function () {
+          STATE.libSource = 'local';
+          resolve();
+        };
+        fallback.onerror = function () {
+          reject(new Error('Failed to load script from CDN and fallback: ' + src));
+        };
+        document.head.appendChild(fallback);
+      } else {
+        reject(new Error('Failed to load script: ' + src));
+      }
+    };
+    document.head.appendChild(script);
+  });
+}
+
+function loadLibraries() {
+  loadingMsg.classList.add('ic-loading-msg--visible');
+
+  return loadScript(COMPRESS_CDN, COMPRESS_FALLBACK)
+    .then(function () {
+      STATE.libReady = true;
+      loadingMsg.classList.remove('ic-loading-msg--visible');
+
+      // Process any pending file
+      if (STATE.pendingFile) {
+        handleFile(STATE.pendingFile);
+        STATE.pendingFile = null;
+      }
+    })
+    .catch(function (err) {
+      loadingMsg.classList.remove('ic-loading-msg--visible');
+      showError('Failed to load compression library. Please check your internet connection and try again.');
+      console.error('Library load error:', err);
+    });
+}
+
+/* -------------------------------------------------------------------
+   File handling
+   ------------------------------------------------------------------- */
+function handleFile(file) {
+  hideError();
+
+  // Validate it's an image
+  if (!file.type.startsWith('image/')) {
+    showError('Please select a valid image file (JPEG, PNG, WebP, BMP, etc.).');
+    return;
+  }
+
+  // Store original file (never mutate this)
+  STATE.originalFile = file;
+
+  // Reset compression state
+  clearCompressedState();
+
+  // Update UI
+  var displayName = formatFilename(file.name);
+  fileNameEl.textContent = displayName;
+  origSizeEl.textContent = formatSize(file.size);
+  barFilename.textContent = displayName;
+
+  // Show original preview
+  var objectUrl = URL.createObjectURL(file);
+  origPreview.src = objectUrl;
+  origPreview.onload = function () {
+    URL.revokeObjectURL(objectUrl);
+  };
+  origPreviewSize.textContent = formatSize(file.size);
+
+  // Update estimate based on current slider
+  updateEstimate();
+
+  // Switch screens
+  fileScreen.style.display = 'none';
+  compressScreen.style.display = 'flex';
+  outputSection.style.display = 'none';
+  bottomBar.classList.add('ic-bottom-bar--visible');
+
+  // Enable compress button
+  compressBtn.disabled = false;
+  downloadBtn.disabled = true;
+}
+
+/* -------------------------------------------------------------------
+   Clear compressed state (memory management)
+   ------------------------------------------------------------------- */
+function clearCompressedState() {
+  if (STATE.compressedUrl) {
+    URL.revokeObjectURL(STATE.compressedUrl);
+  }
+  STATE.compressedBlob = null;
+  STATE.compressedUrl = null;
+  compressedPreview.src = '';
+  compressedSizeEl.textContent = '';
+  savingsEl.textContent = '';
+  outputSection.style.display = 'none';
+  downloadBtn.disabled = true;
+
+  // Cancel any in-progress compression
+  if (STATE.controller) {
+    STATE.controller.abort();
+    STATE.controller = null;
+  }
+  STATE.isCompressing = false;
+  compressBtn.disabled = false;
+  compressBtn.textContent = '🔄 Compress';
+}
+
+/* -------------------------------------------------------------------
+   Estimate calculation
+   ------------------------------------------------------------------- */
+function updateEstimate() {
+  if (!STATE.originalFile) return;
+  var pct = STATE.qualityPercent;
+  var size = STATE.originalFile.size;
+  var estimated = Math.round(size * pct / 100);
+  estimateEl.textContent = 'Estimated: ~' + formatSize(estimated);
+}
+
+/* -------------------------------------------------------------------
+   Compression logic
+   ------------------------------------------------------------------- */
+function runCompression() {
+  if (!STATE.originalFile || STATE.isCompressing) return;
+  if (typeof imageCompression === 'undefined') {
+    showError('Compression library not loaded. Please refresh and try again.');
+    return;
+  }
+
+  STATE.isCompressing = true;
+  compressBtn.disabled = true;
+  compressBtn.textContent = '⏳ Compressing…';
+  downloadBtn.disabled = true;
+
+  // Clear previous compressed state
+  clearCompressedState();
+
+  var pct = STATE.qualityPercent;
+  var origSizeMB = STATE.originalFile.size / (1024 * 1024);
+  var targetMaxSizeMB = origSizeMB * (pct / 100);
+
+  // Build libURL based on how the library was loaded
+  var libURL;
+  if (STATE.libSource === 'local') {
+    // For local, use the local file path
+    libURL = new URL('lib/browser-image-compression.js', window.location.href).href;
+  } else {
+    // For CDN, use the CDN URL for the web worker
+    libURL = 'https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js';
+  }
+
+  STATE.controller = new AbortController();
+
+  var options = {
+    maxSizeMB: Math.max(targetMaxSizeMB, 0.001), // minimum 1KB
+    initialQuality: pct / 100,
+    useWebWorker: true,
+    libURL: libURL,
+    maxIteration: 15,
+    signal: STATE.controller.signal,
+    onProgress: function (progress) {
+      progressFill.style.width = progress + '%';
+      progressSub.textContent = Math.round(progress) + '%';
+    }
+  };
+
+  // Show progress overlay
+  progressOverlay.classList.add('ic-progress-overlay--visible');
+  progressText.textContent = 'Compressing…';
+  progressFill.style.width = '0%';
+  progressSub.textContent = '0%';
+
+  imageCompression(STATE.originalFile, options)
+    .then(function (compressedFile) {
+      STATE.isCompressing = false;
+      STATE.controller = null;
+      STATE.compressedBlob = compressedFile;
+      progressOverlay.classList.remove('ic-progress-overlay--visible');
+
+      // Show compressed preview
+      var url = URL.createObjectURL(compressedFile);
+      STATE.compressedUrl = url;
+      compressedPreview.src = url;
+      compressedSizeEl.textContent = formatSize(compressedFile.size);
+
+      // Calculate savings
+      var origSize = STATE.originalFile.size;
+      var compSize = compressedFile.size;
+      var savedBytes = origSize - compSize;
+      var savedPct = Math.round((savedBytes / origSize) * 100);
+      savingsEl.textContent = '✅ Saved ' + savedPct + '% (' + formatSize(savedBytes) + ')';
+
+      outputSection.style.display = 'flex';
+      compressBtn.disabled = false;
+      compressBtn.textContent = '🔄 Compress';
+      downloadBtn.disabled = false;
+    })
+    .catch(function (err) {
+      STATE.isCompressing = false;
+      STATE.controller = null;
+      progressOverlay.classList.remove('ic-progress-overlay--visible');
+      compressBtn.disabled = false;
+      compressBtn.textContent = '🔄 Compress';
+
+      if (err.name === 'AbortError') {
+        // User changed slider while compressing — expected, don't show error
+        return;
+      }
+      showError('Compression failed: ' + (err.message || 'Unknown error'));
+      console.error('Compression error:', err);
+    });
+}
+
+/* -------------------------------------------------------------------
+   Download
+   ------------------------------------------------------------------- */
+function downloadImage() {
+  if (!STATE.compressedBlob) return;
+
+  var blob = STATE.compressedBlob;
+  var origName = STATE.originalFile.name;
+  var dot = origName.lastIndexOf('.');
+  var baseName = dot > -1 ? origName.slice(0, dot) : origName;
+  var ext = dot > -1 ? origName.slice(dot) : '';
+  var dlName = baseName + '_compressed' + ext;
+
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = dlName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  // Clean up the temporary download URL
+  setTimeout(function () {
+    URL.revokeObjectURL(a.href);
+  }, 1000);
+}
+
+/* -------------------------------------------------------------------
+   Reset to file selection
+   ------------------------------------------------------------------- */
+function resetToFilePick() {
+  clearCompressedState();
+  STATE.originalFile = null;
+
+  if (STATE.compressedUrl) {
+    URL.revokeObjectURL(STATE.compressedUrl);
+    STATE.compressedUrl = null;
+  }
+
+  origPreview.src = '';
+  compressScreen.style.display = 'none';
+  outputSection.style.display = 'none';
+  bottomBar.classList.remove('ic-bottom-bar--visible');
+  fileScreen.style.display = 'flex';
+  compressBtn.disabled = true;
+  downloadBtn.disabled = true;
+  fileInput.value = '';
+  hideError();
+}
+
+/* -------------------------------------------------------------------
+   Event listeners
+   ------------------------------------------------------------------- */
+// File pick button
+pickBtn.addEventListener('click', function () {
+  fileInput.click();
+});
+
+// Change button (inside compress screen)
+changeBtn.addEventListener('click', function () {
+  fileInput.click();
+});
+
+// File input change
+fileInput.addEventListener('change', function () {
+  var files = this.files;
+  if (!files || !files.length) return;
+
+  hideError();
+
+  if (!STATE.libReady) {
+    // Queue file, start library load
+    STATE.pendingFile = files[0];
+    if (loadingMsg.classList.contains('ic-loading-msg--visible')) {
+      // Already loading — just update pending
+      return;
+    }
+    loadLibraries();
+    return;
+  }
+
+  handleFile(files[0]);
+});
+
+// Slider input
+slider.addEventListener('input', function () {
+  STATE.qualityPercent = parseInt(this.value, 10);
+  sliderValue.textContent = STATE.qualityPercent + '%';
+
+  // Update tick marks
+  var ticks = document.querySelectorAll('.ic-slider-ticks__dot');
+  var tickValues = [5, 25, 50, 75, 95];
+  ticks.forEach(function (dot, i) {
+    dot.classList.toggle('ic-slider-ticks__dot--active', STATE.qualityPercent >= tickValues[i]);
+  });
+
+  updateEstimate();
+
+  // Clear previous compressed output whenever slider changes
+  clearCompressedState();
+});
+
+// Compress button
+compressBtn.addEventListener('click', function () {
+  // Ensure estimate references the latest slider value
+  STATE.qualityPercent = parseInt(slider.value, 10);
+  runCompression();
+});
+
+// Download button
+downloadBtn.addEventListener('click', downloadImage);
+
+/* -------------------------------------------------------------------
+   Initialize — load libraries immediately
+   ------------------------------------------------------------------- */
+loadLibraries();
+</script>
+</body>
+</html>

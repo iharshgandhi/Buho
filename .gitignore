@@ -32,6 +32,7 @@ venv/
 #  Test artifacts
 # ---------------------------------------------------------------------------
 PDF-Tools/test_*.pdf
+Image-Tools/Image-Compressor/test_*.*
 # test scripts (not core functionality)
 PDF-Tools/test_*.py
 PDF-Tools/test_password_remover.py
@@ -53,3 +54,5 @@ LocalTestFiles/
 *.swo
 *~
 *.code-workspace
+/.github/
+/AGENTS.md
