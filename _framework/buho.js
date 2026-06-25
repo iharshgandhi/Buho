@@ -15,7 +15,8 @@ var BUHO_CATEGORIES = [
     folder: "PDF-Tools",
     tools: [
       { name: "Merge PDF to PNG", file: "MergePDFtoPNG.html" },
-      { name: "PDF Password Remover", file: "PDFPasswordRemover.html" }
+      { name: "PDF Password Remover", file: "PDFPasswordRemover.html" },
+      { name: "Catalog to Website", file: "CatalogToWebsite.html" }
     ]
   },
   {

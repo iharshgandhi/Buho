@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalog to Website - Buho</title>
+  <link rel="stylesheet" href="../_framework/buho.css">
+<style>
+/* ============================================================
+   Catalog to Website — Tool Styles
+   ============================================================ */
+:root {
+  --thumb-w: 300px;
+  --bottom-bar-h: 64px;
+}
+
+/* -------------------------------------------------------------------
+   FILE SELECTION SCREEN
+   ------------------------------------------------------------------- */
+.cat-file-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 60vh;
+  text-align: center;
+  gap: var(--buho-space-5);
+  padding: var(--buho-space-6) 0;
+}
+.cat-file-screen__icon { font-size: 64px; line-height: 1; }
+.cat-file-screen h1 { font-size: var(--buho-fs-xl); color: var(--buho-fg-hi); }
+.cat-file-screen p { color: var(--buho-fg-lo); max-width: 440px; }
+
+.cat-error-msg {
+  display: none;
+  background: var(--buho-red);
+  color: #fff;
+  padding: var(--buho-space-2) var(--buho-space-4);
+  border-radius: var(--buho-radius);
+  font-size: var(--buho-fs-sm);
+  font-weight: 600;
+  max-width: 480px;
+}
+.cat-loading-msg {
+  display: none;
+  align-items: center;
+  gap: var(--buho-space-2);
+  color: var(--buho-fg-lo);
+  font-size: var(--buho-fs-sm);
+}
+.cat-loading-msg--visible { display: inline-flex; }
+
+/* -------------------------------------------------------------------
+   LOADED SCREEN — thumbnail grid
+   ------------------------------------------------------------------- */
+.cat-loaded-screen { display: none; flex-direction: column; flex: 1; height: 100%; }
+
+.cat-info-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-3);
+  padding: var(--buho-space-2) 0 var(--buho-space-3);
+  border-bottom: var(--buho-border);
+  margin-bottom: var(--buho-space-3);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.cat-info-bar__name {
+  font-weight: 600;
+  color: var(--buho-fg-hi);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 300px;
+}
+.cat-info-bar__count {
+  color: var(--buho-fg-lo);
+  font-size: var(--buho-fs-sm);
+  white-space: nowrap;
+}
+
+.cat-thumb-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: calc(var(--bottom-bar-h) + var(--buho-space-5));
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--buho-space-4);
+}
+
+.cat-page-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--buho-space-3);
+  background: var(--buho-bg-hi);
+  border: 2px solid transparent;
+  border-radius: var(--buho-radius);
+  padding: var(--buho-space-3);
+  transition: border-color var(--buho-ease), background var(--buho-ease);
+}
+.cat-page-card--selected {
+  border-color: var(--buho-blue);
+  background: #f0f5fb;
+}
+
+.cat-page-card__checkbox {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 4px;
+  accent-color: var(--buho-blue);
+  cursor: pointer;
+}
+
+.cat-page-card__preview {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--buho-space-2);
+}
+.cat-page-card__canvas {
+  width: 100%;
+  height: auto;
+  border: var(--buho-border);
+  border-radius: 4px;
+  display: block;
+  background: #fff;
+}
+.cat-page-card__label {
+  font-size: var(--buho-fs-sm);
+  font-weight: 600;
+  color: var(--buho-fg-lo);
+}
+
+/* -------------------------------------------------------------------
+   Options section — between info bar and thumb grid
+   ------------------------------------------------------------------- */
+.cat-options {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-4);
+  padding: var(--buho-space-3) 0;
+  margin-bottom: var(--buho-space-2);
+  flex-wrap: wrap;
+}
+.cat-options label {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-2);
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg);
+  cursor: pointer;
+}
+.cat-options input[type="number"] {
+  width: 70px;
+  padding: var(--buho-space-1) var(--buho-space-2);
+  font-size: var(--buho-fs-sm);
+  border: var(--buho-border);
+  border-radius: var(--buho-radius);
+  background: var(--buho-bg);
+  color: var(--buho-fg);
+}
+.cat-options input[type="checkbox"] {
+  accent-color: var(--buho-blue);
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* -------------------------------------------------------------------
+   FIXED BOTTOM BAR
+   ------------------------------------------------------------------- */
+.cat-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--buho-space-3);
+  height: var(--bottom-bar-h);
+  padding: 0 var(--buho-space-4);
+  background: var(--buho-bg-hi);
+  border-top: var(--buho-border);
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+}
+
+.cat-bottom-bar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-3);
+}
+.cat-bottom-bar__count {
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg-lo);
+  white-space: nowrap;
+}
+.cat-bottom-bar__btn {
+  min-width: 180px;
+}
+
+/* -------------------------------------------------------------------
+   PROGRESS OVERLAY
+   ------------------------------------------------------------------- */
+.cat-progress-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(253, 246, 227, 0.92);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--buho-space-4);
+}
+.cat-progress-overlay--visible { display: flex; }
+
+.cat-progress-overlay__text {
+  font-size: var(--buho-fs-lg);
+  color: var(--buho-fg-hi);
+  font-weight: 600;
+}
+.cat-progress-overlay__sub {
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg-lo);
+}
+
+.cat-progress-track {
+  width: 280px;
+  height: 8px;
+  background: var(--buho-bg);
+  border-radius: 4px;
+  border: var(--buho-border);
+  overflow: hidden;
+}
+.cat-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--buho-green);
+  border-radius: 4px;
+  transition: width 0.15s ease;
+}
+
+/* -------------------------------------------------------------------
+   Preview area (after generation)
+   ------------------------------------------------------------------- */
+.cat-preview-area {
+  display: none;
+  margin-top: var(--buho-space-5);
+  padding-top: var(--buho-space-4);
+  border-top: 2px solid var(--buho-green);
+}
+.cat-preview-area h2 {
+  font-size: var(--buho-fs-lg);
+  color: var(--buho-fg-hi);
+  margin-bottom: var(--buho-space-2);
+}
+.cat-preview-area p {
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg-lo);
+  margin-bottom: var(--buho-space-3);
+}
+.cat-preview-info {
+  background: var(--buho-bg-hi);
+  border: var(--buho-border);
+  border-radius: var(--buho-radius);
+  padding: var(--buho-space-4);
+  margin-bottom: var(--buho-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--buho-space-2);
+}
+.cat-preview-info__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--buho-fs-sm);
+}
+.cat-preview-info__label {
+  color: var(--buho-fg-lo);
+}
+.cat-preview-info__value {
+  color: var(--buho-fg-hi);
+  font-weight: 600;
+}
+
+/* -------------------------------------------------------------------
+   Output preview — inline iframe showing the generated site
+   ------------------------------------------------------------------- */
+.cat-output-preview {
+  width: 100%;
+  border: var(--buho-border);
+  border-radius: var(--buho-radius);
+  background: #fff;
+}
+.cat-output-preview iframe {
+  width: 100%;
+  height: 600px;
+  border: none;
+  border-radius: var(--buho-radius);
+  display: block;
+}
+
+/* -------------------------------------------------------------------
+   Responsive tweaks
+   ------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .cat-thumb-grid {
+    grid-template-columns: 1fr;
+  }
+  .cat-bottom-bar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: var(--buho-space-3) var(--buho-space-4);
+    gap: var(--buho-space-2);
+  }
+  .cat-bottom-bar__left {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .cat-bottom-bar__btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .cat-options {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>
+</head>
+<body>
+
+<main class="buho-content" style="display:flex;flex-direction:column">
+  <div class="buho-content__inner" style="flex:1;display:flex;flex-direction:column">
+
+    <!-- ================================================================
+         FILE SELECTION SCREEN
+         ================================================================ -->
+    <div id="cat-file-screen" class="cat-file-screen">
+      <div class="cat-file-screen__icon">📄</div>
+      <h1>Catalog to Website</h1>
+      <p>Upload a PDF catalog and select which pages to convert into a single self-contained website (index.html). Text stays selectable, images are compressed, and everything works offline.</p>
+      <div id="cat-error-msg" class="cat-error-msg"></div>
+      <div id="cat-loading-msg" class="cat-loading-msg">
+        <span>⏳</span>
+        <span>Loading PDF.js library…</span>
+      </div>
+      <button class="buho-btn" id="cat-pick-btn">📂 Choose PDF File</button>
+      <input type="file" id="cat-file-input" accept=".pdf" style="display:none">
+    </div>
+
+    <!-- ================================================================
+         LOADED SCREEN — thumbnail grid
+         ================================================================ -->
+    <div id="cat-loaded-screen" class="cat-loaded-screen">
+      <!-- info bar -->
+      <div class="cat-info-bar">
+        <span class="cat-info-bar__name" id="cat-filename"></span>
+        <span class="cat-info-bar__count" id="cat-pagecount"></span>
+        <button class="buho-btn buho-btn--outline" id="cat-change-btn" style="font-size:var(--buho-fs-xs);height:32px;padding:0 var(--buho-space-3)">Choose Different PDF</button>
+      </div>
+
+      <!-- options -->
+      <div class="cat-options">
+        <label title="Higher = sharper images but larger file size">
+          Image Quality:
+          <input type="number" id="cat-quality" min="50" max="100" value="80">%
+        </label>
+        <label title="2x is retina-quality; 1x is standard">
+          Render Scale:
+          <input type="number" id="cat-scale" min="1" max="4" value="2">×
+        </label>
+        <label title="Output filename (the downloaded file)">
+          File:
+          <input type="text" id="cat-outname" value="catalog.html" style="width:160px;padding:var(--buho-space-1) var(--buho-space-2);font-size:var(--buho-fs-sm);border:var(--buho-border);border-radius:var(--buho-radius);background:var(--buho-bg);color:var(--buho-fg)">
+        </label>
+      </div>
+
+      <!-- thumbnail grid -->
+      <div class="cat-thumb-grid" id="cat-thumb-grid"></div>
+
+      <!-- preview area (hidden until generation completes) -->
+      <div id="cat-preview-area" class="cat-preview-area">
+        <h2>✅ Website Generated</h2>
+        <p>Your catalog website has been generated and downloaded. Preview below:</p>
+        <div class="cat-preview-info" id="cat-preview-info">
+          <div class="cat-preview-info__row">
+            <span class="cat-preview-info__label">Pages included</span>
+            <span class="cat-preview-info__value" id="cat-preview-pages"></span>
+          </div>
+          <div class="cat-preview-info__row">
+            <span class="cat-preview-info__label">Output file</span>
+            <span class="cat-preview-info__value" id="cat-preview-filename"></span>
+          </div>
+          <div class="cat-preview-info__row">
+            <span class="cat-preview-info__label">File size</span>
+            <span class="cat-preview-info__value" id="cat-preview-size"></span>
+          </div>
+        </div>
+        <div class="cat-output-preview">
+          <iframe id="cat-output-iframe" sandbox="allow-scripts allow-same-origin" title="Catalog website preview"></iframe>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ================================================================
+     FIXED BOTTOM BAR (outside .buho-content so it's truly fixed)
+     ================================================================ -->
+<div class="cat-bottom-bar" id="cat-bottom-bar" style="display:none">
+  <div class="cat-bottom-bar__left">
+    <button class="buho-btn buho-btn--outline" id="cat-select-toggle" style="font-size:var(--buho-fs-xs);height:36px;padding:0 var(--buho-space-3)">Select All</button>
+    <span class="cat-bottom-bar__count" id="cat-select-count">0 of 0 selected</span>
+  </div>
+  <button class="buho-btn cat-bottom-bar__btn" id="cat-generate-btn" disabled>
+    🌐 Generate Website
+  </button>
+</div>
+
+<!-- ================================================================
+     PROGRESS OVERLAY
+     ================================================================ -->
+<div class="cat-progress-overlay" id="cat-progress-overlay">
+  <div class="cat-progress-overlay__text" id="cat-progress-text">Generating website…</div>
+  <div class="cat-progress-track">
+    <div class="cat-progress-fill" id="cat-progress-fill"></div>
+  </div>
+  <div class="cat-progress-overlay__sub" id="cat-progress-sub"></div>
+</div>
+
+<script src="../_framework/buho.js"></script>
+<script>
+// ============================================================
+//  Catalog to Website — Core Logic
+//  Requires: pdf.js (loaded dynamically with CDN fallback)
+//  Converts selected PDF pages into a self-contained HTML file
+//  with canvas-rendered backgrounds + real DOM text overlay.
+// ============================================================
+
+/* -------------------------------------------------------------------
+   CDN / Fallback URLs
+   ------------------------------------------------------------------- */
+var PDFJS_CDN_MAIN  = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+var PDFJS_CDN_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+var PDFJS_FALLBACK_MAIN  = 'lib/pdf.min.js';
+var PDFJS_FALLBACK_WORKER = 'lib/pdf.worker.min.js';
+
+/* -------------------------------------------------------------------
+   State
+   ------------------------------------------------------------------- */
+var STATE = {
+  pdfDoc: null,
+  totalPages: 0,
+  selected: new Set(),
+  thumbScale: 0,
+  fileName: '',
+  isGenerating: false,
+  pdfjsReady: false,
+  pendingFile: null,
+  generatedHTML: null,
+};
+
+/* -------------------------------------------------------------------
+   DOM refs
+   ------------------------------------------------------------------- */
+var $ = function (id) { return document.getElementById(id); };
+var fileScreen      = $('cat-file-screen');
+var loadedScreen    = $('cat-loaded-screen');
+var bottomBar       = $('cat-bottom-bar');
+var fileInput       = $('cat-file-input');
+var pickBtn         = $('cat-pick-btn');
+var changeBtn       = $('cat-change-btn');
+var errorMsg        = $('cat-error-msg');
+var loadingMsg      = $('cat-loading-msg');
+var fileNameEl      = $('cat-filename');
+var pageCountEl     = $('cat-pagecount');
+var thumbGrid       = $('cat-thumb-grid');
+var selectToggleBtn = $('cat-select-toggle');
+var selectCountEl   = $('cat-select-count');
+var generateBtn     = $('cat-generate-btn');
+var progressOverlay = $('cat-progress-overlay');
+var progressText    = $('cat-progress-text');
+var progressSub     = $('cat-progress-sub');
+var progressFill    = $('cat-progress-fill');
+var previewArea     = $('cat-preview-area');
+var previewPages    = $('cat-preview-pages');
+var previewFilename = $('cat-preview-filename');
+var previewSize     = $('cat-preview-size');
+var outputIframe    = $('cat-output-iframe');
+var qualityInput    = $('cat-quality');
+var scaleInput      = $('cat-scale');
+var outnameInput    = $('cat-outname');
+
+/* -------------------------------------------------------------------
+   Dynamic script loader with CDN fallback
+   ------------------------------------------------------------------- */
+function loadScript(src, fallbackSrc) {
+  return new Promise(function (resolve, reject) {
+    var script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = function () {
+      if (fallbackSrc) {
+        var fallback = document.createElement('script');
+        fallback.src = fallbackSrc;
+        fallback.onload = resolve;
+        fallback.onerror = function () {
+          reject(new Error('Failed to load PDF.js from CDN and fallback.'));
+        };
+        document.head.appendChild(fallback);
+      } else {
+        reject(new Error('Failed to load script: ' + src));
+      }
+    };
+    document.head.appendChild(script);
+  });
+}
+
+function loadPDFjs() {
+  loadingMsg.classList.add('cat-loading-msg--visible');
+  return loadScript(PDFJS_CDN_MAIN, PDFJS_FALLBACK_MAIN)
+    .then(function () {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_CDN_WORKER;
+      pdfjsLib.getDocument({ data: new Uint8Array([37,80,68,70]).buffer }).promise
+        .catch(function () {
+          pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_FALLBACK_WORKER;
+        });
+      STATE.pdfjsReady = true;
+      loadingMsg.classList.remove('cat-loading-msg--visible');
+    })
+    .catch(function (err) {
+      try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_FALLBACK_WORKER;
+        STATE.pdfjsReady = true;
+        loadingMsg.classList.remove('cat-loading-msg--visible');
+      } catch (e) {
+        loadingMsg.classList.remove('cat-loading-msg--visible');
+        showError('Failed to load PDF.js library. Check your internet connection and try again.');
+        throw err;
+      }
+    });
+}
+
+/* -------------------------------------------------------------------
+   Error display
+   ------------------------------------------------------------------- */
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.style.display = 'block';
+}
+function clearError() {
+  errorMsg.style.display = 'none';
+  errorMsg.textContent = '';
+}
+
+/* -------------------------------------------------------------------
+   Screen management
+   ------------------------------------------------------------------- */
+function showFileScreen() {
+  fileScreen.style.display    = 'flex';
+  loadedScreen.style.display  = 'none';
+  bottomBar.style.display     = 'none';
+}
+function showLoadedScreen() {
+  fileScreen.style.display    = 'none';
+  loadedScreen.style.display  = 'flex';
+  bottomBar.style.display     = 'flex';
+}
+
+/* -------------------------------------------------------------------
+   File picker
+   ------------------------------------------------------------------- */
+pickBtn.addEventListener('click', function () { fileInput.click(); });
+changeBtn.addEventListener('click', function () {
+  resetTool();
+  fileInput.click();
+});
+
+fileInput.addEventListener('change', function () {
+  var file = fileInput.files && fileInput.files[0];
+  if (!file) return;
+  clearError();
+  STATE.fileName = file.name;
+
+  // Derive default output name from PDF name
+  var baseName = file.name.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'catalog';
+  outnameInput.value = baseName + '.html';
+
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    var arrayBuffer = e.target.result;
+    if (!STATE.pdfjsReady) {
+      STATE.pendingFile = arrayBuffer;
+      return;
+    }
+    loadPDF(arrayBuffer);
+  };
+  reader.onerror = function () {
+    showError('Failed to read file. Please try again.');
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+/* -------------------------------------------------------------------
+   PDF loading & thumbnail rendering
+   ------------------------------------------------------------------- */
+function loadPDF(arrayBuffer) {
+  clearError();
+
+  var loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+  loadingTask.promise.then(function (pdfDoc) {
+    STATE.pdfDoc = pdfDoc;
+    STATE.totalPages = pdfDoc.numPages;
+    STATE.selected = new Set();
+    for (var i = 1; i <= pdfDoc.numPages; i++) STATE.selected.add(i);
+
+    fileNameEl.textContent = STATE.fileName;
+    pageCountEl.textContent = pdfDoc.numPages + ' page' + (pdfDoc.numPages === 1 ? '' : 's');
+
+    thumbGrid.innerHTML = '';
+    previewArea.style.display = 'none';
+
+    showLoadedScreen();
+    updateSelectUI();
+    renderThumbnails(pdfDoc);
+  }).catch(function (err) {
+    showError('Failed to load PDF. The file may be corrupted or not a valid PDF.');
+  });
+}
+
+function renderThumbnails(pdfDoc) {
+  var pageNum = 1;
+
+  function renderNext() {
+    if (pageNum > pdfDoc.numPages) return;
+
+    var pNum = pageNum;
+    pageNum++;
+
+    pdfDoc.getPage(pNum).then(function (page) {
+      var origW = page.getViewport({ scale: 1 }).width;
+      var scale = 300 / origW;
+      if (scale > 1) scale = 1;
+      var viewport = page.getViewport({ scale: scale });
+
+      var card = document.createElement('div');
+      card.className = 'cat-page-card cat-page-card--selected';
+      card.dataset.page = pNum;
+
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.className = 'cat-page-card__checkbox';
+      cb.checked = true;
+      cb.addEventListener('change', function () {
+        togglePage(pNum, cb.checked);
+        card.classList.toggle('cat-page-card--selected', cb.checked);
+      });
+
+      var preview = document.createElement('div');
+      preview.className = 'cat-page-card__preview';
+
+      var canvas = document.createElement('canvas');
+      canvas.className = 'cat-page-card__canvas';
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      var label = document.createElement('span');
+      label.className = 'cat-page-card__label';
+      label.textContent = 'Page ' + pNum;
+
+      preview.appendChild(canvas);
+      preview.appendChild(label);
+      card.appendChild(cb);
+      card.appendChild(preview);
+
+      thumbGrid.appendChild(card);
+
+      var ctx = canvas.getContext('2d');
+      page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {});
+
+      setTimeout(renderNext, 10);
+    }).catch(function () {
+      setTimeout(renderNext, 10);
+    });
+  }
+
+  renderNext();
+}
+
+/* -------------------------------------------------------------------
+   Selection management
+   ------------------------------------------------------------------- */
+function togglePage(pageNum, selected) {
+  if (selected) {
+    STATE.selected.add(pageNum);
+  } else {
+    STATE.selected.delete(pageNum);
+  }
+  updateSelectUI();
+}
+
+function updateSelectUI() {
+  var count = STATE.selected.size;
+  var total = STATE.totalPages;
+  selectCountEl.textContent = count + ' of ' + total + ' selected';
+  generateBtn.disabled = count === 0;
+
+  if (count === total) {
+    selectToggleBtn.textContent = 'Deselect All';
+  } else {
+    selectToggleBtn.textContent = 'Select All';
+  }
+}
+
+selectToggleBtn.addEventListener('click', function () {
+  var allSelected = STATE.selected.size === STATE.totalPages;
+  var checkboxes = thumbGrid.querySelectorAll('.cat-page-card__checkbox');
+  checkboxes.forEach(function (cb, idx) {
+    var pageNum = idx + 1;
+    if (allSelected) {
+      cb.checked = false;
+      STATE.selected.delete(pageNum);
+      cb.closest('.cat-page-card').classList.remove('cat-page-card--selected');
+    } else {
+      cb.checked = true;
+      STATE.selected.add(pageNum);
+      cb.closest('.cat-page-card').classList.add('cat-page-card--selected');
+    }
+  });
+  updateSelectUI();
+});
+
+/* -------------------------------------------------------------------
+   Reset tool
+   ------------------------------------------------------------------- */
+function resetTool() {
+  if (STATE.pdfDoc) {
+    STATE.pdfDoc.destroy();
+  }
+  STATE.pdfDoc = null;
+  STATE.totalPages = 0;
+  STATE.selected = new Set();
+  STATE.fileName = '';
+  STATE.isGenerating = false;
+  STATE.pendingFile = null;
+  STATE.generatedHTML = null;
+  thumbGrid.innerHTML = '';
+  previewArea.style.display = 'none';
+  showFileScreen();
+  clearError();
+}
+
+/* -------------------------------------------------------------------
+   GENERATE WEBSITE — Main engine
+   ------------------------------------------------------------------- */
+generateBtn.addEventListener('click', function () {
+  if (STATE.isGenerating) return;
+  if (STATE.selected.size === 0) return;
+  generateWebsite();
+});
+
+function generateWebsite() {
+  STATE.isGenerating = true;
+  generateBtn.disabled = true;
+
+  progressOverlay.classList.add('cat-progress-overlay--visible');
+  updateProgress(0, STATE.selected.size);
+
+  var selectedPages = [];
+  STATE.selected.forEach(function (p) { selectedPages.push(p); });
+  selectedPages.sort(function (a, b) { return a - b; });
+
+  var total = selectedPages.length;
+  var renderScale = parseFloat(scaleInput.value) || 2;
+  var jpegQuality = parseInt(qualityInput.value, 10) / 100 || 0.8;
+  if (jpegQuality < 0.1) jpegQuality = 0.1;
+  if (jpegQuality > 1.0) jpegQuality = 1.0;
+
+  var pagesData = [];
+  var currentIdx = 0;
+
+  function processNextPage() {
+    if (currentIdx >= total) {
+      // All pages processed — build the final HTML
+      buildOutputHTML(pagesData, renderScale);
+      return;
+    }
+
+    var pageNum = selectedPages[currentIdx];
+    updateProgress(currentIdx, total);
+
+    STATE.pdfDoc.getPage(pageNum).then(function (page) {
+      processPage(page, renderScale, jpegQuality).then(function (pageData) {
+        pagesData.push(pageData);
+        currentIdx++;
+        setTimeout(processNextPage, 5);
+      });
+    });
+  }
+
+  processNextPage();
+}
+
+/* -------------------------------------------------------------------
+   Process a single page: render background + extract text
+   ------------------------------------------------------------------- */
+function processPage(page, renderScale, jpegQuality) {
+  return new Promise(function (resolve, reject) {
+    var viewport = page.getViewport({ scale: renderScale });
+    var w = Math.round(viewport.width);
+    var h = Math.round(viewport.height);
+    var origW = Math.round(page.getViewport({ scale: 1 }).width);
+    var origH = Math.round(page.getViewport({ scale: 1 }).height);
+
+    // --- Render page to canvas for background image ---
+    var canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    var ctx = canvas.getContext('2d');
+
+    // Fill white background first
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, w, h);
+
+    page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
+      // --- Extract text layer ---
+      page.getTextContent().then(function (textContent) {
+        var textSpans = extractTextSpans(textContent, viewport, renderScale, w, h);
+
+        // --- Convert canvas to compressed base64 ---
+        canvas.toBlob(function (blob) {
+          if (!blob) {
+            // Fallback: convert to data URL directly
+            var dataUrl = canvas.toDataURL('image/jpeg', jpegQuality);
+            resolve({
+              width: w,
+              height: h,
+              origWidth: origW,
+              origHeight: origH,
+              compressedB64: dataUrl.split(',')[1],
+              isCompressed: false,
+              textSpans: textSpans
+            });
+            return;
+          }
+
+          compressBlob(blob).then(function (compressedB64) {
+            resolve({
+              width: w,
+              height: h,
+              origWidth: origW,
+              origHeight: origH,
+              compressedB64: compressedB64,
+              isCompressed: true,
+              textSpans: textSpans
+            });
+          }).catch(function () {
+            // Compression failed — use raw base64
+            var reader = new FileReader();
+            reader.onload = function () {
+              var b64 = reader.result.split(',')[1];
+              resolve({
+                width: w,
+                height: h,
+                origWidth: origW,
+                origHeight: origH,
+                compressedB64: b64,
+                isCompressed: false,
+                textSpans: textSpans
+              });
+            };
+            reader.readAsDataURL(blob);
+          });
+        }, 'image/jpeg', jpegQuality);
+      });
+    });
+  });
+}
+
+/* -------------------------------------------------------------------
+   Compress binary blob with Compression Streams API (gzip)
+   Falls back to uncompressed if API unavailable.
+   ------------------------------------------------------------------- */
+function compressBlob(blob) {
+  return new Promise(function (resolve, reject) {
+    if (typeof CompressionStream === 'undefined') {
+      // No Compression Streams API — return raw base64
+      var reader = new FileReader();
+      reader.onload = function () {
+        resolve(reader.result.split(',')[1]);
+      };
+      reader.readAsDataURL(blob);
+      return;
+    }
+
+    blob.arrayBuffer().then(function (buffer) {
+      var uint8 = new Uint8Array(buffer);
+      var cs = new CompressionStream('gzip');
+      var writer = cs.writable.getWriter();
+      writer.write(uint8);
+      writer.close();
+
+      new Response(cs.readable).arrayBuffer().then(function (compressed) {
+        var compressedU8 = new Uint8Array(compressed);
+        var binary = '';
+        for (var i = 0; i < compressedU8.length; i++) {
+          binary += String.fromCharCode(compressedU8[i]);
+        }
+        resolve(btoa(binary));
+      });
+    }).catch(reject);
+  });
+}
+
+/* -------------------------------------------------------------------
+   Extract text positions from pdf.js text content
+   ------------------------------------------------------------------- */
+function extractTextSpans(textContent, viewport, renderScale, pageW, pageH) {
+  var spans = [];
+
+  for (var i = 0; i < textContent.items.length; i++) {
+    var item = textContent.items[i];
+    if (!item.str || item.str.trim() === '') continue;
+
+    // The transform is [scaleX, skewX, skewY, scaleY, translateX, translateY]
+    // in PDF coordinate space (origin at bottom-left, Y up)
+    var tx = item.transform[4];   // x in PDF user space
+    var ty = item.transform[5];   // y in PDF user space
+
+    // Convert to viewport CSS coordinates using viewport.transform
+    // viewport.transform is [a, b, c, d, e, f] where:
+    //   CSS_x = PDF_x * a + PDF_y * c + e
+    //   CSS_y = PDF_x * b + PDF_y * d + f
+    var cssX = tx * viewport.transform[0] + ty * viewport.transform[2] + viewport.transform[4];
+    var cssY = tx * viewport.transform[1] + ty * viewport.transform[3] + viewport.transform[5];
+
+    var fontSize = Math.round(item.height * Math.abs(viewport.transform[3]) * 100) / 100;
+    var spanW = Math.round(item.width * Math.abs(viewport.transform[0]) * 100) / 100;
+    var spanH = Math.round(item.height * Math.abs(viewport.transform[3]) * 100) / 100;
+
+    // Get font family from styles
+    var style = textContent.styles[item.fontName];
+    var fontFamily = style ? style.fontFamily : 'sans-serif';
+
+    // Skip items that have tiny dimensions (likely artifacts)
+    if (spanW < 1 && item.str.length > 0) spanW = item.str.length * fontSize * 0.5;
+
+    spans.push({
+      text: item.str,
+      left: Math.round(cssX * 100) / 100,
+      top: Math.round(cssY * 100) / 100,
+      width: Math.round(spanW * 100) / 100,
+      height: Math.round(spanH * 100) / 100,
+      fontSize: fontSize,
+      fontFamily: fontFamily,
+      hasEOL: item.hasEOL || false
+    });
+  }
+
+  // Merge adjacent spans on the same line (same Y with small X gap)
+  spans = mergeTextSpans(spans);
+
+  return spans;
+}
+
+/* -------------------------------------------------------------------
+   Merge adjacent text spans on the same line
+   ------------------------------------------------------------------- */
+function mergeTextSpans(spans) {
+  if (spans.length === 0) return spans;
+
+  // Sort by top, then left
+  spans.sort(function (a, b) {
+    var dy = a.top - b.top;
+    if (Math.abs(dy) > 3) return dy;
+    return a.left - b.left;
+  });
+
+  var merged = [];
+  var current = spans[0];
+
+  for (var i = 1; i < spans.length; i++) {
+    var next = spans[i];
+    // Same line (Y within 3px)
+    if (Math.abs(next.top - current.top) < 3) {
+      // Small horizontal gap (≤ 4px) — merge
+      var gap = next.left - (current.left + current.width);
+      if (gap <= 4 && gap >= -2) {
+        current.text += ' ' + next.text;
+        current.width = next.left + next.width - current.left;
+        current.hasEOL = next.hasEOL;
+        continue;
+      }
+    }
+    merged.push(current);
+    current = next;
+  }
+  merged.push(current);
+
+  return merged;
+}
+
+/* -------------------------------------------------------------------
+   Build the final self-contained HTML file
+   ------------------------------------------------------------------- */
+function buildOutputHTML(pagesData, renderScale) {
+  progressText.textContent = 'Assembling HTML…';
+
+  var outName = outnameInput.value.trim();
+  if (!outName) outName = 'catalog.html';
+
+  var totalPages = pagesData.length;
+  var totalBytes = 0;
+  var pagesHTML = '';
+
+  for (var i = 0; i < pagesData.length; i++) {
+    var pd = pagesData[i];
+    var pageNum = i + 1;
+    totalBytes += pd.compressedB64.length;
+
+    // Build text layer HTML
+    var textHTML = '';
+    for (var t = 0; t < pd.textSpans.length; t++) {
+      var s = pd.textSpans[t];
+      var fontFamilySafe = s.fontFamily || 'sans-serif';
+      var extraStyle = '';
+      if (s.hasEOL) extraStyle += 'display:block;';
+
+      textHTML += '<span style="left:' + s.left + 'px;top:' + s.top + 'px;width:' + Math.max(s.width, 1) + 'px;height:' + Math.max(s.height, 1) + 'px;font-size:' + s.fontSize + 'px;font-family:\'' + fontFamilySafe + '\',sans-serif;' + extraStyle + '">'
+               + escapeHTML(s.text) + '</span>\n';
+    }
+
+    var storageAttr = pd.isCompressed ? 'data-compressed="' + pd.compressedB64 + '"' : 'data-b64="' + pd.compressedB64 + '"';
+    var imgClass = pd.isCompressed ? 'cat-bg cat-bg--compressed' : 'cat-bg';
+
+    pagesHTML += '<div class="cat-page" style="width:' + pd.width + 'px">\n'
+      + '<div class="cat-page-inner" style="padding-top:' + ((pd.height / pd.width) * 100) + '%">\n'
+      + '<img class="' + imgClass + '" ' + storageAttr + ' alt="Page ' + pageNum + '" data-width="' + pd.width + '" data-height="' + pd.height + '" data-isc="' + (pd.isCompressed ? '1' : '0') + '">\n'
+      + '<div class="cat-text-layer">\n'
+      + textHTML
+      + '</div>\n'
+      + '</div>\n'
+      + '</div>\n';
+  }
+
+  // Estimate decompressed size (base64 → binary overhead)
+  var estimatedKb = Math.round(totalBytes * 0.75 / 1024);
+
+  var html = '<!DOCTYPE html>\n'
+    + '<html lang="en">\n'
+    + '<head>\n'
+    + '<meta charset="UTF-8">\n'
+    + '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
+    + '<title>Catalog</title>\n'
+    + '<style>\n'
+    + '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}\n'
+    + 'html{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;font-size:16px;line-height:1.5;color:#333;background:#f5f5f5}\n'
+    + 'body{padding:20px 10px}\n'
+    + '.cat-header{max-width:900px;margin:0 auto 20px;text-align:center}\n'
+    + '.cat-header h1{font-size:24px;color:#222;margin-bottom:4px}\n'
+    + '.cat-header p{font-size:14px;color:#888}\n'
+    + '.cat-container{max-width:900px;margin:0 auto}\n'
+    + '.cat-page{margin:0 auto 24px;background:#fff;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,0.1);overflow:hidden;page-break-inside:avoid}\n'
+    + '.cat-page-inner{position:relative;width:100%}\n'
+    + '.cat-bg{position:absolute;top:0;left:0;width:100%;height:100%;display:block;object-fit:contain;background:#fff}\n'
+    + '.cat-text-layer{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none}\n'
+    + '.cat-text-layer span{position:absolute;white-space:pre;overflow:hidden;color:transparent;pointer-events:auto;cursor:text;line-height:1;}\n'
+    + '.cat-text-layer span::selection{color:transparent;background:rgba(38,139,210,0.3)}\n'
+    + '@media(max-width:600px){body{padding:10px 5px}.cat-page{border-radius:2px;margin-bottom:12px}}\n'
+    + '@media print{.cat-page{box-shadow:none;border:1px solid #ddd;margin-bottom:0;page-break-after:always}.cat-header{display:none}}\n'
+    + '@media(prefers-color-scheme:dark){html{background:#111;color:#eee}body{background:#111}.cat-page{background:#fff}.cat-header h1{color:#eee}.cat-header p{color:#aaa}}\n'
+    + '.cat-loading{display:flex;align-items:center;justify-content:center;min-height:200px;color:#999;font-size:14px}\n'
+    + '</style>\n'
+    + '</head>\n'
+    + '<body>\n'
+    + '<div class="cat-header">\n'
+    + '<h1>' + escapeHTML(outName.replace(/\.html$/i, '').replace(/-/g, ' ')) + '</h1>\n'
+    + '<p>' + totalPages + ' page' + (totalPages === 1 ? '' : 's') + ' &middot; ~' + estimatedKb + ' KB</p>\n'
+    + '</div>\n'
+    + '<div class="cat-container">\n'
+    + pagesHTML
+    + '</div>\n'
+    + '<script>\n'
+    + '(function(){var d=document;var imgs=d.querySelectorAll(".cat-bg--compressed");var total=imgs.length;var loaded=0;\n'
+    + 'function loadImg(img){var cmp=img.getAttribute("data-compressed");if(!cmp)return;\n'
+    + 'try{var binary=atob(cmp);var bytes=new Uint8Array(binary.length);for(var i=0;i<binary.length;i++){bytes[i]=binary.charCodeAt(i)}\n'
+    + 'var ds=new DecompressionStream("gzip");var writer=ds.writable.getWriter();writer.write(bytes);writer.close();\n'
+    + 'new Response(ds.readable).blob().then(function(blob){var url=URL.createObjectURL(blob);img.src=url;img.removeAttribute("data-compressed");img.classList.remove("cat-bg--compressed");loaded++;if(loaded===total&&d.querySelector(".cat-loading")){var el=d.querySelector(".cat-loading");el.parentNode.removeChild(el)}}).catch(function(){img.removeAttribute("data-compressed");img.classList.remove("cat-bg--compressed");loaded++})}catch(e){img.removeAttribute("data-compressed");img.classList.remove("cat-bg--compressed");loaded++}}\n'
+    + 'var observer;if(typeof IntersectionObserver!="undefined"){observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){var img=entry.target;observer.unobserve(img);loadImg(img)}}),{rootMargin:"200px"}})\n'
+    + 'imgs.forEach(function(img){observer.observe(img)})}else{imgs.forEach(function(img){loadImg(img)})}\n'
+    + 'var plainImgs=d.querySelectorAll(".cat-bg:not(.cat-bg--compressed)");plainImgs.forEach(function(img){var b64=img.getAttribute("data-b64");if(b64){img.src="data:image/jpeg;base64,"+b64;img.removeAttribute("data-b64")}})})();\n'
+    + '<\/script>\n'
+    + '</body>\n'
+    + '</html>';
+
+  STATE.generatedHTML = html;
+
+  // Download
+  triggerDownload(html, outName);
+
+  // Show preview
+  showPreview(pagesData, outName, estimatedKb);
+
+  finishGeneration();
+}
+
+/* -------------------------------------------------------------------
+   Trigger file download
+   ------------------------------------------------------------------- */
+function triggerDownload(html, filename) {
+  var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function () {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 1000);
+}
+
+/* -------------------------------------------------------------------
+   Show preview of the generated website
+   ------------------------------------------------------------------- */
+function showPreview(pagesData, filename, sizeKB) {
+  previewPages.textContent = pagesData.length + (pagesData.length === 1 ? ' page' : ' pages');
+  previewFilename.textContent = filename;
+  previewSize.textContent = sizeKB + ' KB (estimated)';
+  previewArea.style.display = 'block';
+
+  // Show in iframe
+  if (STATE.generatedHTML) {
+    var blob = new Blob([STATE.generatedHTML], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    outputIframe.src = url;
+    // Revoke after a delay to let iframe load
+    setTimeout(function () {
+      // Keep the blob URL alive for the iframe
+    }, 5000);
+  }
+
+  previewArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* -------------------------------------------------------------------
+   Progress UI
+   ------------------------------------------------------------------- */
+function updateProgress(current, total) {
+  var pct = total > 0 ? Math.round((current / total) * 100) : 0;
+  progressFill.style.width = pct + '%';
+  progressText.textContent = 'Processing page ' + Math.min(current + 1, total) + ' of ' + total + '…';
+  progressSub.textContent = pct + '% complete';
+}
+
+function finishGeneration() {
+  STATE.isGenerating = false;
+  generateBtn.disabled = STATE.selected.size === 0;
+  progressOverlay.classList.remove('cat-progress-overlay--visible');
+  progressFill.style.width = '0%';
+}
+
+/* -------------------------------------------------------------------
+   Utility: escape HTML entities
+   ------------------------------------------------------------------- */
+function escapeHTML(str) {
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
+/* -------------------------------------------------------------------
+   Boot: Load PDF.js then process any pending file
+   ------------------------------------------------------------------- */
+loadPDFjs().then(function () {
+  if (STATE.pendingFile) {
+    loadPDF(STATE.pendingFile);
+    STATE.pendingFile = null;
+  }
+}).catch(function (err) {
+  // Error already shown
+});
+</script>
+</body>
+</html>
