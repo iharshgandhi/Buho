@@ -344,7 +344,7 @@
     <div id="cat-file-screen" class="cat-file-screen">
       <div class="cat-file-screen__icon">📄</div>
       <h1>Catalog to Website</h1>
-      <p>Upload a PDF catalog and select which pages to convert into a single self-contained website (index.html). Text stays selectable, images are compressed, and everything works offline.</p>
+      <p>Upload a PDF catalog and select which pages to convert into a single self-contained website (index.html). Each page is rendered as an image so the layout stays exactly as designed.</p>
       <div id="cat-error-msg" class="cat-error-msg"></div>
       <div id="cat-loading-msg" class="cat-loading-msg">
         <span>⏳</span>
@@ -377,7 +377,7 @@
         </label>
         <label title="Output filename (the downloaded file)">
           File:
-          <input type="text" id="cat-outname" value="catalog.html" style="width:160px;padding:var(--buho-space-1) var(--buho-space-2);font-size:var(--buho-fs-sm);border:var(--buho-border);border-radius:var(--buho-radius);background:var(--buho-bg);color:var(--buho-fg)">
+          <input type="text" id="cat-outname" value="index.html" style="width:160px;padding:var(--buho-space-1) var(--buho-space-2);font-size:var(--buho-fs-sm);border:var(--buho-border);border-radius:var(--buho-radius);background:var(--buho-bg);color:var(--buho-fg)">
         </label>
       </div>
 
@@ -589,9 +589,8 @@ fileInput.addEventListener('change', function () {
   clearError();
   STATE.fileName = file.name;
 
-  // Derive default output name from PDF name
-  var baseName = file.name.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'catalog';
-  outnameInput.value = baseName + '.html';
+  // Default output name is always index.html
+  outnameInput.value = 'index.html';
 
   var reader = new FileReader();
   reader.onload = function (e) {
@@ -809,17 +808,15 @@ function generateWebsite() {
 }
 
 /* -------------------------------------------------------------------
-   Process a single page: render background + extract text
+   Process a single page: render as flat image
    ------------------------------------------------------------------- */
 function processPage(page, renderScale, jpegQuality) {
   return new Promise(function (resolve, reject) {
     var viewport = page.getViewport({ scale: renderScale });
     var w = Math.round(viewport.width);
     var h = Math.round(viewport.height);
-    var origW = Math.round(page.getViewport({ scale: 1 }).width);
-    var origH = Math.round(page.getViewport({ scale: 1 }).height);
 
-    // --- Render page to canvas for background image ---
+    // --- Render page to canvas ---
     var canvas = document.createElement('canvas');
     canvas.width = w;
     canvas.height = h;
@@ -830,56 +827,40 @@ function processPage(page, renderScale, jpegQuality) {
     ctx.fillRect(0, 0, w, h);
 
     page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
-      // --- Extract text layer ---
-      page.getTextContent().then(function (textContent) {
-        var textSpans = extractTextSpans(textContent, viewport, renderScale, w, h);
-
-        // --- Convert canvas to compressed base64 ---
-        canvas.toBlob(function (blob) {
-          if (!blob) {
-            // Fallback: convert to data URL directly
-            var dataUrl = canvas.toDataURL('image/jpeg', jpegQuality);
-            resolve({
-              width: w,
-              height: h,
-              origWidth: origW,
-              origHeight: origH,
-              compressedB64: dataUrl.split(',')[1],
-              isCompressed: false,
-              textSpans: textSpans
-            });
-            return;
-          }
-
-          compressBlob(blob).then(function (compressedB64) {
-            resolve({
-              width: w,
-              height: h,
-              origWidth: origW,
-              origHeight: origH,
-              compressedB64: compressedB64,
-              isCompressed: true,
-              textSpans: textSpans
-            });
-          }).catch(function () {
-            // Compression failed — use raw base64
-            var reader = new FileReader();
-            reader.onload = function () {
-              var b64 = reader.result.split(',')[1];
-              resolve({
-                width: w,
-                height: h,
-                origWidth: origW,
-                origHeight: origH,
-                compressedB64: b64,
-                isCompressed: false,
-                textSpans: textSpans
-              });
-            };
-            reader.readAsDataURL(blob);
+      // --- Convert canvas to compressed base64 ---
+      canvas.toBlob(function (blob) {
+        if (!blob) {
+          var dataUrl = canvas.toDataURL('image/jpeg', jpegQuality);
+          resolve({
+            width: w,
+            height: h,
+            compressedB64: dataUrl.split(',')[1],
+            isCompressed: false
           });
-        }, 'image/jpeg', jpegQuality);
-      });
+          return;
+        }
+
+        compressBlob(blob).then(function (compressedB64) {
+          resolve({
+            width: w,
+            height: h,
+            compressedB64: compressedB64,
+            isCompressed: true
+          });
+        }).catch(function () {
+          var reader = new FileReader();
+          reader.onload = function () {
+            var b64 = reader.result.split(',')[1];
+            resolve({
+              width: w,
+              height: h,
+              compressedB64: b64,
+              isCompressed: false
+            });
+          };
+          reader.readAsDataURL(blob);
+        });
+      }, 'image/jpeg', jpegQuality);
     });
   });
 }
@@ -920,103 +901,14 @@ function compressBlob(blob) {
 }
 
 /* -------------------------------------------------------------------
-   Extract text positions from pdf.js text content
-   ------------------------------------------------------------------- */
-function extractTextSpans(textContent, viewport, renderScale, pageW, pageH) {
-  var spans = [];
-
-  for (var i = 0; i < textContent.items.length; i++) {
-    var item = textContent.items[i];
-    if (!item.str || item.str.trim() === '') continue;
-
-    // The transform is [scaleX, skewX, skewY, scaleY, translateX, translateY]
-    // in PDF coordinate space (origin at bottom-left, Y up)
-    var tx = item.transform[4];   // x in PDF user space
-    var ty = item.transform[5];   // y in PDF user space
-
-    // Convert to viewport CSS coordinates using viewport.transform
-    // viewport.transform is [a, b, c, d, e, f] where:
-    //   CSS_x = PDF_x * a + PDF_y * c + e
-    //   CSS_y = PDF_x * b + PDF_y * d + f
-    var cssX = tx * viewport.transform[0] + ty * viewport.transform[2] + viewport.transform[4];
-    var cssY = tx * viewport.transform[1] + ty * viewport.transform[3] + viewport.transform[5];
-
-    var fontSize = Math.round(item.height * Math.abs(viewport.transform[3]) * 100) / 100;
-    var spanW = Math.round(item.width * Math.abs(viewport.transform[0]) * 100) / 100;
-    var spanH = Math.round(item.height * Math.abs(viewport.transform[3]) * 100) / 100;
-
-    // Get font family from styles
-    var style = textContent.styles[item.fontName];
-    var fontFamily = style ? style.fontFamily : 'sans-serif';
-
-    // Skip items that have tiny dimensions (likely artifacts)
-    if (spanW < 1 && item.str.length > 0) spanW = item.str.length * fontSize * 0.5;
-
-    spans.push({
-      text: item.str,
-      left: Math.round(cssX * 100) / 100,
-      top: Math.round(cssY * 100) / 100,
-      width: Math.round(spanW * 100) / 100,
-      height: Math.round(spanH * 100) / 100,
-      fontSize: fontSize,
-      fontFamily: fontFamily,
-      hasEOL: item.hasEOL || false
-    });
-  }
-
-  // Merge adjacent spans on the same line (same Y with small X gap)
-  spans = mergeTextSpans(spans);
-
-  return spans;
-}
-
-/* -------------------------------------------------------------------
-   Merge adjacent text spans on the same line
-   ------------------------------------------------------------------- */
-function mergeTextSpans(spans) {
-  if (spans.length === 0) return spans;
-
-  // Sort by top, then left
-  spans.sort(function (a, b) {
-    var dy = a.top - b.top;
-    if (Math.abs(dy) > 3) return dy;
-    return a.left - b.left;
-  });
-
-  var merged = [];
-  var current = spans[0];
-
-  for (var i = 1; i < spans.length; i++) {
-    var next = spans[i];
-    // Same line (Y within 3px)
-    if (Math.abs(next.top - current.top) < 3) {
-      // Small horizontal gap (≤ 4px) — merge
-      var gap = next.left - (current.left + current.width);
-      if (gap <= 4 && gap >= -2) {
-        current.text += ' ' + next.text;
-        current.width = next.left + next.width - current.left;
-        current.hasEOL = next.hasEOL;
-        continue;
-      }
-    }
-    merged.push(current);
-    current = next;
-  }
-  merged.push(current);
-
-  return merged;
-}
-
-/* -------------------------------------------------------------------
-   Build the final self-contained HTML file
+   Build the final self-contained HTML file — flat images only, no text layer
    ------------------------------------------------------------------- */
 function buildOutputHTML(pagesData, renderScale) {
   progressText.textContent = 'Assembling HTML…';
 
   var outName = outnameInput.value.trim();
-  if (!outName) outName = 'catalog.html';
+  if (!outName) outName = 'index.html';
 
-  var totalPages = pagesData.length;
   var totalBytes = 0;
   var pagesHTML = '';
 
@@ -1025,77 +917,33 @@ function buildOutputHTML(pagesData, renderScale) {
     var pageNum = i + 1;
     totalBytes += pd.compressedB64.length;
 
-    // Build text layer HTML
-    var textHTML = '';
-    for (var t = 0; t < pd.textSpans.length; t++) {
-      var s = pd.textSpans[t];
-      var fontFamilySafe = s.fontFamily || 'sans-serif';
-      var extraStyle = '';
-      if (s.hasEOL) extraStyle += 'display:block;';
+    var storageAttr = pd.isCompressed ? 'data-c="' + pd.compressedB64 + '"' : 'data-b="' + pd.compressedB64 + '"';
+    var imgClass = pd.isCompressed ? 'pg pg-c' : 'pg';
 
-      textHTML += '<span style="left:' + s.left + 'px;top:' + s.top + 'px;width:' + Math.max(s.width, 1) + 'px;height:' + Math.max(s.height, 1) + 'px;font-size:' + s.fontSize + 'px;font-family:\'' + fontFamilySafe + '\',sans-serif;' + extraStyle + '">'
-               + escapeHTML(s.text) + '</span>\n';
-    }
-
-    var storageAttr = pd.isCompressed ? 'data-compressed="' + pd.compressedB64 + '"' : 'data-b64="' + pd.compressedB64 + '"';
-    var imgClass = pd.isCompressed ? 'cat-bg cat-bg--compressed' : 'cat-bg';
-
-    pagesHTML += '<div class="cat-page" style="width:' + pd.width + 'px">\n'
-      + '<div class="cat-page-inner" style="padding-top:' + ((pd.height / pd.width) * 100) + '%">\n'
-      + '<img class="' + imgClass + '" ' + storageAttr + ' alt="Page ' + pageNum + '" data-width="' + pd.width + '" data-height="' + pd.height + '" data-isc="' + (pd.isCompressed ? '1' : '0') + '">\n'
-      + '<div class="cat-text-layer">\n'
-      + textHTML
-      + '</div>\n'
-      + '</div>\n'
-      + '</div>\n';
+    pagesHTML += '<img class="' + imgClass + '" ' + storageAttr
+      + ' alt="Page ' + pageNum + '"'
+      + ' style="width:100%;display:block">\n';
   }
 
-  // Estimate decompressed size (base64 → binary overhead)
   var estimatedKb = Math.round(totalBytes * 0.75 / 1024);
 
   var html = '<!DOCTYPE html>\n'
     + '<html lang="en">\n'
     + '<head>\n'
     + '<meta charset="UTF-8">\n'
-    + '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
+    + '<meta name="viewport" content="width=device-width,initial-scale=1.0">\n'
     + '<title>Catalog</title>\n'
     + '<style>\n'
-    + '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}\n'
-    + 'html{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;font-size:16px;line-height:1.5;color:#333;background:#f5f5f5}\n'
-    + 'body{padding:20px 10px}\n'
-    + '.cat-header{max-width:900px;margin:0 auto 20px;text-align:center}\n'
-    + '.cat-header h1{font-size:24px;color:#222;margin-bottom:4px}\n'
-    + '.cat-header p{font-size:14px;color:#888}\n'
-    + '.cat-container{max-width:900px;margin:0 auto}\n'
-    + '.cat-page{margin:0 auto 24px;background:#fff;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,0.1);overflow:hidden;page-break-inside:avoid}\n'
-    + '.cat-page-inner{position:relative;width:100%}\n'
-    + '.cat-bg{position:absolute;top:0;left:0;width:100%;height:100%;display:block;object-fit:contain;background:#fff}\n'
-    + '.cat-text-layer{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none}\n'
-    + '.cat-text-layer span{position:absolute;white-space:pre;overflow:hidden;color:transparent;pointer-events:auto;cursor:text;line-height:1;}\n'
-    + '.cat-text-layer span::selection{color:transparent;background:rgba(38,139,210,0.3)}\n'
-    + '@media(max-width:600px){body{padding:10px 5px}.cat-page{border-radius:2px;margin-bottom:12px}}\n'
-    + '@media print{.cat-page{box-shadow:none;border:1px solid #ddd;margin-bottom:0;page-break-after:always}.cat-header{display:none}}\n'
-    + '@media(prefers-color-scheme:dark){html{background:#111;color:#eee}body{background:#111}.cat-page{background:#fff}.cat-header h1{color:#eee}.cat-header p{color:#aaa}}\n'
-    + '.cat-loading{display:flex;align-items:center;justify-content:center;min-height:200px;color:#999;font-size:14px}\n'
+    + '*{margin:0;padding:0;box-sizing:border-box}\n'
+    + 'body{background:#ddd}\n'
+    + '.pg{width:100%;display:block;background:#fff}\n'
+    + '@media print{.pg{page-break-after:always}}\n'
     + '</style>\n'
     + '</head>\n'
     + '<body>\n'
-    + '<div class="cat-header">\n'
-    + '<h1>' + escapeHTML(outName.replace(/\.html$/i, '').replace(/-/g, ' ')) + '</h1>\n'
-    + '<p>' + totalPages + ' page' + (totalPages === 1 ? '' : 's') + ' &middot; ~' + estimatedKb + ' KB</p>\n'
-    + '</div>\n'
-    + '<div class="cat-container">\n'
     + pagesHTML
-    + '</div>\n'
     + '<script>\n'
-    + '(function(){var d=document;var imgs=d.querySelectorAll(".cat-bg--compressed");var total=imgs.length;var loaded=0;\n'
-    + 'function loadImg(img){var cmp=img.getAttribute("data-compressed");if(!cmp)return;\n'
-    + 'try{var binary=atob(cmp);var bytes=new Uint8Array(binary.length);for(var i=0;i<binary.length;i++){bytes[i]=binary.charCodeAt(i)}\n'
-    + 'var ds=new DecompressionStream("gzip");var writer=ds.writable.getWriter();writer.write(bytes);writer.close();\n'
-    + 'new Response(ds.readable).blob().then(function(blob){var url=URL.createObjectURL(blob);img.src=url;img.removeAttribute("data-compressed");img.classList.remove("cat-bg--compressed");loaded++;if(loaded===total&&d.querySelector(".cat-loading")){var el=d.querySelector(".cat-loading");el.parentNode.removeChild(el)}}).catch(function(){img.removeAttribute("data-compressed");img.classList.remove("cat-bg--compressed");loaded++})}catch(e){img.removeAttribute("data-compressed");img.classList.remove("cat-bg--compressed");loaded++}}\n'
-    + 'var observer;if(typeof IntersectionObserver!="undefined"){observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){var img=entry.target;observer.unobserve(img);loadImg(img)}}),{rootMargin:"200px"}})\n'
-    + 'imgs.forEach(function(img){observer.observe(img)})}else{imgs.forEach(function(img){loadImg(img)})}\n'
-    + 'var plainImgs=d.querySelectorAll(".cat-bg:not(.cat-bg--compressed)");plainImgs.forEach(function(img){var b64=img.getAttribute("data-b64");if(b64){img.src="data:image/jpeg;base64,"+b64;img.removeAttribute("data-b64")}})})();\n'
+    + '!function(){var d=document;var a=d.querySelectorAll(".pg-c");var o=new IntersectionObserver(function(e){e.forEach(function(e){if(e.isIntersecting){var i=e.target;o.unobserve(i);!function(i){var c=i.getAttribute("data-c");if(!c)return;try{var b=atob(c),u=new Uint8Array(b.length);for(var j=0;j<b.length;j++){u[j]=b.charCodeAt(j)}var s=new DecompressionStream("gzip"),w=s.writable.getWriter();w.write(u);w.close();new Response(s.readable).blob().then(function(b){var u=URL.createObjectURL(b);i.src=u;i.removeAttribute("data-c");i.classList.remove("pg-c")}).catch(function(){i.removeAttribute("data-c");i.classList.remove("pg-c")})}catch(e){i.removeAttribute("data-c");i.classList.remove("pg-c")}}(i)}})},{rootMargin:"500px"});a.forEach(function(i){o.observe(i)});d.querySelectorAll(".pg:not(.pg-c)").forEach(function(i){var b=i.getAttribute("data-b");if(b){i.src="data:image/jpeg;base64,"+b;i.removeAttribute("data-b")}})})();\n'
     + '<\/script>\n'
     + '</body>\n'
     + '</html>';

@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cross Writing Generator - Buho</title>
+  <link rel="stylesheet" href="../../_framework/buho.css">
+<style>
+/* ============================================================
+   Cross Writing Generator — Tool Styles
+   ============================================================ */
+.cw-intro {
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg-lo);
+  margin-bottom: var(--buho-space-4);
+  max-width: 720px;
+}
+
+/* -------------------------------------------------------------------
+   Controls
+   ------------------------------------------------------------------- */
+.cw-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--buho-space-4);
+  margin-bottom: var(--buho-space-4);
+}
+.cw-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--buho-space-2);
+}
+.cw-field label {
+  font-size: var(--buho-fs-sm);
+  font-weight: 600;
+  color: var(--buho-fg-hi);
+}
+.cw-field select,
+.cw-field input[type="number"] {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--buho-space-3);
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-fg);
+  background: var(--buho-bg);
+  border: var(--buho-border);
+  border-radius: var(--buho-radius);
+  outline: none;
+  transition: border-color var(--buho-ease);
+}
+.cw-field select:focus,
+.cw-field input[type="number"]:focus { border-color: var(--buho-blue); }
+
+.cw-color-row {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-2);
+}
+.cw-color-row input[type="color"] {
+  width: 44px;
+  height: 40px;
+  padding: 2px;
+  border: var(--buho-border);
+  border-radius: var(--buho-radius);
+  background: var(--buho-bg);
+  cursor: pointer;
+}
+.cw-color-row span {
+  font-size: var(--buho-fs-xs);
+  color: var(--buho-fg-lo);
+}
+
+.cw-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--buho-space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--buho-space-5);
+}
+.cw-msg {
+  font-size: var(--buho-fs-sm);
+  color: var(--buho-red);
+  font-weight: 600;
+}
+
+/* -------------------------------------------------------------------
+   Preview
+   ------------------------------------------------------------------- */
+.cw-preview {
+  display: none;
+  margin-top: var(--buho-space-4);
+}
+.cw-preview__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--buho-space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--buho-space-3);
+}
+.cw-preview__title {
+  font-size: var(--buho-fs-lg);
+  font-weight: 700;
+  color: var(--buho-fg-hi);
+}
+.cw-preview__scroll {
+  max-height: 70vh;
+  overflow-y: auto;
+  border: var(--buho-border);
+  border-radius: var(--buho-radius);
+  background: var(--buho-bg-hi);
+  padding: var(--buho-space-4);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--buho-space-4);
+}
+.cw-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--buho-space-3);
+  background: var(--buho-bg);
+  border: var(--buho-border);
+  border-radius: var(--buho-radius);
+  padding: var(--buho-space-3);
+}
+.cw-card__label {
+  font-size: var(--buho-fs-sm);
+  font-weight: 700;
+  color: var(--buho-fg-hi);
+}
+.cw-card__canvas {
+  width: 100%;
+  height: auto;
+  border: var(--buho-border);
+  border-radius: 4px;
+  display: block;
+  background: #fff;
+}
+.cw-card__btn {
+  min-width: 160px;
+  justify-content: center;
+}
+
+/* -------------------------------------------------------------------
+   Attribution badge (non-intrusive, 90% transparent)
+   ------------------------------------------------------------------- */
+.cw-attribution {
+  position: fixed;
+  right: var(--buho-space-3);
+  bottom: var(--buho-space-3);
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--buho-space-1);
+  font-size: var(--buho-fs-xs);
+  color: var(--buho-fg);
+  background: var(--buho-bg-hi);
+  border: var(--buho-border);
+  border-radius: var(--buho-radius);
+  padding: var(--buho-space-1) var(--buho-space-2);
+  text-decoration: none;
+  opacity: 0.1;
+  transition: opacity var(--buho-ease);
+}
+.cw-attribution:hover,
+.cw-attribution:focus {
+  opacity: 0.9;
+}
+
+@media (max-width: 480px) {
+  .cw-preview__scroll { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+  <!--
+    The top bar and sub-bar are injected by buho.js automatically.
+    Do NOT add <header> elements here — buhoInit() inserts them.
+  -->
+
+  <!-- ================================================================= -->
+  <!--  TOOL CONTENT                                                     -->
+  <!-- ================================================================= -->
+  <main class="buho-content">
+    <div class="buho-content__inner">
+
+      <h1>Cross Writing Generator</h1>
+      <p class="cw-intro">
+        Paste your content below. The text is first written horizontally across the page.
+        Once the page is full, the remaining text is written in rotated (cross) mode —
+        the page is turned 90° and writing continues over the top. Different colours and
+        25% transparency let the two passes show through each other. Output is a square
+        21&times;21&nbsp;cm page at 300&nbsp;DPI.
+      </p>
+
+      <!-- Input -->
+      <div class="buho-tool-section">
+        <h2 class="buho-tool-section__title">1. Paste your content</h2>
+        <textarea id="cw-text" class="buho-textarea" placeholder="Paste or type the content you want to cross-write here…"></textarea>
+      </div>
+
+      <!-- Options -->
+      <div class="buho-tool-section">
+        <h2 class="buho-tool-section__title">2. Choose options</h2>
+        <div class="cw-controls">
+          <div class="cw-field">
+            <label for="cw-font">Handwriting font</label>
+            <select id="cw-font"></select>
+          </div>
+          <div class="cw-field">
+            <label for="cw-size">Font size (px @300dpi)</label>
+            <input type="number" id="cw-size" min="40" max="200" step="2" value="72">
+          </div>
+          <div class="cw-field">
+            <label for="cw-hcolor">Horizontal colour (25% opacity)</label>
+            <div class="cw-color-row">
+              <input type="color" id="cw-hcolor" value="#1a1a1a">
+              <span id="cw-hcolor-label">#1a1a1a</span>
+            </div>
+          </div>
+          <div class="cw-field">
+            <label for="cw-vcolor">Vertical colour (25% opacity)</label>
+            <div class="cw-color-row">
+              <input type="color" id="cw-vcolor" value="#b30000">
+              <span id="cw-vcolor-label">#b30000</span>
+            </div>
+          </div>
+        </div>
+        <div class="cw-actions">
+          <button class="buho-btn" id="cw-generate">✍ Cross Write</button>
+          <span class="cw-msg" id="cw-msg"></span>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="cw-preview" id="cw-preview">
+        <div class="cw-preview__head">
+          <span class="cw-preview__title" id="cw-preview-title">Generated pages</span>
+          <button class="buho-btn buho-btn--outline" id="cw-pdf-btn">📄 Download All as PDF</button>
+        </div>
+        <div class="cw-preview__scroll" id="cw-preview-scroll"></div>
+      </div>
+
+    </div>
+  </main>
+  <!-- ================================================================= -->
+  <!--  END TOOL CONTENT                                                 -->
+  <!-- ================================================================= -->
+
+  <!-- Attribution badge — non-intrusive, 90% transparent -->
+  <a class="cw-attribution"
+     href="https://www.quantumenterprises.co.uk/handwriting-fonts/fontvault.htm"
+     target="_blank" rel="noopener"
+     title="Handwriting fonts from the Quantum Enterprises Font Vault — used here for non-commercial purposes">
+    ✍ Fonts: Quantum Enterprises (non-commercial)
+  </a>
+
+  <script src="../../_framework/buho.js"></script>
+  <script>
+// ============================================================
+//  Cross Writing Generator — Core Logic
+//  All processing happens on-device in the browser.
+// ============================================================
+
+/* -------------------------------------------------------------------
+   Constants
+   ------------------------------------------------------------------- */
+var CANVAS_SIZE = 2480;            // 21cm @ 300 DPI (square)
+var TEXT_ALPHA  = 0.25;            // 25% transparency for both passes
+var LINE_HEIGHT_RATIO = 1.4;       // normal text line spacing
+
+/* -------------------------------------------------------------------
+   Fonts — file name (no .ttf) -> display label
+   All downloaded from the Quantum Enterprises Font Vault.
+   ------------------------------------------------------------------- */
+var FONTS = [
+  { file: "QEAntonyLark",        label: "Antony Lark" },
+  { file: "QEBEV",               label: "Beverly Smith" },
+  { file: "QEBradenHill",        label: "Braden Hill" },
+  { file: "QECarolineMutiboko",  label: "Caroline Mutiboko" },
+  { file: "QEDaveMergens",       label: "David Mergens" },
+  { file: "QEDavidReid",         label: "David Reid" },
+  { file: "QEDavidReidCAP",      label: "David Reid (CAP)" },
+  { file: "QEDonaldRoss",        label: "Donald Ross" },
+  { file: "QEDSFont",            label: "DS Font" },
+  { file: "QEGarrettWMoretz",    label: "Garrett Moretz" },
+  { file: "QEgeeKzoid",          label: "geeKzoid" },
+  { file: "QEGHHughes",          label: "George Hughes" },
+  { file: "QEPrintVersion",      label: "Harriet DeLaughter (Print)" },
+  { file: "QECursiveVersion",    label: "Harriet DeLaughter (Cursive)" },
+  { file: "QEHerbertCooper",     label: "Herbert Cooper" },
+  { file: "QEJeffDungan",        label: "Jeff Dungan" },
+  { file: "QEJER",               label: "Kate Rothrock" },
+  { file: "QEJohnCaplin",        label: "John Caplin" },
+  { file: "QEJohnWilliams",      label: "John Williams" },
+  { file: "QEJulianDean",        label: "Julian Dean" },
+  { file: "QEKevinKnowles",      label: "Kevin Knowles" },
+  { file: "QEKevinShirley",      label: "Kevin Shirley" },
+  { file: "QEKunjarScript",      label: "Kunjar Bhaduri" },
+  { file: "QEMamasAndPapas",     label: "Mamas and Papas" },
+  { file: "QEPamRosenberry",     label: "Pamela Rosenberry" },
+  { file: "QEPhilipBean",        label: "Philip Bean" },
+  { file: "QERoystonSuch",       label: "Royston Such" },
+  { file: "QERoystonSuchCAP",    label: "Royston Such (CAP)" },
+  { file: "QERufus",             label: "Rufus" },
+  { file: "QERuthStafford",      label: "Ruth Stafford" },
+  { file: "QESamRoberts",        label: "Sam Roberts" },
+  { file: "QESamRoberts2",       label: "Sam Roberts (2)" },
+  { file: "QEScottWilliams",     label: "Scott Williams" },
+  { file: "QETimDoremus",        label: "Tim Doremus" },
+  { file: "QETonyFlores",        label: "Tony Flores" },
+  { file: "QEVRead",             label: "Valerie Read" },
+  { file: "QEVickyCaulfield",    label: "Vicky Caulfield" },
+  { file: "QEPhillips",          label: "William Phillips" }
+];
+
+/* -------------------------------------------------------------------
+   State
+   ------------------------------------------------------------------- */
+var pages = [];          // array of full-res canvases
+var loadedFonts = {};    // name -> FontFace
+
+/* -------------------------------------------------------------------
+   DOM refs
+   ------------------------------------------------------------------- */
+var $ = function (id) { return document.getElementById(id); };
+var textEl      = $('cw-text');
+var fontEl      = $('cw-font');
+var sizeEl      = $('cw-size');
+var hColorEl    = $('cw-hcolor');
+var vColorEl    = $('cw-vcolor');
+var hColorLabel = $('cw-hcolor-label');
+var vColorLabel = $('cw-vcolor-label');
+var generateBtn = $('cw-generate');
+var msgEl       = $('cw-msg');
+var previewEl   = $('cw-preview');
+var previewTitle= $('cw-preview-title');
+var previewScroll = $('cw-preview-scroll');
+var pdfBtn      = $('cw-pdf-btn');
+
+/* -------------------------------------------------------------------
+   Populate font dropdown
+   ------------------------------------------------------------------- */
+function populateFonts() {
+  FONTS.forEach(function (f) {
+    var opt = document.createElement('option');
+    opt.value = f.file;
+    opt.textContent = f.label;
+    fontEl.appendChild(opt);
+  });
+}
+
+/* -------------------------------------------------------------------
+   Load a font on demand via the FontFace API
+   ------------------------------------------------------------------- */
+function loadFont(name) {
+  return new Promise(function (resolve, reject) {
+    if (loadedFonts[name]) { resolve(); return; }
+    var url = 'fonts/' + name + '.ttf';
+    var face = new FontFace(name, 'url(' + url + ')');
+    face.load().then(function (loaded) {
+      document.fonts.add(loaded);
+      loadedFonts[name] = loaded;
+      resolve();
+    }).catch(function (err) {
+      reject(err);
+    });
+  });
+}
+
+/* -------------------------------------------------------------------
+   Text wrapping — returns the next line that fits and the new index
+   ------------------------------------------------------------------- */
+function getNextLine(ctx, text, idx, maxW) {
+  var line = '';
+  var i = idx;
+  while (i < text.length) {
+    var ch = text[i];
+    if (ch === '\n') {
+      return { line: line, nextIdx: i + 1 };
+    }
+    var test = line + ch;
+    if (ctx.measureText(test).width <= maxW) {
+      line = test;
+      i++;
+    } else {
+      if (line === '') { line = ch; i++; }  // force a single over-wide char
+      break;
+    }
+  }
+  return { line: line, nextIdx: i };
+}
+
+/* -------------------------------------------------------------------
+   Draw one pass (horizontal or vertical) starting at text index.
+   Returns the new text index after the pass.
+   ------------------------------------------------------------------- */
+function drawPass(ctx, text, startIdx, fontPx, color, vertical) {
+  var margin = Math.round(fontPx * 0.6);
+  var lineHeight = Math.round(fontPx * LINE_HEIGHT_RATIO);
+  var maxW = CANVAS_SIZE - 2 * margin;
+  var maxY = CANVAS_SIZE - margin;
+
+  ctx.save();
+  if (vertical) {
+    // Rotate 90° CCW: text reads bottom-to-top, character tops face left.
+    ctx.translate(0, CANVAS_SIZE);
+    ctx.rotate(-Math.PI / 2);
+  }
+  ctx.fillStyle = color;
+  ctx.globalAlpha = TEXT_ALPHA;
+  ctx.font = fontPx + 'px "' + currentFontName() + '"';
+  ctx.textBaseline = 'alphabetic';
+
+  var x = margin;
+  var y = margin + fontPx;
+  var idx = startIdx;
+
+  while (y <= maxY) {
+    if (idx >= text.length) break;
+    var res = getNextLine(ctx, text, idx, maxW);
+    ctx.fillText(res.line, x, y);
+    idx = res.nextIdx;
+    y += lineHeight;
+  }
+  ctx.restore();
+  return idx;
+}
+
+function currentFontName() {
+  return fontEl.value;
+}
+
+/* -------------------------------------------------------------------
+   Generate all pages
+   ------------------------------------------------------------------- */
+function generate() {
+  var text = textEl.value;
+  if (!text.trim()) {
+    showMsg('Please paste some text first.');
+    return;
+  }
+  var fontPx = parseInt(sizeEl.value, 10) || 72;
+  var hColor = hColorEl.value;
+  var vColor = vColorEl.value;
+
+  pages = [];
+  var idx = 0;
+  var safety = 0;
+
+  while (idx < text.length && safety < 500) {
+    var canvas = document.createElement('canvas');
+    canvas.width = CANVAS_SIZE;
+    canvas.height = CANVAS_SIZE;
+    var ctx = canvas.getContext('2d');
+
+    // White background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+    // Horizontal pass, then vertical (cross) pass
+    idx = drawPass(ctx, text, idx, fontPx, hColor, false);
+    idx = drawPass(ctx, text, idx, fontPx, vColor, true);
+
+    pages.push(canvas);
+    safety++;
+  }
+
+  renderPreview();
+}
+
+/* -------------------------------------------------------------------
+   Render preview cards
+   ------------------------------------------------------------------- */
+function renderPreview() {
+  previewScroll.innerHTML = '';
+  previewTitle.textContent = 'Generated pages (' + pages.length + ')';
+
+  pages.forEach(function (pageCanvas, i) {
+    var card = document.createElement('div');
+    card.className = 'cw-card';
+
+    var label = document.createElement('div');
+    label.className = 'cw-card__label';
+    label.textContent = 'Page ' + (i + 1);
+
+    var canvas = document.createElement('canvas');
+    canvas.className = 'cw-card__canvas';
+    canvas.width = CANVAS_SIZE;
+    canvas.height = CANVAS_SIZE;
+    canvas.getContext('2d').drawImage(pageCanvas, 0, 0);
+
+    var btn = document.createElement('button');
+    btn.className = 'buho-btn buho-btn--outline cw-card__btn';
+    btn.textContent = '⬇ Download PNG';
+    btn.addEventListener('click', (function (pc, n) {
+      return function () { downloadPNG(pc, n); };
+    })(pageCanvas, i + 1));
+
+    card.appendChild(label);
+    card.appendChild(canvas);
+    card.appendChild(btn);
+    previewScroll.appendChild(card);
+  });
+
+  previewEl.style.display = 'block';
+  pdfBtn.disabled = pages.length === 0;
+  previewEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* -------------------------------------------------------------------
+   Download a single page as PNG (compressed, not raw)
+   ------------------------------------------------------------------- */
+function downloadPNG(canvas, pageNum) {
+  canvas.toBlob(function (blob) {
+    if (!blob) { showMsg('Failed to generate PNG.'); return; }
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'cross-writing-page-' + pageNum + '.png';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 1000);
+  }, 'image/png');
+}
+
+/* -------------------------------------------------------------------
+   jsPDF loader — CDN first, local fallback
+   ------------------------------------------------------------------- */
+var JSPDF_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+var JSPDF_FALLBACK = 'lib/jspdf.umd.min.js';
+
+function loadScript(src, fallbackSrc) {
+  return new Promise(function (resolve, reject) {
+    var script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = function () {
+      if (fallbackSrc) {
+        var fb = document.createElement('script');
+        fb.src = fallbackSrc;
+        fb.onload = resolve;
+        fb.onerror = function () { reject(new Error('Failed to load script: ' + src)); };
+        document.head.appendChild(fb);
+      } else {
+        reject(new Error('Failed to load script: ' + src));
+      }
+    };
+    document.head.appendChild(script);
+  });
+}
+
+function loadJSPDF() {
+  if (window.jspdf && window.jspdf.jsPDF) return Promise.resolve();
+  return loadScript(JSPDF_CDN, JSPDF_FALLBACK);
+}
+
+/* -------------------------------------------------------------------
+   Download all pages as a single PDF
+   ------------------------------------------------------------------- */
+pdfBtn.addEventListener('click', function () {
+  if (pages.length === 0) return;
+  pdfBtn.disabled = true;
+  pdfBtn.textContent = '⏳ Preparing PDF…';
+
+  loadJSPDF().then(function () {
+    var jsPDF = window.jspdf.jsPDF;
+    var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [210, 210] });
+
+    pages.forEach(function (canvas, i) {
+      if (i > 0) pdf.addPage([210, 210], 'portrait');
+      // JPEG keeps the PDF small (background is white, no transparency needed)
+      var imgData = canvas.toDataURL('image/jpeg', 0.85);
+      pdf.addImage(imgData, 'JPEG', 0, 0, 210, 210);
+    });
+
+    pdf.save('cross-writing.pdf');
+    pdfBtn.disabled = false;
+    pdfBtn.textContent = '📄 Download All as PDF';
+  }).catch(function () {
+    showMsg('Failed to load PDF library. Check your connection and try again.');
+    pdfBtn.disabled = false;
+    pdfBtn.textContent = '📄 Download All as PDF';
+  });
+});
+
+/* -------------------------------------------------------------------
+   Helpers
+   ------------------------------------------------------------------- */
+function showMsg(m) {
+  msgEl.textContent = m;
+  if (m) {
+    clearTimeout(showMsg._t);
+    showMsg._t = setTimeout(function () { msgEl.textContent = ''; }, 4000);
+  }
+}
+
+/* -------------------------------------------------------------------
+   Events
+   ------------------------------------------------------------------- */
+generateBtn.addEventListener('click', function () {
+  var text = textEl.value;
+  if (!text.trim()) { showMsg('Please paste some text first.'); return; }
+
+  generateBtn.disabled = true;
+  generateBtn.textContent = '⏳ Generating…';
+
+  loadFont(fontEl.value).then(function () {
+    generate();
+    generateBtn.disabled = false;
+    generateBtn.textContent = '✍ Cross Write';
+  }).catch(function () {
+    showMsg('Failed to load the selected font.');
+    generateBtn.disabled = false;
+    generateBtn.textContent = '✍ Cross Write';
+  });
+});
+
+hColorEl.addEventListener('input', function () { hColorLabel.textContent = hColorEl.value; });
+vColorEl.addEventListener('input', function () { vColorLabel.textContent = vColorEl.value; });
+
+/* -------------------------------------------------------------------
+   Boot
+   ------------------------------------------------------------------- */
+populateFonts();
+</script>
+</body>
+</html>

@@ -42,6 +42,13 @@ var BUHO_CATEGORIES = [
     ]
   },
   {
+    name: "AntiAI Tools",
+    folder: "AntiAI-Tools",
+    tools: [
+      { name: "Cross Writing Generator", file: "cross-writing-generator.html", folder: "AntiAI-Tools/Cross-Writing-Generator" }
+    ]
+  },
+  {
     name: "About",
     folder: "",
     tools: [

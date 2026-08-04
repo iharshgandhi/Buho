@@ -37,6 +37,8 @@ Image-Tools/Image-Compressor/test_*.*
 PDF-Tools/test_*.py
 PDF-Tools/test_password_remover.py
 LocalTestFiles/
+AntiAI-Tools/Cross-Writing-Generator/test_*.*
+AntiAI-Tools/Cross-Writing-Generator/output/
 
 # ---------------------------------------------------------------------------
 #  macOS
