@@ -118,8 +118,14 @@
       function isFree(model) { return Number(model.pricing && model.pricing.prompt) === 0 && Number(model.pricing && model.pricing.completion) === 0; }
       function isHarnessOnlyModel(model) { return model.id === 'thinkingmachines/inkling:free' || model.canonical_slug === 'thinkingmachines/inkling:free'; }
       function isHarnessOnlyError(error) { return /only available on agentic harnesses|agentic harness/i.test(error && error.message || ''); }
+      async function fetchWithTimeout(url, options, timeoutMs) {
+        var controller = new AbortController();
+        var timeout = setTimeout(function () { controller.abort(); }, timeoutMs);
+        try { return await fetch(url, Object.assign({}, options, { signal: controller.signal })); }
+        finally { clearTimeout(timeout); }
+      }
       async function getModels(key, mode) {
-        var response = await fetch('https://openrouter.ai/api/v1/models', { headers: { Authorization: 'Bearer ' + key } });
+        var response = await fetchWithTimeout('https://openrouter.ai/api/v1/models', { headers: { Authorization: 'Bearer ' + key } }, 20000);
         var data = await response.json();
         if (!response.ok || data.error) throw new Error(data.error && data.error.message || 'The API key could not retrieve models.');
         var models = (data.data || []).filter(function (model) { return model.id && !isHarnessOnlyModel(model) && model.context_length >= 4000 && (mode === 'free' ? isFree(model) : !isFree(model) && isFinite(price(model))); });
@@ -127,12 +133,14 @@
         models.sort(mode === 'free' ? function (a, b) { return modelScore(b) - modelScore(a); } : function (a, b) { return price(a) - price(b) || modelScore(b) - modelScore(a); });
         return models;
       }
-      async function askModel(key, models, chapter) {
+      async function askModel(key, models, chapter, mode) {
         var fullPrompt = prompt + '\n\n## CHAPTER TO PROCESS\nChapter Number: ' + chapter.number + '\n\n## CHAPTER TEXT\n---\n' + chapter.text + '\n---';
         var lastError = null;
-        for (var index = 0; index < Math.min(models.length, 3); index += 1) {
+        var maxAttempts = mode === 'free' ? Math.min(models.length, 8) : Math.min(models.length, 3);
+        for (var index = 0; index < maxAttempts; index += 1) {
           try {
-            var response = await fetch('https://openrouter.ai/api/v1/chat/completions', { method: 'POST', headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: models[index].id, messages: [{ role: 'system', content: 'You create accurate reading comprehension exercises for children aged 8-10.' }, { role: 'user', content: fullPrompt }], max_tokens: 4000, temperature: 0.3 }) });
+            setStatus('Trying ' + (models[index].name || models[index].id) + ' (' + (index + 1) + '/' + maxAttempts + ')...', '');
+            var response = await fetchWithTimeout('https://openrouter.ai/api/v1/chat/completions', { method: 'POST', headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: models[index].id, messages: [{ role: 'system', content: 'You create accurate reading comprehension exercises for children aged 8-10.' }, { role: 'user', content: fullPrompt }], max_tokens: 4000, temperature: 0.3 }) }, 30000);
             var data = await response.json();
             if (!response.ok || data.error) throw new Error(data.error && data.error.message || 'Model request failed.');
             var content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '';
@@ -175,7 +183,7 @@
           var scope = document.querySelector('input[name="qg-scope"]:checked').value, mode = document.querySelector('input[name="qg-api-mode"]:checked').value, chapters = splitChapters(text), models = await getModels(key, mode);
           if (scope === 'chapter') chapters = [chapters[0]];
           var files = [];
-          for (var index = 0; index < chapters.length; index += 1) { setStatus('Generating chapter ' + (index + 1) + ' of ' + chapters.length + '...', ''); var questions = await askModel(key, models, chapters[index]); var filename = safeName(bookName) + (scope === 'book' ? '_ch' + String(chapters[index].number).padStart(2, '0') : '') + '.pdf'; files.push(makePdf(bookName, chapters[index], questions, filename)); }
+          for (var index = 0; index < chapters.length; index += 1) { setStatus('Generating chapter ' + (index + 1) + ' of ' + chapters.length + '...', ''); var questions = await askModel(key, models, chapters[index], mode); var filename = safeName(bookName) + (scope === 'book' ? '_ch' + String(chapters[index].number).padStart(2, '0') : '') + '.pdf'; files.push(makePdf(bookName, chapters[index], questions, filename)); }
           files.forEach(function (file) { var item = document.createElement('div'); item.className = 'qg-download'; item.innerHTML = '<span class="qg-download__name"></span><a class="buho-btn" download="' + file.filename + '">Download PDF</a>'; item.querySelector('.qg-download__name').textContent = file.filename; item.querySelector('a').href = file.url; downloadList.appendChild(item); });
           downloads.classList.add('qg-downloads--visible'); setStatus(files.length + ' questionnaire' + (files.length === 1 ? '' : 's') + ' ready.', 'success');
         } catch (error) { setStatus(error.message || 'Generation failed. Check the key and try again.', 'error'); }
