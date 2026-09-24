@@ -6,12 +6,13 @@
   <title>Questionnaire Generator - Buho</title>
   <link rel="stylesheet" href="../_framework/buho.css">
   <style>
-    .qg-intro { color: var(--buho-fg-lo); margin-bottom: var(--buho-space-5); }
+    .qg-intro { font-size: var(--buho-fs-sm); color: var(--buho-fg-lo); margin-bottom: var(--buho-space-4); max-width: 720px; }
     .qg-field { margin-bottom: var(--buho-space-4); }
-    .qg-label { display: block; margin-bottom: var(--buho-space-2); font-weight: 700; color: var(--buho-fg-hi); }
-    .qg-input { width: 100%; height: 42px; padding: 0 var(--buho-space-3); color: var(--buho-fg); background: var(--buho-bg); border: var(--buho-border); border-radius: var(--buho-radius); outline: none; }
+    .qg-label { display: block; margin-bottom: var(--buho-space-2); font-size: var(--buho-fs-sm); font-weight: 600; color: var(--buho-fg-hi); }
+    .qg-input { width: 100%; height: 40px; padding: 0 var(--buho-space-3); font-size: var(--buho-fs-sm); color: var(--buho-fg); background: var(--buho-bg); border: var(--buho-border); border-radius: var(--buho-radius); outline: none; transition: border-color var(--buho-ease); }
     .qg-input:focus { border-color: var(--buho-blue); }
-    .qg-textarea { min-height: 360px; font-family: var(--buho-font); font-size: var(--buho-fs-base); }
+    .qg-textarea { min-height: 320px; font-family: var(--buho-font); font-size: var(--buho-fs-base); }
+    .qg-fieldset { padding: 0; border: 0; }
     .qg-radio-group { display: flex; flex-wrap: wrap; gap: var(--buho-space-4); }
     .qg-radio { display: inline-flex; align-items: center; gap: var(--buho-space-2); min-height: 44px; cursor: pointer; }
     .qg-radio input { width: 18px; height: 18px; accent-color: var(--buho-blue); }
@@ -36,36 +37,43 @@
       <p class="qg-intro">Turn a chapter or a complete book into a printable reading-comprehension questionnaire.</p>
 
       <form id="qg-form" novalidate>
-        <div class="qg-field">
-          <label class="qg-label" for="qg-book-name">Book Name</label>
-          <input class="qg-input" id="qg-book-name" type="text" required placeholder="For example, Five Run Away Together">
-        </div>
-
-        <div class="qg-field">
-          <label class="qg-label" for="qg-text">Book or chapter text</label>
-          <textarea class="buho-textarea qg-textarea" id="qg-text" required placeholder="Paste the complete text here..."></textarea>
-        </div>
-
-        <fieldset class="qg-field">
-          <legend class="qg-label">Text scope</legend>
-          <div class="qg-radio-group">
-            <label class="qg-radio"><input type="radio" name="qg-scope" value="chapter" checked> Chapter</label>
-            <label class="qg-radio"><input type="radio" name="qg-scope" value="book"> Full Book</label>
+        <div class="buho-tool-section">
+          <h2 class="buho-tool-section__title">1. Enter your text</h2>
+          <div class="qg-field">
+            <label class="qg-label" for="qg-book-name">Book Name</label>
+            <input class="qg-input" id="qg-book-name" type="text" required placeholder="For example, Five Run Away Together">
           </div>
-        </fieldset>
-
-        <div class="qg-field">
-          <label class="qg-label" for="qg-api-key">OpenRouter API Key</label>
-          <input class="qg-input" id="qg-api-key" type="password" required autocomplete="off" placeholder="sk-or-v1-...">
+          <div class="qg-field">
+            <label class="qg-label" for="qg-text">Book or chapter text</label>
+            <textarea class="buho-textarea qg-textarea" id="qg-text" required placeholder="Paste the complete text here..."></textarea>
+          </div>
         </div>
 
-        <fieldset class="qg-field">
-          <legend class="qg-label">API mode</legend>
-          <div class="qg-radio-group">
-            <label class="qg-radio"><input type="radio" name="qg-api-mode" value="free" checked> Use Free API</label>
-            <label class="qg-radio"><input type="radio" name="qg-api-mode" value="paid"> Use Paid API</label>
+        <div class="buho-tool-section">
+          <h2 class="buho-tool-section__title">2. Choose text scope</h2>
+          <fieldset class="qg-field qg-fieldset">
+            <legend class="qg-label">Text scope</legend>
+            <div class="qg-radio-group">
+              <label class="qg-radio"><input type="radio" name="qg-scope" value="chapter" checked> Chapter</label>
+              <label class="qg-radio"><input type="radio" name="qg-scope" value="book"> Full Book</label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="buho-tool-section">
+          <h2 class="buho-tool-section__title">3. Connect to OpenRouter</h2>
+          <div class="qg-field">
+            <label class="qg-label" for="qg-api-key">OpenRouter API Key</label>
+            <input class="qg-input" id="qg-api-key" type="password" required autocomplete="off" placeholder="sk-or-v1-...">
           </div>
-        </fieldset>
+          <fieldset class="qg-field qg-fieldset">
+            <legend class="qg-label">API mode</legend>
+            <div class="qg-radio-group">
+              <label class="qg-radio"><input type="radio" name="qg-api-mode" value="free" checked> Use Free API</label>
+              <label class="qg-radio"><input type="radio" name="qg-api-mode" value="paid"> Use Paid API</label>
+            </div>
+          </fieldset>
+        </div>
 
         <div class="qg-actions">
           <button class="buho-btn" id="qg-generate" type="submit">Generate Questionnaire</button>
