@@ -116,11 +116,13 @@
       function modelScore(model) { var benchmarks = model.benchmarks && model.benchmarks.artificial_analysis || {}; return Number(benchmarks.intelligence_index || 0) * 1000000 + Number(benchmarks.coding_index || 0) * 1000 + Number(benchmarks.agentic_index || 0); }
       function price(model) { return Number(model.pricing && (model.pricing.prompt || model.pricing.input) || Infinity) + Number(model.pricing && (model.pricing.completion || model.pricing.output) || Infinity); }
       function isFree(model) { return Number(model.pricing && model.pricing.prompt) === 0 && Number(model.pricing && model.pricing.completion) === 0; }
+      function isHarnessOnlyModel(model) { return model.id === 'thinkingmachines/inkling:free' || model.canonical_slug === 'thinkingmachines/inkling:free'; }
+      function isHarnessOnlyError(error) { return /only available on agentic harnesses|agentic harness/i.test(error && error.message || ''); }
       async function getModels(key, mode) {
         var response = await fetch('https://openrouter.ai/api/v1/models', { headers: { Authorization: 'Bearer ' + key } });
         var data = await response.json();
         if (!response.ok || data.error) throw new Error(data.error && data.error.message || 'The API key could not retrieve models.');
-        var models = (data.data || []).filter(function (model) { return model.id && model.context_length >= 4000 && (mode === 'free' ? isFree(model) : !isFree(model) && isFinite(price(model))); });
+        var models = (data.data || []).filter(function (model) { return model.id && !isHarnessOnlyModel(model) && model.context_length >= 4000 && (mode === 'free' ? isFree(model) : !isFree(model) && isFinite(price(model))); });
         if (!models.length) throw new Error(mode === 'free' ? 'No free models are available for this API key.' : 'No paid models are available for this API key.');
         models.sort(mode === 'free' ? function (a, b) { return modelScore(b) - modelScore(a); } : function (a, b) { return price(a) - price(b) || modelScore(b) - modelScore(a); });
         return models;
@@ -136,7 +138,7 @@
             var content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '';
             if (!content.includes('## Short Answer Questions') || !content.includes('## True or False Questions') || !content.includes('## Think & Write Questions')) throw new Error('The model returned an invalid questionnaire format.');
             return content;
-          } catch (error) { lastError = error; }
+          } catch (error) { lastError = isHarnessOnlyError(error) ? new Error('This model requires an agentic harness and cannot run in the browser.') : error; }
         }
         throw lastError || new Error('All available models failed.');
       }
