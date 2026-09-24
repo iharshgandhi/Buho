@@ -49,6 +49,13 @@ var BUHO_CATEGORIES = [
     ]
   },
   {
+    name: "Study-Tools",
+    folder: "Study-Tools",
+    tools: [
+      { name: "Questionnaire Generator", file: "questionnaire-generator.html" }
+    ]
+  },
+  {
     name: "About",
     folder: "",
     tools: [

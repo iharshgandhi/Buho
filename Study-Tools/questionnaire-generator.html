@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questionnaire Generator - Buho</title>
+  <link rel="stylesheet" href="../_framework/buho.css">
+  <style>
+    .qg-intro { color: var(--buho-fg-lo); margin-bottom: var(--buho-space-5); }
+    .qg-field { margin-bottom: var(--buho-space-4); }
+    .qg-label { display: block; margin-bottom: var(--buho-space-2); font-weight: 700; color: var(--buho-fg-hi); }
+    .qg-input { width: 100%; height: 42px; padding: 0 var(--buho-space-3); color: var(--buho-fg); background: var(--buho-bg); border: var(--buho-border); border-radius: var(--buho-radius); outline: none; }
+    .qg-input:focus { border-color: var(--buho-blue); }
+    .qg-textarea { min-height: 360px; font-family: var(--buho-font); font-size: var(--buho-fs-base); }
+    .qg-radio-group { display: flex; flex-wrap: wrap; gap: var(--buho-space-4); }
+    .qg-radio { display: inline-flex; align-items: center; gap: var(--buho-space-2); min-height: 44px; cursor: pointer; }
+    .qg-radio input { width: 18px; height: 18px; accent-color: var(--buho-blue); }
+    .qg-actions { display: flex; align-items: center; gap: var(--buho-space-3); flex-wrap: wrap; margin-top: var(--buho-space-5); }
+    .qg-status { min-height: 24px; color: var(--buho-fg-lo); font-size: var(--buho-fs-sm); }
+    .qg-status--error { color: var(--buho-red); font-weight: 600; }
+    .qg-status--success { color: var(--buho-green); font-weight: 600; }
+    .qg-downloads { display: none; margin-top: var(--buho-space-6); padding-top: var(--buho-space-4); border-top: var(--buho-border); }
+    .qg-downloads--visible { display: block; }
+    .qg-downloads h2 { font-size: var(--buho-fs-lg); color: var(--buho-fg-hi); margin-bottom: var(--buho-space-3); }
+    .qg-download-list { display: grid; gap: var(--buho-space-2); }
+    .qg-download { display: flex; align-items: center; justify-content: space-between; gap: var(--buho-space-3); padding: var(--buho-space-3); background: var(--buho-bg-hi); border: var(--buho-border); border-radius: var(--buho-radius); }
+    .qg-download__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--buho-fg-hi); }
+    .qg-download .buho-btn { flex-shrink: 0; }
+    @media (max-width: 480px) { .qg-download { align-items: stretch; flex-direction: column; } .qg-download .buho-btn { justify-content: center; } }
+  </style>
+</head>
+<body>
+  <main class="buho-content">
+    <div class="buho-content__inner">
+      <h1>Questionnaire Generator</h1>
+      <p class="qg-intro">Turn a chapter or a complete book into a printable reading-comprehension questionnaire.</p>
+
+      <form id="qg-form" novalidate>
+        <div class="qg-field">
+          <label class="qg-label" for="qg-book-name">Book Name</label>
+          <input class="qg-input" id="qg-book-name" type="text" required placeholder="For example, Five Run Away Together">
+        </div>
+
+        <div class="qg-field">
+          <label class="qg-label" for="qg-text">Book or chapter text</label>
+          <textarea class="buho-textarea qg-textarea" id="qg-text" required placeholder="Paste the complete text here..."></textarea>
+        </div>
+
+        <fieldset class="qg-field">
+          <legend class="qg-label">Text scope</legend>
+          <div class="qg-radio-group">
+            <label class="qg-radio"><input type="radio" name="qg-scope" value="chapter" checked> Chapter</label>
+            <label class="qg-radio"><input type="radio" name="qg-scope" value="book"> Full Book</label>
+          </div>
+        </fieldset>
+
+        <div class="qg-field">
+          <label class="qg-label" for="qg-api-key">OpenRouter API Key</label>
+          <input class="qg-input" id="qg-api-key" type="password" required autocomplete="off" placeholder="sk-or-v1-...">
+        </div>
+
+        <fieldset class="qg-field">
+          <legend class="qg-label">API mode</legend>
+          <div class="qg-radio-group">
+            <label class="qg-radio"><input type="radio" name="qg-api-mode" value="free" checked> Use Free API</label>
+            <label class="qg-radio"><input type="radio" name="qg-api-mode" value="paid"> Use Paid API</label>
+          </div>
+        </fieldset>
+
+        <div class="qg-actions">
+          <button class="buho-btn" id="qg-generate" type="submit">Generate Questionnaire</button>
+          <span class="qg-status" id="qg-status" role="status" aria-live="polite"></span>
+        </div>
+      </form>
+
+      <section class="qg-downloads" id="qg-downloads" aria-labelledby="qg-download-title">
+        <h2 id="qg-download-title">Downloads</h2>
+        <div class="qg-download-list" id="qg-download-list"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="../_framework/buho.js"></script>
+  <script src="../AntiAI-Tools/Cross-Writing-Generator/lib/jspdf.umd.min.js"></script>
+  <script>
+    (function () {
+      var prompt = "You are an experienced educator specializing in creating reading comprehension exercises for children's literature, specifically for ages 8-10. Your task is to generate exactly the specified number and types of questions based on a book chapter, following British English conventions appropriate to the text's era.\n\nReturn ONLY the questions in this exact Markdown format. Do not include explanatory text or answers.\n\n## Short Answer Questions\n1. [Question requiring a one-word or short phrase answer]\n2. [Question requiring a one-word or short phrase answer]\n3. [Question requiring a one-word or short phrase answer]\n4. [Question requiring a one-word or short phrase answer]\n5. [Question requiring a one-word or short phrase answer]\n6. [Question requiring a one-word or short phrase answer]\n7. [Question requiring a one-word or short phrase answer]\n8. [Question requiring a one-word or short phrase answer]\n9. [Question requiring a one-word or short phrase answer]\n10. [Question requiring a one-word or short phrase answer]\n\n## True or False Questions\n1. [Statement that is either true or false based on the chapter]\n2. [Statement that is either true or false based on the chapter]\n3. [Statement that is either true or false based on the chapter]\n4. [Statement that is either true or false based on the chapter]\n5. [Statement that is either true or false based on the chapter]\n6. [Statement that is either true or false based on the chapter]\n7. [Statement that is either true or false based on the chapter]\n8. [Statement that is either true or false based on the chapter]\n9. [Statement that is either true or false based on the chapter]\n10. [Statement that is either true or false based on the chapter]\n\n## Think & Write Questions\n1. [Question asking for a scene summary plus personal thoughts or opinion]\n2. [Question asking for a scene summary plus personal thoughts or opinion]\n\nBase all questions strictly on the chapter. Use British English, vary characters, plot, setting and themes, make true/false statements clearly verifiable, and make think-and-write questions combine factual recall with personal response.";
+      var form = document.getElementById('qg-form');
+      var button = document.getElementById('qg-generate');
+      var status = document.getElementById('qg-status');
+      var downloads = document.getElementById('qg-downloads');
+      var downloadList = document.getElementById('qg-download-list');
+      var wordNumbers = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20 };
+
+      function setStatus(message, type) { status.textContent = message; status.className = 'qg-status' + (type ? ' qg-status--' + type : ''); }
+      function safeName(value) { return value.trim().replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '') || 'Questionnaire'; }
+      function chapterNumber(value) { var key = value.toLowerCase(); return /^\d+$/.test(key) ? Number(key) : wordNumbers[key] || null; }
+      function splitChapters(text) {
+        var lines = text.replace(/\r\n?/g, '\n').split('\n');
+        var chapters = [], current = null;
+        var heading = /^\s*chapter\s+([0-9]+|[a-z]+(?:-[a-z]+)?)(?:\s*:\s*(.*))?\s*$/i;
+        lines.forEach(function (line) {
+          var match = line.match(heading);
+          if (match && chapterNumber(match[1]) !== null) {
+            if (current && current.lines.join('\n').trim()) chapters.push(current);
+            current = { number: chapterNumber(match[1]), title: match[2] ? match[2].trim() : '', lines: [line] };
+          } else if (current) {
+            current.lines.push(line);
+            if (!current.title && line.trim() && !/^chapter\s/i.test(line)) current.title = line.trim();
+          }
+        });
+        if (current && current.lines.join('\n').trim()) chapters.push(current);
+        if (!chapters.length) return [{ number: 1, title: 'Chapter 1', text: text.trim() }];
+        return chapters.map(function (chapter) { chapter.text = chapter.lines.join('\n').trim(); delete chapter.lines; return chapter; });
+      }
+      function modelScore(model) { var benchmarks = model.benchmarks && model.benchmarks.artificial_analysis || {}; return Number(benchmarks.intelligence_index || 0) * 1000000 + Number(benchmarks.coding_index || 0) * 1000 + Number(benchmarks.agentic_index || 0); }
+      function price(model) { return Number(model.pricing && (model.pricing.prompt || model.pricing.input) || Infinity) + Number(model.pricing && (model.pricing.completion || model.pricing.output) || Infinity); }
+      function isFree(model) { return Number(model.pricing && model.pricing.prompt) === 0 && Number(model.pricing && model.pricing.completion) === 0; }
+      async function getModels(key, mode) {
+        var response = await fetch('https://openrouter.ai/api/v1/models', { headers: { Authorization: 'Bearer ' + key } });
+        var data = await response.json();
+        if (!response.ok || data.error) throw new Error(data.error && data.error.message || 'The API key could not retrieve models.');
+        var models = (data.data || []).filter(function (model) { return model.id && model.context_length >= 4000 && (mode === 'free' ? isFree(model) : !isFree(model) && isFinite(price(model))); });
+        if (!models.length) throw new Error(mode === 'free' ? 'No free models are available for this API key.' : 'No paid models are available for this API key.');
+        models.sort(mode === 'free' ? function (a, b) { return modelScore(b) - modelScore(a); } : function (a, b) { return price(a) - price(b) || modelScore(b) - modelScore(a); });
+        return models;
+      }
+      async function askModel(key, models, chapter) {
+        var fullPrompt = prompt + '\n\n## CHAPTER TO PROCESS\nChapter Number: ' + chapter.number + '\n\n## CHAPTER TEXT\n---\n' + chapter.text + '\n---';
+        var lastError = null;
+        for (var index = 0; index < Math.min(models.length, 3); index += 1) {
+          try {
+            var response = await fetch('https://openrouter.ai/api/v1/chat/completions', { method: 'POST', headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: models[index].id, messages: [{ role: 'system', content: 'You create accurate reading comprehension exercises for children aged 8-10.' }, { role: 'user', content: fullPrompt }], max_tokens: 4000, temperature: 0.3 }) });
+            var data = await response.json();
+            if (!response.ok || data.error) throw new Error(data.error && data.error.message || 'Model request failed.');
+            var content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '';
+            if (!content.includes('## Short Answer Questions') || !content.includes('## True or False Questions') || !content.includes('## Think & Write Questions')) throw new Error('The model returned an invalid questionnaire format.');
+            return content;
+          } catch (error) { lastError = error; }
+        }
+        throw lastError || new Error('All available models failed.');
+      }
+      function parseQuestions(markdown) {
+        var result = { short: [], truth: [], think: [] }, section = '';
+        markdown.split('\n').forEach(function (line) {
+          var heading = line.trim().toLowerCase();
+          if (heading === '## short answer questions') section = 'short';
+          else if (heading === '## true or false questions') section = 'truth';
+          else if (heading === '## think & write questions') section = 'think';
+          else if (/^\d+\.\s+/.test(line.trim()) && section) result[section].push(line.trim().replace(/^\d+\.\s+/, ''));
+        });
+        return result;
+      }
+      function writeWrapped(pdf, text, x, y, width, lineHeight) { var lines = pdf.splitTextToSize(text, width); lines.forEach(function (line) { if (y > 270) { pdf.addPage(); y = 20; } pdf.text(line, x, y); y += lineHeight; }); return y; }
+      function makePdf(bookName, chapter, markdown, filename) {
+        var jsPDF = window.jspdf && window.jspdf.jsPDF;
+        if (!jsPDF) throw new Error('The PDF library did not load.');
+        var pdf = new jsPDF({ unit: 'mm', format: 'a4' }), questions = parseQuestions(markdown), y = 24;
+        pdf.setTextColor(47, 79, 79); pdf.setFont('times', 'normal'); pdf.setFontSize(20); pdf.text(chapter.title || ('Chapter ' + chapter.number), 105, y, { align: 'center' });
+        y += 9; pdf.setFontSize(11); pdf.text('Reading Comprehension Questionnaire', 105, y, { align: 'center' }); y += 12;
+        [{ title: 'Short Answer Questions', items: questions.short, answer: '________________________________________________________________________________' }, { title: 'True or False Questions', items: questions.truth, answer: 'True / False' }, { title: 'Think & Write Questions', items: questions.think, answer: '________________________________________________________________________________' }].forEach(function (section) {
+          if (y > 250) { pdf.addPage(); y = 20; } pdf.setFontSize(14); pdf.setTextColor(139, 69, 19); pdf.text(section.title, 20, y); y += 8; pdf.setTextColor(47, 79, 79); pdf.setFontSize(11);
+          section.items.forEach(function (item, index) { y = writeWrapped(pdf, (index + 1) + '. ' + item, 22, y, 168, 5); y += 3; y = writeWrapped(pdf, section.answer, 22, y, 168, 5); y += section.title.indexOf('Think') >= 0 ? 12 : 8; });
+        });
+        return { filename: filename, url: URL.createObjectURL(pdf.output('blob')) };
+      }
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault(); downloads.classList.remove('qg-downloads--visible'); downloadList.innerHTML = '';
+        var bookName = document.getElementById('qg-book-name').value.trim(), text = document.getElementById('qg-text').value.trim(), key = document.getElementById('qg-api-key').value.trim();
+        if (!bookName || !text || !key) { setStatus('Book name, text, and API key are required.', 'error'); return; }
+        button.disabled = true; setStatus('Validating the key and finding a model...', '');
+        try {
+          var scope = document.querySelector('input[name="qg-scope"]:checked').value, mode = document.querySelector('input[name="qg-api-mode"]:checked').value, chapters = splitChapters(text), models = await getModels(key, mode);
+          if (scope === 'chapter') chapters = [chapters[0]];
+          var files = [];
+          for (var index = 0; index < chapters.length; index += 1) { setStatus('Generating chapter ' + (index + 1) + ' of ' + chapters.length + '...', ''); var questions = await askModel(key, models, chapters[index]); var filename = safeName(bookName) + (scope === 'book' ? '_ch' + String(chapters[index].number).padStart(2, '0') : '') + '.pdf'; files.push(makePdf(bookName, chapters[index], questions, filename)); }
+          files.forEach(function (file) { var item = document.createElement('div'); item.className = 'qg-download'; item.innerHTML = '<span class="qg-download__name"></span><a class="buho-btn" download="' + file.filename + '">Download PDF</a>'; item.querySelector('.qg-download__name').textContent = file.filename; item.querySelector('a').href = file.url; downloadList.appendChild(item); });
+          downloads.classList.add('qg-downloads--visible'); setStatus(files.length + ' questionnaire' + (files.length === 1 ? '' : 's') + ' ready.', 'success');
+        } catch (error) { setStatus(error.message || 'Generation failed. Check the key and try again.', 'error'); }
+        button.disabled = false;
+      });
+    }());
+  </script>
+</body>
+</html>
